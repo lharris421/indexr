@@ -13,8 +13,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' directory_path <- "path/to/your/rds/files"
 #' rehash(directory_path)
+#' }
 rehash <- function(folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE) {
 
   files <- list.files(folder, pattern = "\\.rds$", full.names = TRUE)

@@ -18,9 +18,11 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' folder_path <- "path/to/your/rds/files"
 #' params_list <- list(param1 = c("value1", "value2"), param2 = c(1, 2))
 #' missing_combinations <- check_parameters_existence(folder_path, params_list, "missing")
+#' }
 check_parameters_existence <- function(folder, params_list, check_for = c("missing", "existing"), halt = FALSE, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE) {
   # Validate 'check_for' option
   check_for <- match.arg(check_for)

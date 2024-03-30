@@ -12,9 +12,11 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' folder_path <- "path/to/your/saved/objects"
 #' params_grid <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
 #' read_objects(folder_path, params_grid)
+#' }
 read_objects <- function(folder, params_grid, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE) {
   for (i in 1:nrow(params_grid)) {
     # Apply the data type conversion function to each column of the row

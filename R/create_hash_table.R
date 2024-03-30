@@ -17,10 +17,12 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' directory_path <- "path/to/your/rds/files"
 #' hash_table <- create_hash_table(directory_path)
 #' # To save the hash table to a file
 #' create_hash_table(directory_path, save_path = "path/to/save/hash_table.csv")
+#' }
 create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
   # List all RDS files in the given directory
   files <- list.files(path, pattern = "\\.rds$", full.names = TRUE)

@@ -12,11 +12,13 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Path to the existing hash table CSV
 #' hash_table_path <- "path/to/hash_table.csv"
 #' # Directory containing the associated RDS files
 #' rds_directory <- "path/to/rds_files"
 #' update_hash_table(hash_table_path, rds_directory)
+#' }
 update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE) {
   updated_table <- read.csv(table_path, stringsAsFactors = FALSE)
 

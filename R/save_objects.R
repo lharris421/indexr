@@ -18,8 +18,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' args_list <- list(param1 = "value1", param2 = 100)
 #' save_objects("path/to/save", args_list)
+#' }
 save_objects <- function(folder, args_list, ..., hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, overwrite = FALSE, include_timestamp = TRUE) {
 
   ## Add timestampe

@@ -11,24 +11,26 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' args <- list(param1 = "value1", param2 = 100, param3 = NA)
 #' hash_val <- generate_hash(args)
+#' }
 generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE) {
   # Remove NA values if ignore_na is TRUE
   if (ignore_na) {
     args_list <- Filter(function(x) !is.na(x), args_list)
   }
-  
+
   # Order alphabetically if alphabetical_order is TRUE
   if (alphabetical_order) {
     args_list <- args_list[order(names(args_list))]
   }
-  
+
   # Handle timestamp
   if (!hash_includes_timestamp) {
     args_list$timestamp <- NULL
   }
-  
+
   # Apply data type conversion to each element of args_list
   args_list <- lapply(args_list, function(x) {
     if (all(grepl("^[0-9]+$", x))) {
