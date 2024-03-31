@@ -17,7 +17,7 @@
 #' params_grid <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
 #' read_objects(folder_path, params_grid)
 #' }
-read_objects <- function(folder, params_grid, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE) {
+read_objects <- function(folder, params_grid, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
   for (i in 1:nrow(params_grid)) {
     # Apply the data type conversion function to each column of the row
     converted_row <- lapply(params_grid[i, ], convert_column)
@@ -26,7 +26,7 @@ read_objects <- function(folder, params_grid, hash_includes_timestamp = FALSE, i
     args_list <- setNames(as.list(converted_row), names(params_grid))
 
     # Generate hash using generate_hash function
-    hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order)
+    hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
 
     # Construct the file path and check if it exists
     file_path <- file.path(folder, paste0(hash, ".rds"))

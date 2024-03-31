@@ -19,7 +19,7 @@
 #' rds_directory <- "path/to/rds_files"
 #' update_hash_table(hash_table_path, rds_directory)
 #' }
-update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE) {
+update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
   updated_table <- read.csv(table_path, stringsAsFactors = FALSE)
 
   for (i in 1:nrow(updated_table)) {
@@ -50,7 +50,7 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
       if (updated_args_list$lambda == "across") {
         updated_args_list[["timestamp"]] <- NULL
       }
-      new_hash <- generate_hash(updated_args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order)
+      new_hash <- generate_hash(updated_args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
 
       # Save the updated objects under new hash
       new_file_path <- file.path(rds_folder, paste0(new_hash, ".rds"))

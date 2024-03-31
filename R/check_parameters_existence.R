@@ -23,7 +23,7 @@
 #' params_list <- list(param1 = c("value1", "value2"), param2 = c(1, 2))
 #' missing_combinations <- check_parameters_existence(folder_path, params_list, "missing")
 #' }
-check_parameters_existence <- function(folder, params_list, check_for = c("missing", "existing"), halt = FALSE, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE) {
+check_parameters_existence <- function(folder, params_list, check_for = c("missing", "existing"), halt = FALSE, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
   # Validate 'check_for' option
   check_for <- match.arg(check_for)
 
@@ -45,7 +45,7 @@ check_parameters_existence <- function(folder, params_list, check_for = c("missi
     args_list <- setNames(as.list(params_combinations[i, ]), names(params_combinations))
 
     # Generate hash for the args_list
-    hash <- generate_hash(args_list, hash_includes_timestamp, ignore_na, alphabetical_order)
+    hash <- generate_hash(args_list, hash_includes_timestamp, ignore_na, alphabetical_order, algo)
 
     # Check for the existence of the hash in the hash_table
     if (hash %in% hash_table$hash) {

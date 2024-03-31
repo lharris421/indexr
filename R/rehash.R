@@ -17,7 +17,7 @@
 #' directory_path <- "path/to/your/rds/files"
 #' rehash(directory_path)
 #' }
-rehash <- function(folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE) {
+rehash <- function(folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
   files <- list.files(folder, pattern = "\\.rds$", full.names = TRUE)
 
@@ -32,8 +32,7 @@ rehash <- function(folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, al
     }
 
     # Generate new hash using generate_hash function
-    new_hash <- generate_hash(e$args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order)
-    print(new_hash)
+    new_hash <- generate_hash(e$args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
     # Construct new file path with the new hash
     new_file_path <- file.path(folder, paste0(new_hash, ".rds"))
 

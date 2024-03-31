@@ -22,7 +22,8 @@
 #' args_list <- list(param1 = "value1", param2 = 100)
 #' save_objects("path/to/save", args_list)
 #' }
-save_objects <- function(folder, args_list, ..., hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, overwrite = FALSE, include_timestamp = TRUE) {
+save_objects <- function(folder, args_list, ..., hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, overwrite = FALSE, include_timestamp = TRUE,
+                         algo = "xxhash64") {
 
   ## Add timestampe
   if (include_timestamp) {
@@ -31,7 +32,7 @@ save_objects <- function(folder, args_list, ..., hash_includes_timestamp = FALSE
   }
 
   # Generate hash using generate_hash function
-  hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order)
+  hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
 
   # Construct the file path
   file_path <- file.path(folder, paste0(hash, ".rds"))
