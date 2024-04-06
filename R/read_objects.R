@@ -32,10 +32,8 @@ read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore
   # Check for 'function_name' and process through combine_arguments_with_defaults
   if (!is.null(params$function_name)) {
     params <- combine_arguments_with_defaults(params)
+    params <- lapply(params, convert_column)
   }
-
-  # Apply convert_column to each element of the list
-  params <- lapply(params, convert_column)
 
   # Generate hash using generate_hash function
   hash <- generate_hash(params, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)

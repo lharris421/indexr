@@ -45,7 +45,6 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
     args_list$timestamp <- NULL
   }
 
-  print(args_list)
   return(digest::digest(args_list, algo = algo))
 }
 
