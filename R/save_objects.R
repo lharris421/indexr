@@ -37,7 +37,7 @@ save_objects <- function(folder, ..., args_list = NULL, hash_includes_timestamp 
     objects <- list(...)
     if (length(objects) == 1 && !is.null(objects[[1]]$call)) {
       # Extract call details and then combine arguments with defaults
-      args_list <- extract_call_details(objects[[1]]$call)
+      args_list <- extract_call_details(objects[[1]])
       args_list <- combine_arguments_with_defaults(args_list)
     } else {
       stop("Either provide an args_list or a single object with a call property.")
