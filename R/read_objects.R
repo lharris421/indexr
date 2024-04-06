@@ -29,16 +29,16 @@ read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore
     stop("params must be a list, data frame, or matrix.")
   }
 
-  # Apply convert_column to each element of the list
-  args_list <- lapply(params, convert_column)
-
   # Check for 'function_name' and process through combine_arguments_with_defaults
-  if (!is.null(args_list$function_name)) {
-    args_list <- combine_arguments_with_defaults(args_list)
+  if (!is.null(params$function_name)) {
+    params <- combine_arguments_with_defaults(params)
   }
 
+  # Apply convert_column to each element of the list
+  params <- lapply(params, convert_column)
+
   # Generate hash using generate_hash function
-  hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
+  hash <- generate_hash(params, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
 
   # Construct the file path based on save_method
   file_extension <- ifelse(save_method == "rda", ".rda", ".rds")

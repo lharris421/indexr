@@ -17,7 +17,6 @@
 #' }
 generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
-  print(args_list)
   # Handle timestamp
   if (!hash_includes_timestamp) {
     args_list$timestamp <- NULL
@@ -45,8 +44,6 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
   if (alphabetical_order) {
     args_list <- args_list[order(names(args_list))]
   }
-
-  print(args_list)
 
   return(digest::digest(args_list, algo = algo))
 }
