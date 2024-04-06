@@ -17,14 +17,15 @@
 #' params <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
 #' read_objects(folder_path, params)
 #' }
-read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
+read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64", save_method = "rda") {
+
   # Convert params to a list if it's a single row of a data frame or matrix
   if (is.data.frame(params) || is.matrix(params)) {
     if (nrow(params) != 1) {
       stop("params must be a single row of a data frame or matrix.")
     }
     params <- setNames(as.list(params[1, ]), names(params))
-  } else if (!is.list(params)) {
+  } elseif (!is.list(params)) {
     stop("params must be a list, data frame, or matrix.")
   }
 
@@ -39,13 +40,24 @@ read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore
   # Generate hash using generate_hash function
   hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
 
-  # Construct the file path and check if it exists
-  file_path <- file.path(folder, paste0(hash, ".rda"))
+  # Construct the file path based on save_method
+  file_extension <- ifelse(save_method == "rda", ".rda", ".rds")
+  file_path <- file.path(folder, paste0(hash, file_extension))
+
   if (file.exists(file_path)) {
-    load(file_path, envir = globalenv())
+    if (save_method == "rda") {
+      load(file_path, envir = globalenv())
+    } else { # Assuming save_method is "rds"
+      loaded_objects <- readRDS(file_path)
+      if (length(loaded_objects) < 2) {
+        stop("The loaded .rds file does not contain the expected number of objects.")
+      }
+      return(loaded_objects[[2]]) # Return the second item of the list
+    }
   } else {
     warning(paste0("File not found for hash: ", hash))
   }
 }
+
 
 
