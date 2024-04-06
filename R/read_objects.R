@@ -24,7 +24,7 @@ read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore
       stop("params must be a single row of a data frame or matrix.")
     }
     params <- setNames(as.list(params[1, ]), names(params))
-  } elseif (!is.list(params)) {
+  } else if (!is.list(params)) {
     stop("params must be a list, data frame, or matrix.")
   }
 
