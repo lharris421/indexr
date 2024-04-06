@@ -25,14 +25,23 @@ Here's a quick start guide to using indexr:
 ```R
 library(indexr)
 
-# Example usage of save_objects and read_objects
-args_list <- list(param1 = "value1", param2 = 100)
-folder_path <- "path/to/your/rds/files"
-save_objects(folder_path, args_list)
-read_objects(folder_path, params_grid = data.frame(param1 = "value1", param2 = 100))
+# Example usage of save_objects 
+y <- rnorm(10)
+x <- rnorm(10)
+res <- lm(y ~ x)
+save_objects(".", res)
 
-# Creating a hash table from RDS files
-hash_table <- create_hash_table(folder_path)
+# Example usage of read_objects
+rm(list = ls())
+## save_method default is "rda" for current manuscript compatibility but will be changed very soon
+res <- read_objects(".", list(function_name = "lm", formula = "y ~ x"), save_method = "rds") 
+print(res)
+
+## Showing that compatible with defaults
+rm(list = ls())
+## save_method default is "rda" for current manuscript compatibility but will be changed very soon
+res <- read_objects(".", list(function_name = "lm", formula = "y ~ x", method = "qr"), save_method = "rds") 
+print(res)
 ```
 
 For detailed usage, please refer to the package documentation.
