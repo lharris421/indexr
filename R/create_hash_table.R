@@ -47,7 +47,7 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL, save_m
         next  # Skip if the args_list is not found
       }
 
-      args_list <- lapply(loaded_objects[[1]], convert_column)
+      args_list <- lapply(loaded_objects[[1]], convert_type)
     }
 
     args_list$hash <- stringr::str_remove(basename(file), file_pattern)

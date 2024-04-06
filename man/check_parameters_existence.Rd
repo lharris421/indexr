@@ -11,7 +11,8 @@ check_parameters_existence(
   halt = FALSE,
   hash_includes_timestamp = FALSE,
   ignore_na = TRUE,
-  alphabetical_order = TRUE
+  alphabetical_order = TRUE,
+  algo = "xxhash64"
 )
 }
 \arguments{

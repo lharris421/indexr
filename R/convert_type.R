@@ -4,24 +4,21 @@
 #' to numeric if all elements are numbers, otherwise, it converts them to character.
 #' This is particularly useful for ensuring consistent data types across data processing.
 #'
-#' @param column A vector (column) that needs to be checked and potentially converted.
+#' @param x An object that needs to be checked and potentially converted.
 #'
 #' @return Returns a vector with its elements converted to either numeric or character type,
 #'         based on the content of the vector.
 #'
 #' @noRd
-convert_column <- function(column) {
-  if (is.logical(column) | is.character(column)) {
-    # If column is logical, return as is
-    return(column)
-  } else if (is.numeric(column)) {
-    as.numeric(column)
-  } else if (class(column) == "call") {
-    # Convert function to a single character string
-    return(deparse(column))
+convert_type <- function(x) {
+  if (is.logical(x) | is.character(x)) {
+    return(x)
+  } else if (is.numeric(x)) {
+    as.numeric(x)
+  } else if (is.call(x) == "call") {
+    return(deparse(x))
   } else {
-    # Otherwise, convert to character
-    return(as.character(column))
+    return(as.character(x))
   }
 }
 

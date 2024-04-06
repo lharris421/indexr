@@ -6,21 +6,23 @@
 \usage{
 save_objects(
   folder,
-  args_list,
   ...,
+  args_list = NULL,
   hash_includes_timestamp = FALSE,
   ignore_na = TRUE,
   alphabetical_order = TRUE,
   overwrite = FALSE,
-  include_timestamp = TRUE
+  include_timestamp = TRUE,
+  algo = "xxhash64",
+  save_method = "rds"
 )
 }
 \arguments{
 \item{folder}{A string specifying the directory where the R objects will be saved.}
 
-\item{args_list}{A named list of arguments based on which the hash for filename will be generated.}
-
 \item{...}{The data to be save.}
+
+\item{args_list}{A named list of arguments based on which the hash for filename will be generated.}
 
 \item{hash_includes_timestamp}{Logical; if TRUE, the timestamp will be included in the hash calculation.}
 

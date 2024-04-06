@@ -6,16 +6,18 @@
 \usage{
 read_objects(
   folder,
-  params_grid,
+  params,
   hash_includes_timestamp = FALSE,
   ignore_na = TRUE,
-  alphabetical_order = TRUE
+  alphabetical_order = TRUE,
+  algo = "xxhash64",
+  save_method = "rda"
 )
 }
 \arguments{
 \item{folder}{A string specifying the directory where the objects are stored.}
 
-\item{params_grid}{A data frame or matrix where each row represents a different set of parameters to be hashed and checked for corresponding files.}
+\item{params}{A data frame or matrix where each row represents a different set of parameters to be hashed and checked for corresponding files.}
 
 \item{hash_includes_timestamp}{Logical; if TRUE, includes timestamps in the hash generation process.}
 
@@ -32,7 +34,7 @@ Reads objects from files in a specified directory. The files are identified base
 \examples{
 \dontrun{
 folder_path <- "path/to/your/saved/objects"
-params_grid <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
-read_objects(folder_path, params_grid)
+params <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
+read_objects(folder_path, params)
 }
 }

@@ -4,7 +4,12 @@
 \alias{create_hash_table}
 \title{Create a Hash Table from RDS Files}
 \usage{
-create_hash_table(path, save_path = NULL, filter_list = NULL)
+create_hash_table(
+  path,
+  save_path = NULL,
+  filter_list = NULL,
+  save_method = "rda"
+)
 }
 \arguments{
 \item{path}{A string specifying the directory containing the RDS files.}

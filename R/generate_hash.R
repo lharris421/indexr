@@ -23,7 +23,7 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
       return(x)
     } else if (is.numeric(x)) {
       return(as.numeric(x))
-    } else if (class(x) == "call") {
+    } else if (is.call(x)) {
       return(deparse(x))  # Convert function to a single character string
     } else {
       return(as.character(x))

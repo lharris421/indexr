@@ -8,7 +8,8 @@ generate_hash(
   args_list,
   hash_includes_timestamp = FALSE,
   ignore_na = TRUE,
-  alphabetical_order = TRUE
+  alphabetical_order = TRUE,
+  algo = "xxhash64"
 )
 }
 \arguments{

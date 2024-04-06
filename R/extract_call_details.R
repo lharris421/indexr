@@ -33,7 +33,7 @@ get_default_arguments <- function(input) {
   # Get default arguments and filter out those without defaults
   defaults <- formals(func)
   defaults <- Filter(function(x) !is.null(x), defaults)
-  defaults <- lapply(defaults, convert_column)
+  defaults <- lapply(defaults, convert_type)
   defaults <- Filter(function(x) x != "", defaults)
   defaults <- Filter(function(x) !is.na(x), defaults)
 
