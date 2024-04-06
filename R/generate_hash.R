@@ -18,17 +18,7 @@
 generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
   # Apply data type conversion to each element of args_list
-  args_list <- lapply(args_list, function(x) {
-    if (is.logical(x) | is.character(x)) {
-      return(x)
-    } else if (is.numeric(x)) {
-      return(as.numeric(x))
-    } else if (is.call(x)) {
-      return(deparse(x))  # Convert function to a single character string
-    } else {
-      return(as.character(x))
-    }
-  })
+  args_list <- lapply(args_list, convert_type)
 
   # Remove NA values if ignore_na is TRUE
   if (ignore_na) {
