@@ -29,7 +29,7 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL, save_m
 
   # List all files in the given directory based on the file pattern
   files <- list.files(path, pattern = file_pattern, full.names = TRUE)
-  print(files)
+
   # Initialize an empty list to store the args_lists along with their hashes
   all_args_lists <- list()
 
