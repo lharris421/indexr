@@ -42,6 +42,8 @@ rm(list = ls())
 ## save_method default is "rda" for current manuscript compatibility but will be changed very soon
 res <- read_objects(".", list(function_name = "lm", formula = "y ~ x", method = "qr"), save_method = "rds") 
 print(res)
+
+create_hash_table(".", save_method = "rds")
 ```
 
 For detailed usage, please refer to the package documentation.
