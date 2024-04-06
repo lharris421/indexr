@@ -39,5 +39,5 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
       return(as.character(x))
     }
   })
-  return(digest(args_list, algo = algo))
+  return(digest::digest(args_list, algo = algo))
 }

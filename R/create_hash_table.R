@@ -43,7 +43,7 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
   }
 
   # Combine all args_lists into a data frame using bind_rows
-  args_df <- bind_rows(lapply(all_args_lists, as.data.frame.list))
+  args_df <- dplyr::bind_rows(lapply(all_args_lists, as.data.frame.list))
 
   # Apply filters if filter_list is provided
   if (!is.null(filter_list) && is.list(filter_list)) {
