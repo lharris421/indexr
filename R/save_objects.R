@@ -70,7 +70,7 @@ save_objects <- function(folder, ..., args_list = NULL, hash_includes_timestamp 
     save(list = names(objects_to_save), file = file_path, envir = globalenv())
   } else {
     # Save args_list as the first object followed by the other objects for .rds
-    saveRDS(list(args_list, ...), file = file_path)
+    saveRDS(list("args_list" = args_list, ...), file = file_path)
   }
 }
 

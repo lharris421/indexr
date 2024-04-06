@@ -23,23 +23,35 @@
 #' # To save the hash table to a file
 #' create_hash_table(directory_path, save_path = "path/to/save/hash_table.csv")
 #' }
-create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
-  # List all RDS files in the given directory
-  files <- list.files(path, pattern = "\\.rda$", full.names = TRUE)
+create_hash_table <- function(path, save_path = NULL, filter_list = NULL, save_method = "rda") {
+  # Determine the file pattern based on save_method
+  file_pattern <- ifelse(save_method == "rda", "\\.rda$", "\\.rds$")
+
+  # List all files in the given directory based on the file pattern
+  files <- list.files(path, pattern = file_pattern, full.names = TRUE)
+  print(files)
 
   # Initialize an empty list to store the args_lists along with their hashes
   all_args_lists <- list()
 
-  # Read each file and extract args_list, converting all values to character
   for (file in files) {
-    e <- new.env()
-    load(file, envir = e)
-    if ("args_list" %in% names(e)) {
-      # Convert all elements of args_list to character
-      char_args_list <- lapply(e$args_list, as.character)
-      char_args_list$hash <- stringr::str_remove(basename(file), ".rda$")
-      all_args_lists[[basename(file)]] <- char_args_list
+    if (save_method == "rda") {
+      e <- new.env()
+      load(file, envir = e)
+      if ("args_list" %in% names(e)) {
+        # Convert all elements of args_list to character
+        char_args_list <- lapply(e$args_list, as.character)
+      }
+    } else {  # Assuming save_method is "rds"
+      loaded_objects <- readRDS(file)
+      if (length(loaded_objects) < 1 || !("args_list" %in% names(loaded_objects[[1]]))) {
+        next  # Skip if the args_list is not found
+      }
+      char_args_list <- lapply(loaded_objects[[1]], as.character)
     }
+
+    char_args_list$hash <- stringr::str_remove(basename(file), file_pattern)
+    all_args_lists[[basename(file)]] <- char_args_list
   }
 
   # Combine all args_lists into a data frame using bind_rows
@@ -59,3 +71,4 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
 
   return(args_df)
 }
+
