@@ -11,9 +11,11 @@
 #'
 #' @noRd
 convert_column <- function(column) {
-  if (is.logical(column) | is.numeric(column) | is.character(column)) {
+  if (is.logical(column) | is.character(column)) {
     # If column is logical, return as is
     return(column)
+  } else if (is.numeric(column)) {
+      is.numeric(column)
   } else if (class(column) == "call") {
     # Convert function to a single character string
     return(deparse(column))

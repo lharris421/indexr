@@ -20,7 +20,6 @@
 rehash <- function(folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
   files <- list.files(folder, pattern = "\\.rda$", full.names = TRUE)
-
   for (file in files) {
     e <- new.env()
     load(file, envir = e)
