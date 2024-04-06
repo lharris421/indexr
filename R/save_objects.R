@@ -27,7 +27,7 @@ save_objects <- function(folder, ..., args_list = NULL, hash_includes_timestamp 
   # Additional check for save_method 'rds'
   if (save_method == "rds") {
     objects <- list(...)
-    if (any(sapply(objects, length) != 1)) {
+    if (length(objects) != 1) {
       stop("All objects must be of length 1 when using 'rds' save method. Combine objects into a single list or save as an .rda.")
     }
   }
