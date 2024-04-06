@@ -15,7 +15,7 @@ convert_column <- function(column) {
     # If column is logical, return as is
     return(column)
   } else if (is.numeric(column)) {
-    is.numeric(column)
+    as.numeric(column)
   } else if (class(column) == "call") {
     # Convert function to a single character string
     return(deparse(column))
