@@ -3,7 +3,7 @@
 #' Reads objects from files in a specified directory. The files are identified based on a hash generated from a grid of parameters. This function iterates over each combination of parameters in the grid, generates a hash for each, and attempts to load the corresponding object from the directory.
 #'
 #' @param folder A string specifying the directory where the objects are stored.
-#' @param params_grid A data frame or matrix where each row represents a different set of parameters to be hashed and checked for corresponding files.
+#' @param params A data frame or matrix where each row represents a different set of parameters to be hashed and checked for corresponding files.
 #' @param hash_includes_timestamp Logical; if TRUE, includes timestamps in the hash generation process.
 #' @param ignore_na Logical; if TRUE, NA values are ignored during hash generation.
 #' @param alphabetical_order Logical; if TRUE, parameters are sorted alphabetically before hash generation.
@@ -14,26 +14,38 @@
 #' @examples
 #' \dontrun{
 #' folder_path <- "path/to/your/saved/objects"
-#' params_grid <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
-#' read_objects(folder_path, params_grid)
+#' params <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
+#' read_objects(folder_path, params)
 #' }
-read_objects <- function(folder, params_grid, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
-  for (i in 1:nrow(params_grid)) {
-    # Apply the data type conversion function to each column of the row
-    converted_row <- lapply(params_grid[i, ], convert_column)
-
-    # Convert the row to a named list
-    args_list <- setNames(as.list(converted_row), names(params_grid))
-
-    # Generate hash using generate_hash function
-    hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
-
-    # Construct the file path and check if it exists
-    file_path <- file.path(folder, paste0(hash, ".rds"))
-    if (file.exists(file_path)) {
-      load(file_path, envir = globalenv())
-    } else {
-      warning(paste0("File not found for hash: ", hash))
+read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
+  # Convert params to a list if it's a single row of a data frame or matrix
+  if (is.data.frame(params) || is.matrix(params)) {
+    if (nrow(params) != 1) {
+      stop("params must be a single row of a data frame or matrix.")
     }
+    params <- setNames(as.list(params[1, ]), names(params))
+  } elseif (!is.list(params)) {
+    stop("params must be a list, data frame, or matrix.")
+  }
+
+  # Apply convert_column to each element of the list
+  args_list <- lapply(params, convert_column)
+
+  # Check for 'function_name' and process through combine_arguments_with_defaults
+  if (!is.null(args_list$function_name)) {
+    args_list <- combine_arguments_with_defaults(args_list)
+  }
+
+  # Generate hash using generate_hash function
+  hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
+
+  # Construct the file path and check if it exists
+  file_path <- file.path(folder, paste0(hash, ".rds"))
+  if (file.exists(file_path)) {
+    load(file_path, envir = globalenv())
+  } else {
+    warning(paste0("File not found for hash: ", hash))
   }
 }
+
+
