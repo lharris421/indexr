@@ -16,6 +16,26 @@
 #' hash_val <- generate_hash(args)
 #' }
 generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
+
+  print(args_list)
+  # Handle timestamp
+  if (!hash_includes_timestamp) {
+    args_list$timestamp <- NULL
+  }
+
+  # Apply data type conversion to each element of args_list
+  args_list <- lapply(args_list, function(x) {
+    if (is.logical(x)) {
+      return(x)
+    } else if (class(x) == "call") {
+      return(deparse(x))  # Convert formula to a single character string
+    } else if (all(grepl("^[0-9]+$", x))) {
+      return(as.numeric(x))
+    } else {
+      return(as.character(x))
+    }
+  })
+
   # Remove NA values if ignore_na is TRUE
   if (ignore_na) {
     args_list <- Filter(function(x) !is.na(x), args_list)
@@ -26,18 +46,9 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
     args_list <- args_list[order(names(args_list))]
   }
 
-  # Handle timestamp
-  if (!hash_includes_timestamp) {
-    args_list$timestamp <- NULL
-  }
+  print(args_list)
 
-  # Apply data type conversion to each element of args_list
-  args_list <- lapply(args_list, function(x) {
-    if (all(grepl("^[0-9]+$", x))) {
-      return(as.numeric(x))
-    } else {
-      return(as.character(x))
-    }
-  })
   return(digest::digest(args_list, algo = algo))
 }
+
+
