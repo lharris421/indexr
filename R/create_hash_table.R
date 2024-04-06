@@ -25,7 +25,7 @@
 #' }
 create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
   # List all RDS files in the given directory
-  files <- list.files(path, pattern = "\\.rds$", full.names = TRUE)
+  files <- list.files(path, pattern = "\\.rda$", full.names = TRUE)
 
   # Initialize an empty list to store the args_lists along with their hashes
   all_args_lists <- list()
@@ -37,7 +37,7 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
     if ("args_list" %in% names(e)) {
       # Convert all elements of args_list to character
       char_args_list <- lapply(e$args_list, as.character)
-      char_args_list$hash <- stringr::str_remove(basename(file), ".rds$")
+      char_args_list$hash <- stringr::str_remove(basename(file), ".rda$")
       all_args_lists[[basename(file)]] <- char_args_list
     }
   }

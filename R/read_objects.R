@@ -40,7 +40,7 @@ read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore
   hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
 
   # Construct the file path and check if it exists
-  file_path <- file.path(folder, paste0(hash, ".rds"))
+  file_path <- file.path(folder, paste0(hash, ".rda"))
   if (file.exists(file_path)) {
     load(file_path, envir = globalenv())
   } else {

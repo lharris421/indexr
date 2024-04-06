@@ -35,7 +35,7 @@ save_objects <- function(folder, args_list, ..., hash_includes_timestamp = FALSE
   hash <- generate_hash(args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
 
   # Construct the file path
-  file_path <- file.path(folder, paste0(hash, ".rds"))
+  file_path <- file.path(folder, paste0(hash, ".rda"))
 
   # Check for existing file
   if (file.exists(file_path) && !overwrite) {

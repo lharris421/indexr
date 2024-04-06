@@ -27,7 +27,7 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
     old_hash <- row$hash
 
     # Load the old RDS file
-    old_file_path <- file.path(rds_folder, paste0(old_hash, ".rds"))
+    old_file_path <- file.path(rds_folder, paste0(old_hash, ".rda"))
     e <- new.env()
     if (file.exists(old_file_path)) {
       load(old_file_path, envir = e)
@@ -53,7 +53,7 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
       new_hash <- generate_hash(updated_args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
 
       # Save the updated objects under new hash
-      new_file_path <- file.path(rds_folder, paste0(new_hash, ".rds"))
+      new_file_path <- file.path(rds_folder, paste0(new_hash, ".rda"))
       e$args_list <- updated_args_list
       save(list = ls(envir = e), file = new_file_path, envir = e)
 
