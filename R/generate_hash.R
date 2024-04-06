@@ -17,19 +17,12 @@
 #' }
 generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
-  # Handle timestamp
-  if (!hash_includes_timestamp) {
-    args_list$timestamp <- NULL
-  }
-
   # Apply data type conversion to each element of args_list
   args_list <- lapply(args_list, function(x) {
-    if (is.logical(x)) {
+    if (is.logical(x) | is.numeric(x)) {
       return(x)
     } else if (class(x) == "call") {
-      return(deparse(x))  # Convert formula to a single character string
-    } else if (all(grepl("^[0-9]+$", x))) {
-      return(as.numeric(x))
+      return(deparse(x))  # Convert function to a single character string
     } else {
       return(as.character(x))
     }
@@ -45,7 +38,13 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
     args_list <- args_list[order(names(args_list))]
   }
 
+  # Handle timestamp
+  if (!hash_includes_timestamp) {
+    args_list$timestamp <- NULL
+  }
+
   return(digest::digest(args_list, algo = algo))
 }
+
 
 

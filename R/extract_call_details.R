@@ -15,25 +15,26 @@ extract_call_details <- function(obj) {
   return(result)
 }
 get_default_arguments <- function(input) {
-    if (is.list(input) && !is.null(input$function_name)) {
-      function_name <- input$function_name
-    } else if (!is.null(input$call)) {
-      call_obj <- input$call
-      function_name <- as.character(call_obj[[1]])
-    } else {
-      stop("Input must either be an object with a 'call' element or a list with a 'function_name' element.")
-    }
+  if (is.list(input) && !is.null(input$function_name)) {
+    function_name <- input$function_name
+  } else if (!is.null(input$call)) {
+    call_obj <- input$call
+    function_name <- as.character(call_obj[[1]])
+  } else {
+    stop("Input must either be an object with a 'call' element or a list with a 'function_name' element.")
+  }
 
-    # Find the function in the environment
-    func <- get(function_name, mode = "function")
-    if (is.null(func)) {
-      stop("Function not found in the environment.")
-    }
+  # Find the function in the environment
+  func <- get(function_name, mode = "function")
+  if (is.null(func)) {
+    stop("Function not found in the environment.")
+  }
 
   # Get default arguments and filter out those without defaults
   defaults <- formals(func)
-  defaults <- Filter(function(x) !is.symbol(x), defaults)
   defaults <- Filter(function(x) !is.null(x), defaults)
+  defaults <- lapply(defaults, convert_column)
+  defaults <- Filter(function(x) x != "", defaults)
   defaults <- Filter(function(x) !is.na(x), defaults)
 
   return(defaults)
@@ -50,5 +51,12 @@ combine_arguments_with_defaults <- function(user_args) {
   combined_args <- modifyList(defaults, user_args)
 
   return(combined_args)
+}
+if_vector <- function(x) {
+  if (is.vector(x)) {
+    return(x[1])
+  } else {
+    return(x)
+  }
 }
 

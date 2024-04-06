@@ -11,19 +11,17 @@
 #'
 #' @noRd
 convert_column <- function(column) {
-  if (is.logical(column)) {
+  if (is.logical(column) | is.numeric(column)) {
     # If column is logical, return as is
     return(column)
   } else if (class(column) == "call") {
-    # Convert formula to a single character string
+    # Convert function to a single character string
     return(deparse(column))
-  } else if (all(grepl("^[0-9]+$", column))) {
-    # Convert to numeric if all elements are numbers
-    return(as.numeric(column))
   } else {
     # Otherwise, convert to character
     return(as.character(column))
   }
 }
+
 
 
