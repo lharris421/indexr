@@ -15,7 +15,7 @@ convert_type <- function(x) {
     return(x)
   } else if (is.numeric(x)) {
     as.numeric(x)
-  } else if (is.call(x) == "call") {
+  } else if (is.call(x)) {
     return(deparse(x))
   } else {
     return(as.character(x))
