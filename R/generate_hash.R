@@ -19,7 +19,7 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
 
   # Apply data type conversion to each element of args_list
   args_list <- lapply(args_list, function(x) {
-    if (is.logical(x) | is.numeric(x)) {
+    if (is.logical(x) | is.numeric(x) | is.character(x)) {
       return(x)
     } else if (class(x) == "call") {
       return(deparse(x))  # Convert function to a single character string

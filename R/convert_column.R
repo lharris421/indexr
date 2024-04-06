@@ -11,7 +11,7 @@
 #'
 #' @noRd
 convert_column <- function(column) {
-  if (is.logical(column) | is.numeric(column)) {
+  if (is.logical(column) | is.numeric(column) | is.character(column)) {
     # If column is logical, return as is
     return(column)
   } else if (class(column) == "call") {
