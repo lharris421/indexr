@@ -14,7 +14,7 @@ convert_column <- function(column) {
   if (is.logical(column)) {
     # If column is logical, return as is
     return(column)
-  } else if (class(column) == "formula") {
+  } else if (class(column) == "call") {
     # Convert formula to a single character string
     return(deparse(column))
   } else if (all(grepl("^[0-9]+$", column))) {

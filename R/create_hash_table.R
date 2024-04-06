@@ -30,7 +30,6 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL, save_m
   # List all files in the given directory based on the file pattern
   files <- list.files(path, pattern = file_pattern, full.names = TRUE)
   print(files)
-
   # Initialize an empty list to store the args_lists along with their hashes
   all_args_lists <- list()
 
@@ -40,18 +39,19 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL, save_m
       load(file, envir = e)
       if ("args_list" %in% names(e)) {
         # Convert all elements of args_list to character
-        char_args_list <- lapply(e$args_list, as.character)
+        args_list <- lapply(e$args_list, as.character)
       }
     } else {  # Assuming save_method is "rds"
       loaded_objects <- readRDS(file)
-      if (length(loaded_objects) < 1 || !("args_list" %in% names(loaded_objects[[1]]))) {
+      if (length(loaded_objects) < 1 || !("args_list" %in% names(loaded_objects))) {
         next  # Skip if the args_list is not found
       }
-      char_args_list <- lapply(loaded_objects[[1]], as.character)
+
+      args_list <- lapply(loaded_objects[[1]], convert_column)
     }
 
-    char_args_list$hash <- stringr::str_remove(basename(file), file_pattern)
-    all_args_lists[[basename(file)]] <- char_args_list
+    args_list$hash <- stringr::str_remove(basename(file), file_pattern)
+    all_args_lists[[basename(file)]] <- args_list
   }
 
   # Combine all args_lists into a data frame using bind_rows
