@@ -15,7 +15,7 @@ Install `indexr` from GitHub (future CRAN release planned):
 
 ```R
 # install.packages("devtools")
-devtools::install_github("your-github-username/indexr")
+devtools::install_github("lharris421/indexr")
 ```
 
 ## Usage
