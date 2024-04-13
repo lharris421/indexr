@@ -66,11 +66,12 @@ save_objects <- function(folder, ..., args_list = NULL, hash_includes_timestamp 
   # Save according to the specified method
   if (save_method == "rda") {
     # Combine all objects into a list with args_list being the first element
-    objects_to_save <- c(list(args_list = args_list), list(...))
-    save(list = names(objects_to_save), file = file_path, envir = globalenv())
+    call <- match.call(expand.dots = FALSE)
+    ellipsis <- call[["..."]]
+    object_names <- sapply(ellipsis, deparse)
+    save(list = c("args_list", object_names), file = file_path, envir = globalenv())
   } else {
     # Save args_list as the first object followed by the other objects for .rds
     saveRDS(list("args_list" = args_list, ...), file = file_path)
   }
 }
-
