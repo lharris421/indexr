@@ -19,7 +19,7 @@
 #' rds_directory <- "path/to/rds_files"
 #' update_hash_table(hash_table_path, rds_directory)
 #' }
-update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
+update_hash_table <- function(table_path, rds_folder, save_method = "rds", hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
   updated_table <- read.csv(table_path, stringsAsFactors = FALSE)
 
   for (i in 1:nrow(updated_table)) {
@@ -27,35 +27,43 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
     old_hash <- row$hash
 
     # Load the old RDS file
-    old_file_path <- file.path(rds_folder, paste0(old_hash, ".rda"))
+    old_file_path <- file.path(rds_folder, glue("{old_hash}.{save_method}"))
     e <- new.env()
     if (file.exists(old_file_path)) {
-      load(old_file_path, envir = e)
+      if (save_method == "rda") {
+        load(old_file_path, envir = e)
+      } else {
+        e$res_list <- readRDS(old_file_path)
+        e$args_list <- e$res_list$args_list
+      }
 
       # Ensure args_list exists in the loaded environment
       if (!"args_list" %in% ls(envir = e)) {
-        warning(paste0("args_list not found in RDS file: ", old_file_path))
+        warning(glue("args_list not found in {save_method} file: {old_file_path}"))
         next
       }
 
       # Update args_list with values from the updated table row
       updated_args_list <- e$args_list
       for (col_name in names(updated_table)) {
-        if (col_name != "hash" && !is.na(row[[col_name]])) {
+        if (col_name != "hash" && (!is.na(row[[col_name]]) | !is.na(updated_args_list[[col_name]]))) {
           updated_args_list[[col_name]] <- row[[col_name]]
         }
       }
 
       # Calculate new hash for updated args_list using generate_hash
-      if (updated_args_list$lambda == "across") {
-        updated_args_list[["timestamp"]] <- NULL
-      }
+      print(updated_args_list)
       new_hash <- generate_hash(updated_args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
 
       # Save the updated objects under new hash
-      new_file_path <- file.path(rds_folder, paste0(new_hash, ".rda"))
+      new_file_path <- file.path(rds_folder, glue("{new_hash}.{save_method}"))
       e$args_list <- updated_args_list
-      save(list = ls(envir = e), file = new_file_path, envir = e)
+      if (save_method == "rda") {
+        save(list = ls(envir = e), file = new_file_path, envir = e)
+      } else {
+        e$res_list$args_list <- e$args_list
+        saveRDS(e$res_list, file = new_file_path)
+      }
 
       # Delete the old file if not overwritten and hashes differ
       if (old_hash != new_hash) {
