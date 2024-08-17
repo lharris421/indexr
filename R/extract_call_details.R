@@ -12,9 +12,9 @@ extract_call_details <- function(obj) {
   for (arg_name in names(args)) {
     arg_value <- args[[arg_name]]
 
-    # Check if the argument is a function or a call to a function
-    if (is.function(arg_value) || is.call(arg_value)) {
-      result[[arg_name]] <- deparse(arg_value)
+    # Check if the argument is a function or a name that corresponds to a function
+    if (is.function(arg_value) || is.function(get(as.character(arg_value), envir = parent.frame(), inherits = TRUE))) {
+      result[[arg_name]] <- paste0("\"", as.character(arg_value), "\"")
     } else {
       result[[arg_name]] <- arg_value
     }
@@ -22,6 +22,7 @@ extract_call_details <- function(obj) {
 
   return(result)
 }
+
 
 get_default_arguments <- function(input) {
   if (is.list(input) && !is.null(input$function_name)) {
