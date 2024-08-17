@@ -8,12 +8,21 @@ extract_call_details <- function(obj) {
   args <- as.list(call_obj)[-1]
 
   result <- list(function_name = function_name)
+
   for (arg_name in names(args)) {
-    result[[arg_name]] <- args[[arg_name]]
+    arg_value <- args[[arg_name]]
+
+    # Check if the argument is a function or a call to a function
+    if (is.function(arg_value) || is.call(arg_value)) {
+      result[[arg_name]] <- deparse(arg_value)
+    } else {
+      result[[arg_name]] <- arg_value
+    }
   }
 
   return(result)
 }
+
 get_default_arguments <- function(input) {
   if (is.list(input) && !is.null(input$function_name)) {
     function_name <- input$function_name
