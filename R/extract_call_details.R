@@ -9,13 +9,26 @@ extract_call_details <- function(obj) {
 
   result <- list(function_name = function_name)
 
+
   for (arg_name in names(args)) {
+
     arg_value <- args[[arg_name]]
     arg_as_char <- as.character(arg_value)
 
-    # Check if the argument is a function or corresponds to a function in the environment
-    if (length(arg_as_char) == 1 && (is.function(arg_value) || exists(arg_as_char, mode = "function", envir = parent.frame()))) {
-      result[[arg_name]] <- paste0("\"", arg_as_char, "\"")
+    if (length(arg_as_char) == 0) next
+
+    # Check if the argument is a call to 'list'
+    if (startsWith(arg_as_char[1], "list")) {
+
+      # Evaluate the arg_value directly
+      list_to_save <- eval(arg_value)
+
+      # Save the evaluated list to the result
+      if (length(list_to_save) == 0) next
+      result[[arg_name]] <- list_to_save
+
+    } else if (length(arg_as_char) == 1 && (is.function(arg_value) || exists(arg_as_char, mode = "function", envir = parent.frame()))) {
+      result[[arg_name]] <- arg_as_char  # Assign the character representation directly
     } else {
       result[[arg_name]] <- arg_value
     }
@@ -23,10 +36,8 @@ extract_call_details <- function(obj) {
 
   return(result)
 }
-
-
-
 get_default_arguments <- function(input) {
+
   if (is.list(input) && !is.null(input$function_name)) {
     function_name <- input$function_name
   } else if (!is.null(input$call)) {
@@ -47,6 +58,7 @@ get_default_arguments <- function(input) {
   defaults <- Filter(function(x) !is.null(x), defaults)
   defaults <- lapply(defaults, convert_type)
   defaults <- Filter(function(x) x != "", defaults)
+  defaults <- Filter(function(x) x != "list()", defaults)
   defaults <- Filter(function(x) !is.na(x), defaults)
 
   return(defaults)

@@ -23,9 +23,9 @@
 #' # To save the hash table to a file
 #' create_hash_table(directory_path, save_path = "path/to/save/hash_table.csv")
 #' }
-create_hash_table <- function(path, save_path = NULL, filter_list = NULL, save_method = "rda") {
+create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
   # Determine the file pattern based on save_method
-  file_pattern <- ifelse(save_method == "rda", "\\.rda$", "\\.rds$")
+  file_pattern <- "\\.rds$"
 
   # List all files in the given directory based on the file pattern
   files <- list.files(path, pattern = file_pattern, full.names = TRUE)
@@ -34,34 +34,28 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL, save_m
   all_args_lists <- list()
 
   for (file in files) {
-    if (save_method == "rda") {
-      e <- new.env()
-      load(file, envir = e)
-      if ("args_list" %in% names(e)) {
-        # Convert all elements of args_list to character
-        args_list <- lapply(e$args_list, as.character)
-      }
-    } else {  # Assuming save_method is "rds"
-      loaded_objects <- readRDS(file)
-      if (length(loaded_objects) < 1 || !("args_list" %in% names(loaded_objects))) {
-        next  # Skip if the args_list is not found
-      }
-
-      args_list <- lapply(loaded_objects[[1]], convert_type)
+    loaded_objects <- readRDS(file)
+    if (length(loaded_objects) < 1 || !("args_list" %in% names(loaded_objects))) {
+      next  # Skip if the args_list is not found
     }
 
+    args_list <- lapply(loaded_objects[[1]], convert_type)
+
     args_list$hash <- stringr::str_remove(basename(file), file_pattern)
+    args_list <- convert_vectors_to_c_strings(args_list)
+
     all_args_lists[[basename(file)]] <- args_list
   }
 
   # Combine all args_lists into a data frame using bind_rows
-  args_df <- dplyr::bind_rows(lapply(all_args_lists, as.data.frame.list))
+  args_df <- dplyr::bind_rows(lapply(all_args_lists, as.data.frame.list, optional = TRUE))
 
   # Apply filters if filter_list is provided
   if (!is.null(filter_list) && is.list(filter_list)) {
     for (col_name in names(filter_list)) {
-      args_df <- args_df[args_df[[col_name]] == filter_list[[col_name]], ]
+      args_df <- args_df[!is.na(args_df[[col_name]]) & args_df[[col_name]] == filter_list[[col_name]], ]
     }
+    args_df <- args_df[, !sapply(args_df, function(col) all(is.na(col)))]
   }
 
   # Save the table if a save_path is provided
@@ -71,4 +65,15 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL, save_m
 
   return(args_df)
 }
-
+convert_vectors_to_c_strings <- function(lst) {
+  lapply(lst, function(element) {
+    if (is.list(element)) {
+      convert_vectors_to_c_strings(element)
+    } else if (is.vector(element) && length(element) > 1) {
+      # Convert numeric vector to a c() string without shQuote
+      paste0("c(", paste(element, collapse = ", "), ")")
+    } else {
+      element
+    }
+  })
+}

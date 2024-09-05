@@ -17,17 +17,18 @@
 #' }
 generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
+
+  # Order alphabetically if alphabetical_order is TRUE
+  if (alphabetical_order) {
+    args_list <- sort_list_recursive(args_list)
+  }
+
   # Apply data type conversion to each element of args_list
   args_list <- lapply(args_list, convert_type)
 
   # Remove NA values if ignore_na is TRUE
   if (ignore_na) {
-    args_list <- Filter(function(x) !is.na(x), args_list)
-  }
-
-  # Order alphabetically if alphabetical_order is TRUE
-  if (alphabetical_order) {
-    args_list <- args_list[order(names(args_list))]
+    args_list <- Filter(function(x) is.list(x) || !is.na(x), args_list)
   }
 
   # Handle timestamp
@@ -37,6 +38,17 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
 
   return(digest::digest(args_list, algo = algo))
 }
+sort_list_recursive <- function(x) {
+  if (is.list(x) & length(x) > 0) {
+    # Sort the list based on names
+    sorted_x <- x[order(names(x))]
 
+    # Apply sorting recursively to any nested lists
+    sorted_x <- lapply(sorted_x, sort_list_recursive)
 
-
+    return(sorted_x)
+  } else {
+    # If it's not a list, return the element as is
+    return(x)
+  }
+}

@@ -17,7 +17,7 @@
 #' params <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
 #' read_objects(folder_path, params)
 #' }
-read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64", save_method = "rda") {
+read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64", save_method = "rds") {
 
   # Convert params to a list if it's a single row of a data frame or matrix
   if (is.data.frame(params) || is.matrix(params)) {
@@ -28,6 +28,9 @@ read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore
   } else if (!is.list(params)) {
     stop("params must be a list, data frame, or matrix.")
   }
+
+  params <- Filter(function(x) !is.null(x), params)
+  params <- Filter(function(x) !(is.list(x) && length(x) == 0), params)
 
   # Check for 'function_name' and process through combine_arguments_with_defaults
   if (!is.null(params$function_name)) {

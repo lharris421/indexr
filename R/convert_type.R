@@ -11,7 +11,7 @@
 #'
 #' @noRd
 convert_type <- function(x) {
-  if (is.logical(x) | is.character(x)) {
+  if (is.logical(x) | is.character(x) | is.list(x)) {
     return(x)
   } else if (is.numeric(x)) {
     as.numeric(x)
