@@ -18,6 +18,9 @@
 generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
 
+  args_list <- Filter(function(x) !is.null(x), args_list)
+  args_list <- Filter(function(x) !(is.list(x) && length(x) == 0), args_list)
+
   # Order alphabetically if alphabetical_order is TRUE
   if (alphabetical_order) {
     args_list <- sort_list_recursive(args_list)

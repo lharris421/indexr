@@ -29,9 +29,6 @@ read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore
     stop("params must be a list, data frame, or matrix.")
   }
 
-  params <- Filter(function(x) !is.null(x), params)
-  params <- Filter(function(x) !(is.list(x) && length(x) == 0), params)
-
   # Check for 'function_name' and process through combine_arguments_with_defaults
   if (!is.null(params$function_name)) {
     params <- combine_arguments_with_defaults(params)

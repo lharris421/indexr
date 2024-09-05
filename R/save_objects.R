@@ -23,9 +23,6 @@ save_objects <- function(folder, results, args_list = NULL,
     args_list$timestamp <- timestamp
   }
 
-  args_list <- Filter(function(x) !is.null(x), args_list)
-  args_list <- Filter(function(x) !(is.list(x) && length(x) == 0), args_list)
-
   # Generate hash using generate_hash function
   hash <- generate_hash(
     args_list,
