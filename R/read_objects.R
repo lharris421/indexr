@@ -17,7 +17,7 @@
 #' params <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
 #' read_objects(folder_path, params)
 #' }
-read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64", save_method = "rds") {
+read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64", save_method = "rds", print_hash = FALSE) {
 
   # Convert params to a list if it's a single row of a data frame or matrix
   if (is.data.frame(params) || is.matrix(params)) {
@@ -29,13 +29,10 @@ read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore
     stop("params must be a list, data frame, or matrix.")
   }
 
-  # Check for 'function_name' and process through combine_arguments_with_defaults
-  if (!is.null(params$function_name)) {
-    params <- combine_arguments_with_defaults(params)
-  }
-
   # Generate hash using generate_hash function
-  hash <- generate_hash(params, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
+  res <- generate_hash(params, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
+  hash <- res$hash
+  if (print_hash) print(hash)
 
   # Construct the file path based on save_method
   file_extension <- ifelse(save_method == "rda", ".rda", ".rds")

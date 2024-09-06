@@ -9,7 +9,7 @@ save_objects <- function(folder, results, args_list = NULL,
     if (class(results) == "list" && !is.null(results$call)) {
       # Extract call details and then combine arguments with defaults
       args_list <- extract_call_details(results)
-      args_list <- combine_arguments_with_defaults(args_list)
+      # args_list <- combine_arguments_with_defaults(args_list)
     } else {
       stop("Either provide an args_list or a results list with a call.")
     }
@@ -24,11 +24,13 @@ save_objects <- function(folder, results, args_list = NULL,
   }
 
   # Generate hash using generate_hash function
-  hash <- generate_hash(
+  res <- generate_hash(
     args_list,
     hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na,
     alphabetical_order = alphabetical_order, algo = algo
   )
+  hash <- res$hash
+  args_list <- res$args_list
 
   # Check for save_method and construct the file path accordingly
   file_path <- file.path(folder, paste0(hash, ".rds"))

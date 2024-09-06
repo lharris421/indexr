@@ -18,6 +18,11 @@
 generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
 
+  # Check for 'function_name' and process through combine_arguments_with_defaults
+  if (!is.null(args_list$function_name)) {
+    args_list <- combine_arguments_with_defaults(args_list)
+  }
+
   args_list <- Filter(function(x) !is.null(x), args_list)
   args_list <- Filter(function(x) !(is.list(x) && length(x) == 0), args_list)
 
@@ -39,7 +44,9 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
     args_list$timestamp <- NULL
   }
 
-  return(digest::digest(args_list, algo = algo))
+  res <- list(args_list = args_list, hash = digest::digest(args_list, algo = algo))
+
+  return(res)
 }
 sort_list_recursive <- function(x) {
   if (is.list(x) & length(x) > 0) {
