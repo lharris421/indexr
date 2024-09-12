@@ -5,7 +5,7 @@
 #' and compares them against a hash table created from the RDS files.
 #'
 #' @param folder A string specifying the directory containing the RDS files.
-#' @param params_list A list of parameters for which combinations are checked.
+#' @param args_list A list of parameters for which combinations are checked.
 #'                    Each element of the list should be a vector of values for one parameter.
 #' @param check_for Character vector to specify whether to check for 'missing' or 'existing' combinations.
 #'                  Default options are 'missing' and 'existing'.
@@ -20,10 +20,10 @@
 #' @examples
 #' \dontrun{
 #' folder_path <- "path/to/your/rds/files"
-#' params_list <- list(param1 = c("value1", "value2"), param2 = c(1, 2))
-#' missing_combinations <- check_parameters_existence(folder_path, params_list, "missing")
+#' args_list <- list(param1 = c("value1", "value2"), param2 = c(1, 2))
+#' missing_combinations <- check_parameters_existence(folder_path, args_list, "missing")
 #' }
-check_parameters_existence <- function(folder, params_list, check_for = c("missing", "existing"), halt = FALSE, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
+check_parameters_existence <- function(folder, args_list, check_for = c("missing", "existing"), halt = FALSE, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
   # Validate 'check_for' option
   check_for <- match.arg(check_for)
 
@@ -31,32 +31,32 @@ check_parameters_existence <- function(folder, params_list, check_for = c("missi
   hash_table <- create_hash_table(folder)
 
   # Expand the parameters to all combinations (if they contain vectors)
-  params_combinations <- expand.grid(params_list)
+  args_combinations <- expand.grid(args_list)
 
-  # Convert params_combinations to a data frame for joining
-  params_combinations <- as.data.frame(params_combinations, stringsAsFactors = FALSE)
+  # Convert args_combinations to a data frame for joining
+  args_combinations <- as.data.frame(args_combinations, stringsAsFactors = FALSE)
 
   # Initialize a vector to store the status of each combination (missing or existing)
-  params_status <- character(nrow(params_combinations))
+  args_status <- character(nrow(args_combinations))
 
   # Check each parameter combination by generating its hash and comparing with hash_table
-  for (i in 1:nrow(params_combinations)) {
+  for (i in 1:nrow(args_combinations)) {
     # Convert the row to a named list
-    args_list <- setNames(as.list(params_combinations[i, ]), names(params_combinations))
+    args_list <- setNames(as.list(args_combinations[i, ]), names(args_combinations))
 
     # Generate hash for the args_list
     hash <- generate_hash(args_list, hash_includes_timestamp, ignore_na, alphabetical_order, algo)
 
     # Check for the existence of the hash in the hash_table
     if (hash %in% hash_table$hash) {
-      params_status[i] <- "existing"
+      args_status[i] <- "existing"
     } else {
-      params_status[i] <- "missing"
+      args_status[i] <- "missing"
     }
   }
 
   # Create a result data frame
-  result_df <- cbind(params_combinations, Status = params_status)
+  result_df <- cbind(args_combinations, Status = args_status)
 
   # Filter based on 'check_for' option
   result <- switch(check_for,
