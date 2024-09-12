@@ -15,14 +15,20 @@
 #' args <- list(param1 = "value1", param2 = 100, param3 = NA)
 #' hash_val <- generate_hash(args)
 #' }
-generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
+generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na = TRUE,
+                          alphabetical_order = TRUE, algo = "xxhash64", ignore_script_name = FALSE) {
 
+  # Optionally remove 'script_name' if ignore_script_name is TRUE
+  if (ignore_script_name && "script_name" %in% names(args_list)) {
+    args_list$script_name <- NULL
+  }
 
   # Check for 'function_name' and process through combine_arguments_with_defaults
   if (!is.null(args_list$function_name)) {
     args_list <- combine_arguments_with_defaults(args_list)
   }
 
+  # Filter out NULL and empty list values
   args_list <- Filter(function(x) !is.null(x), args_list)
   args_list <- Filter(function(x) !(is.list(x) && length(x) == 0), args_list)
 
@@ -44,10 +50,12 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
     args_list$timestamp <- NULL
   }
 
+  # Generate the hash
   res <- list(args_list = args_list, hash = digest::digest(args_list, algo = algo))
 
   return(res)
 }
+
 sort_list_recursive <- function(x) {
   if (is.list(x) & length(x) > 0) {
     # Sort the list based on names

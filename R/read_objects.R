@@ -17,7 +17,11 @@
 #' params <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
 #' read_objects(folder_path, params)
 #' }
-read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64", save_method = "rds", print_hash = FALSE) {
+read_objects <- function(folder, params, hash_includes_timestamp = FALSE,
+                         ignore_script_name = FALSE,
+                         ignore_na = TRUE, alphabetical_order = TRUE,
+                         algo = "xxhash64", save_method = "rds",
+                         print_hash = FALSE) {
 
   # Convert params to a list if it's a single row of a data frame or matrix
   if (is.data.frame(params) || is.matrix(params)) {
@@ -30,7 +34,11 @@ read_objects <- function(folder, params, hash_includes_timestamp = FALSE, ignore
   }
 
   # Generate hash using generate_hash function
-  res <- generate_hash(params, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
+  res <- generate_hash(
+    params, hash_includes_timestamp = hash_includes_timestamp,
+    ignore_na = ignore_na, alphabetical_order = alphabetical_order,
+    algo = algo, ignore_script_name = ignore_script_name
+  )
   hash <- res$hash
   if (print_hash) print(hash)
 
