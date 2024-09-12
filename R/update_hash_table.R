@@ -19,8 +19,10 @@
 #' rds_directory <- "path/to/rds_files"
 #' update_hash_table(hash_table_path, rds_directory)
 #' }
-update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
-  updated_table <- readr::read_csv(table_path) #, stringsAsFactors = FALSE
+update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = FALSE,
+                              ignore_script_name = FALSE,
+                              ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
+  updated_table <- readr::read_csv(table_path) # Read the updated CSV table
 
   for (i in 1:nrow(updated_table)) {
     row <- updated_table[i, ]
@@ -29,23 +31,20 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
     # Load the old RDS file
     old_file_path <- file.path(rds_folder, glue("{old_hash}.rds"))
     e <- new.env()
+
     if (file.exists(old_file_path)) {
       e$res_list <- readRDS(old_file_path)
       e$args_list <- e$res_list$args_list
-      print(e$args_list)
 
       # Ensure args_list exists in the loaded environment
       if (!"args_list" %in% ls(envir = e)) {
-        warning(glue("args_list not found in rds file: {old_file_path}"))
+        warning(glue("args_list not found in RDS file: {old_file_path}"))
         next
       }
 
       # Update args_list with values from the updated table row
       updated_args_list <- e$args_list
       for (col_name in names(updated_table)) {
-        # print(col_name)
-        # print(row[[col_name]])
-        # print(updated_args_list[[col_name]])
         if (col_name != "hash" && (!is.na(row[[col_name]]) | !is.na(updated_args_list[[col_name]]))) {
           # Convert c() string back to vector if necessary
           updated_args_list[[col_name]] <- c_string_to_vector(row[[col_name]])
@@ -53,10 +52,11 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
       }
 
       # Calculate new hash for updated args_list using generate_hash
-      print(updated_args_list)
-      new_hash <- generate_hash(updated_args_list, hash_includes_timestamp = hash_includes_timestamp, ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)
+      new_hash <- generate_hash(updated_args_list, hash_includes_timestamp = hash_includes_timestamp,
+                                ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo,
+                                ignore_script_name = ignore_script_name)$hash
 
-      # Save the updated objects under new hash
+      # Save the updated objects under the new hash
       new_file_path <- file.path(rds_folder, glue("{new_hash}.rds"))
       e$args_list <- updated_args_list
       e$res_list$args_list <- e$args_list
@@ -72,11 +72,27 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
     }
   }
 }
+
+# Function to convert a c() string back into a vector or retain original value
 c_string_to_vector <- function(str) {
+  if (is.na(str)) {
+    return(NA)
+  }
+
+  # Check if the string looks like a c() expression
   if (grepl("^c\\(", str)) {
-    # Evaluate the string to convert it back to a vector
-    eval(parse(text = str))
+    # Safely parse the string to convert it back to a vector
+    tryCatch({
+      eval(parse(text = str))
+    }, error = function(e) {
+      # In case of error, return the original string
+      str
+    })
+  } else if (grepl("^\\d+$|^-?\\d*\\.\\d+$", str)) {
+    # If it's a number, convert to numeric
+    as.numeric(str)
   } else {
+    # Otherwise, return the original string (e.g., for character data)
     str
   }
 }

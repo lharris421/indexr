@@ -15,7 +15,7 @@ save_objects <- function(folder, results, args_list = NULL,
   }
 
   # Try to get the script name and add to args_list if it doesn't already exist
-  if (get_filename) {
+  if (get_script_name) {
     if (!"script_name" %in% names(args_list)) {
       # Get the script name
       script_name <- tryCatch({

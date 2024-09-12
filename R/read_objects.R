@@ -20,8 +20,7 @@
 read_objects <- function(folder, args_list, hash_includes_timestamp = FALSE,
                          ignore_script_name = FALSE,
                          ignore_na = TRUE, alphabetical_order = TRUE,
-                         algo = "xxhash64", save_method = "rds",
-                         print_hash = FALSE) {
+                         algo = "xxhash64", print_hash = FALSE) {
 
   # Convert args to a list if it's a single row of a data frame or matrix
   if (is.data.frame(args_list) || is.matrix(args_list)) {
@@ -43,19 +42,15 @@ read_objects <- function(folder, args_list, hash_includes_timestamp = FALSE,
   if (print_hash) print(hash)
 
   # Construct the file path based on save_method
-  file_extension <- ifelse(save_method == "rda", ".rda", ".rds")
+  file_extension <- ".rds"
   file_path <- file.path(folder, paste0(hash, file_extension))
 
   if (file.exists(file_path)) {
-    if (save_method == "rda") {
-      load(file_path, envir = globalenv())
-    } else { # Assuming save_method is "rds"
       loaded_objects <- readRDS(file_path)
       if (length(loaded_objects) < 2) {
         stop("The loaded .rds file does not contain the expected number of objects.")
       }
       return(loaded_objects[[2]]) # Return the second item of the list
-    }
   } else {
     warning(paste0("File not found for hash: ", hash))
   }

@@ -44,7 +44,13 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
     args_list$hash <- stringr::str_remove(basename(file), file_pattern)
     args_list <- convert_vectors_to_c_strings(args_list)
 
-    all_args_lists[[basename(file)]] <- args_list
+    # Flatten the nested list with descriptive column names
+    flat_args_list <- flatten_nested_list(args_list)
+
+    # Convert all elements to characters
+    flat_args_list <- lapply(flat_args_list, as.character)
+
+    all_args_lists[[basename(file)]] <- flat_args_list
   }
 
   # Combine all args_lists into a data frame using bind_rows
@@ -65,12 +71,36 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
 
   return(args_df)
 }
+
+# Recursively flatten a nested list and create descriptive column names
+flatten_nested_list <- function(lst, parent_name = NULL) {
+  flat_list <- list()
+
+  for (name in names(lst)) {
+    item <- lst[[name]]
+    col_name <- if (is.null(parent_name)) {
+      paste0("[[", name, "]]")
+    } else {
+      paste0(parent_name, "[[", name, "]]")
+    }
+
+    if (is.list(item)) {
+      # Recursively flatten the nested list
+      flat_list <- c(flat_list, flatten_nested_list(item, col_name))
+    } else {
+      flat_list[[col_name]] <- item
+    }
+  }
+
+  return(flat_list)
+}
+
 convert_vectors_to_c_strings <- function(lst) {
   lapply(lst, function(element) {
     if (is.list(element)) {
       convert_vectors_to_c_strings(element)
     } else if (is.vector(element) && length(element) > 1) {
-      # Convert numeric vector to a c() string without shQuote
+      # Convert vector to a c() string without quotes
       paste0("c(", paste(element, collapse = ", "), ")")
     } else {
       element
