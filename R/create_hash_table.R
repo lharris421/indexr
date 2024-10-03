@@ -78,8 +78,10 @@ flatten_nested_list <- function(lst, parent_name = NULL) {
 
   for (name in names(lst)) {
     item <- lst[[name]]
+
+    # Only wrap sub-elements with [[]]
     col_name <- if (is.null(parent_name)) {
-      paste0("[[", name, "]]")
+      name
     } else {
       paste0(parent_name, "[[", name, "]]")
     }

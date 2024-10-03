@@ -20,9 +20,8 @@
 #' update_hash_table(hash_table_path, rds_directory)
 #' }
 update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = FALSE,
-                              ignore_script_name = FALSE,
                               ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
-  updated_table <- readr::read_csv(table_path) # Read the updated CSV table
+  updated_table <- readr::read_csv(table_path)  # Read the updated CSV table
 
   for (i in 1:nrow(updated_table)) {
     row <- updated_table[i, ]
@@ -44,27 +43,49 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
 
       # Update args_list with values from the updated table row
       updated_args_list <- e$args_list
-      for (col_name in names(updated_table)) {
-        if (col_name != "hash" && (!is.na(row[[col_name]]) | !is.na(updated_args_list[[col_name]]))) {
-          # Convert c() string back to vector if necessary
-          updated_args_list[[col_name]] <- c_string_to_vector(row[[col_name]])
+
+      for (col_name in names(row)) {
+        # Skip the hash column
+        if (col_name == "hash") next
+
+        # If the value in the CSV is not NA, update the args_list
+        if (!is.na(row[[col_name]])) {
+          # Retrieve the current value from args_list (if it exists)
+          current_value <- get_nested_value_from_list(updated_args_list, col_name)
+          print(current_value)
+
+          # Convert the value from CSV using c_string_to_vector
+          new_value <- c_string_to_vector(row[[col_name]])
+
+          # Compare values before updating
+          if (!identical(current_value, new_value)) {
+            message(glue("Updating {col_name} in args_list: {current_value} -> {new_value}"))
+            updated_args_list <- update_nested_list_from_csv(updated_args_list, col_name, new_value)
+          }
         }
       }
 
       # Calculate new hash for updated args_list using generate_hash
       new_hash <- generate_hash(updated_args_list, hash_includes_timestamp = hash_includes_timestamp,
-                                ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo,
-                                ignore_script_name = ignore_script_name)$hash
+                                ignore_na = ignore_na, alphabetical_order = alphabetical_order, algo = algo)$hash
 
-      # Save the updated objects under the new hash
       new_file_path <- file.path(rds_folder, glue("{new_hash}.rds"))
-      e$args_list <- updated_args_list
-      e$res_list$args_list <- e$args_list
-      saveRDS(e$res_list, file = new_file_path)
 
-      # Delete the old file if not overwritten and hashes differ
-      if (old_hash != new_hash) {
-        file.remove(old_file_path)
+      # Check if the new hash file already exists
+      if (file.exists(new_file_path)) {
+        message(glue("Hash {new_hash} already exists, skipping update for {old_hash}."))
+      } else {
+        # Save the updated objects under the new hash
+        e$args_list <- updated_args_list
+        e$res_list$args_list <- e$args_list
+        saveRDS(e$res_list, file = new_file_path)
+        message(glue("Updated hash {old_hash} to {new_hash}."))
+
+        # Delete the old file if not overwritten and hashes differ
+        if (old_hash != new_hash) {
+          file.remove(old_file_path)
+          message(glue("Deleted old hash {old_hash}."))
+        }
       }
 
     } else {
@@ -95,4 +116,48 @@ c_string_to_vector <- function(str) {
     # Otherwise, return the original string (e.g., for character data)
     str
   }
+}
+
+# Function to update the nested list based on a flattened column name from the CSV
+update_nested_list_from_csv <- function(lst, col_name, value) {
+  # Split the column name by "[[...]]" to get the nested elements
+  split_names <- strsplit(col_name, "\\[\\[|\\]\\]")[[1]]
+  split_names <- split_names[split_names != ""]  # Remove empty elements from splitting
+
+  # Navigate through the list based on the split names and update the value
+  current_list <- lst
+  for (i in seq_along(split_names)) {
+    name <- split_names[i]
+
+    # If we reach the last name, we assign the value
+    if (i == length(split_names)) {
+      current_list[[name]] <- value
+    } else {
+      # If the sub-list doesn't exist, create it
+      if (is.null(current_list[[name]])) {
+        current_list[[name]] <- list()
+      }
+      current_list <- current_list[[name]]
+    }
+  }
+
+  # Return the updated list
+  return(lst)
+}
+
+# Function to retrieve a nested value from a list based on a flattened column name
+get_nested_value_from_list <- function(lst, col_name) {
+  split_names <- strsplit(col_name, "\\[\\[|\\]\\]")[[1]]
+  split_names <- split_names[split_names != ""]  # Remove empty elements from splitting
+
+  current_list <- lst
+  for (name in split_names) {
+    if (!is.null(current_list[[name]])) {
+      current_list <- current_list[[name]]
+    } else {
+      return(NULL)
+    }
+  }
+
+  return(current_list)
 }
