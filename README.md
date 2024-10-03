@@ -1,4 +1,4 @@
-# indexr: Efficient Parameter Hashing and Object Management in R <img src="man/figures/logo.webp" align="right" height="150" />
+# indexr: Efficient Parameter Hashing and Object Management in R <img src="man/figures/indexr_hex_sticker.png" align="right" height="150" />
 
 `indexr` is a cutting-edge R package designed to streamline the management of R objects based on parameter configurations. It provides robust tools for saving, reading, and updating objects with hashed file names, ensuring efficient and organized data handling. This package is especially useful for scenarios involving extensive parameter tuning, simulations, or any context where managing a large number of R objects is required.
 
