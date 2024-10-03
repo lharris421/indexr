@@ -48,5 +48,5 @@ sticker(
   url = "cran.r-project.org",   # Optional URL at the bottom
   u_color = "#37474F",          # URL text color
   u_size = 5,                   # URL text size
-  filename = "/man/figures/indexr_hex_sticker.png"  # Output filename
+  filename = "./man/figures/indexr_hex_sticker.png"  # Output filename
 )
