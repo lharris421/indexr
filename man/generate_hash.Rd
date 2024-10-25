@@ -9,7 +9,8 @@ generate_hash(
   hash_includes_timestamp = FALSE,
   ignore_na = TRUE,
   alphabetical_order = TRUE,
-  algo = "xxhash64"
+  algo = "xxhash64",
+  ignore_script_name = FALSE
 )
 }
 \arguments{

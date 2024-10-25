@@ -6,7 +6,7 @@
 \usage{
 check_parameters_existence(
   folder,
-  params_list,
+  args_list,
   check_for = c("missing", "existing"),
   halt = FALSE,
   hash_includes_timestamp = FALSE,
@@ -18,7 +18,7 @@ check_parameters_existence(
 \arguments{
 \item{folder}{A string specifying the directory containing the RDS files.}
 
-\item{params_list}{A list of parameters for which combinations are checked.
+\item{args_list}{A list of parameters for which combinations are checked.
 Each element of the list should be a vector of values for one parameter.}
 
 \item{check_for}{Character vector to specify whether to check for 'missing' or 'existing' combinations.
@@ -43,7 +43,7 @@ and compares them against a hash table created from the RDS files.
 \examples{
 \dontrun{
 folder_path <- "path/to/your/rds/files"
-params_list <- list(param1 = c("value1", "value2"), param2 = c(1, 2))
-missing_combinations <- check_parameters_existence(folder_path, params_list, "missing")
+args_list <- list(param1 = c("value1", "value2"), param2 = c(1, 2))
+missing_combinations <- check_parameters_existence(folder_path, args_list, "missing")
 }
 }

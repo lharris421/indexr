@@ -1,26 +1,39 @@
-#' Read Objects Based on Parameter Grid
+#' Read Objects from Multiple Folders and Tag with Hash and Timestamp
 #'
-#' Reads objects from files in a specified directory. The files are identified based on a hash generated from a grid of parameters. This function iterates over each combination of parameters in the grid, generates a hash for each, and attempts to load the corresponding object from the directory.
+#' Reads R objects from specified folders based on a generated hash of the provided arguments. If the object is successfully read, the function appends the hash and the current timestamp to the \code{indexer_tagging.txt} file in the folder where the file was found.
 #'
-#' @param folder A string specifying the directory where the objects are stored.
-#' @param args A data frame or matrix where each row represents a different set of parameters to be hashed and checked for corresponding files.
-#' @param hash_includes_timestamp Logical; if TRUE, includes timestamps in the hash generation process.
-#' @param ignore_na Logical; if TRUE, NA values are ignored during hash generation.
-#' @param alphabetical_order Logical; if TRUE, parameters are sorted alphabetically before hash generation.
-#'
-#' @return The function invisibly returns `NULL` and is primarily used for its side effect of loading objects into the global environment.
-#' @export
-#'
+#' @param folders Character vector specifying the paths to directories containing the saved objects. The function will check each folder in order to find the file.
+#' @param args_list A named list of arguments used to generate a unique hash for the file.
+#' @param hash_includes_timestamp Logical. If \code{TRUE}, the timestamp is included in the hash generation.
+#' @param ignore_script_name Logical. If \code{TRUE}, the script name is ignored during hash generation.
+#' @param ignore_na Logical. If \code{TRUE}, \code{NA} values in \code{args_list} are ignored during hash generation.
+#' @param alphabetical_order Logical. If \code{TRUE}, the names in \code{args_list} are sorted alphabetically before hash generation.
+#' @param algo Character string specifying the hashing algorithm to use. Default is \code{"xxhash64"}.
+#' @param print_hash Logical. If \code{TRUE}, prints the generated hash.
+#' @return The second element of the loaded object list, typically the results. Returns \code{NULL} if the file is not found in any of the specified folders.
+#' @details
+#' This function attempts to read an R object from files located in one of the specified folders. The file name is based on the hash of the provided arguments. If successful, it appends the hash and the timestamp when it was read to the \code{indexer_tagging.txt} file in the folder where the file was found.
 #' @examples
 #' \dontrun{
-#' folder_path <- "path/to/your/saved/objects"
-#' args <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
-#' read_objects(folder_path, args)
+#' # Read objects from multiple folders and save the hash and timestamp if the tagging file exists
+#' loaded_object <- read_objects(
+#'   folders = c("/folder1/path", "/folder2/path"),
+#'   args_list = list(arg1 = "value1", arg2 = "value2"),
+#'   print_hash = TRUE
+#' )
 #' }
-read_objects <- function(folder, args_list, hash_includes_timestamp = FALSE,
+read_objects <- function(folders, args_list, hash_includes_timestamp = FALSE,
                          ignore_script_name = FALSE,
                          ignore_na = TRUE, alphabetical_order = TRUE,
                          algo = "xxhash64", print_hash = FALSE) {
+
+  # Validate folders input
+  if (missing(folders) || is.null(folders)) {
+    stop("Please provide at least one folder path in 'folders'.")
+  }
+  if (!is.character(folders)) {
+    stop("'folders' must be a character vector of folder paths.")
+  }
 
   # Convert args to a list if it's a single row of a data frame or matrix
   if (is.data.frame(args_list) || is.matrix(args_list)) {
@@ -41,20 +54,37 @@ read_objects <- function(folder, args_list, hash_includes_timestamp = FALSE,
   hash <- res$hash
   if (print_hash) print(hash)
 
-  # Construct the file path based on save_method
+  # Construct the file name
   file_extension <- ".rds"
-  file_path <- file.path(folder, paste0(hash, file_extension))
+  file_name <- paste0(hash, file_extension)
 
-  if (file.exists(file_path)) {
+  # Initialize loaded_objects as NULL
+  loaded_objects <- NULL
+
+  # Loop over folders to find the file
+  for (folder in folders) {
+    file_path <- file.path(folder, file_name)
+    if (file.exists(file_path)) {
       loaded_objects <- readRDS(file_path)
       if (length(loaded_objects) < 2) {
         stop("The loaded .rds file does not contain the expected number of objects.")
       }
+
+      # Check if the tagging file exists in the same directory
+      tagging_file <- file.path(folder, "indexer_tagging.txt")
+      if (file.exists(tagging_file)) {
+        # Get the current timestamp
+        timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+        # Append the hash and timestamp to the tagging file
+        cat(paste(hash, timestamp, sep = "\t"), file = tagging_file, append = TRUE, sep = "\n")
+      }
+
+      # Return the loaded object
       return(loaded_objects[[2]]) # Return the second item of the list
-  } else {
-    warning(paste0("File not found for hash: ", hash))
+    }
   }
+
+  # If file not found in any folder
+  warning(paste0("File not found for hash: ", hash))
+  return(NULL)
 }
-
-
-

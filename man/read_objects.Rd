@@ -6,24 +6,25 @@
 \usage{
 read_objects(
   folder,
-  params,
+  args_list,
   hash_includes_timestamp = FALSE,
+  ignore_script_name = FALSE,
   ignore_na = TRUE,
   alphabetical_order = TRUE,
   algo = "xxhash64",
-  save_method = "rda"
+  print_hash = FALSE
 )
 }
 \arguments{
 \item{folder}{A string specifying the directory where the objects are stored.}
-
-\item{params}{A data frame or matrix where each row represents a different set of parameters to be hashed and checked for corresponding files.}
 
 \item{hash_includes_timestamp}{Logical; if TRUE, includes timestamps in the hash generation process.}
 
 \item{ignore_na}{Logical; if TRUE, NA values are ignored during hash generation.}
 
 \item{alphabetical_order}{Logical; if TRUE, parameters are sorted alphabetically before hash generation.}
+
+\item{args}{A data frame or matrix where each row represents a different set of parameters to be hashed and checked for corresponding files.}
 }
 \value{
 The function invisibly returns \code{NULL} and is primarily used for its side effect of loading objects into the global environment.
@@ -34,7 +35,7 @@ Reads objects from files in a specified directory. The files are identified base
 \examples{
 \dontrun{
 folder_path <- "path/to/your/saved/objects"
-params <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
-read_objects(folder_path, params)
+args <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
+read_objects(folder_path, args)
 }
 }

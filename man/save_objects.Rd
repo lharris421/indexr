@@ -2,11 +2,11 @@
 % Please edit documentation in R/save_objects.R
 \name{save_objects}
 \alias{save_objects}
-\title{Save R Objects with Parameter Hashing}
+\title{Save Objects with Hashing and Incremental Saving Options}
 \usage{
 save_objects(
   folder,
-  ...,
+  results,
   args_list = NULL,
   hash_includes_timestamp = FALSE,
   ignore_na = TRUE,
@@ -14,38 +14,64 @@ save_objects(
   overwrite = FALSE,
   include_timestamp = TRUE,
   algo = "xxhash64",
-  save_method = "rds"
+  get_script_name = TRUE,
+  ignore_script_name = FALSE,
+  incremental = FALSE,
+  identifier = NULL
 )
 }
 \arguments{
-\item{folder}{A string specifying the directory where the R objects will be saved.}
+\item{folder}{Character string specifying the path to the directory where the objects will be saved.}
 
-\item{...}{The data to be save.}
+\item{results}{The R object or list of objects to be saved.}
 
-\item{args_list}{A named list of arguments based on which the hash for filename will be generated.}
+\item{args_list}{A named list of arguments used to generate a unique hash for the file. If \code{NULL}, the function attempts to extract it from \code{results}.}
 
-\item{hash_includes_timestamp}{Logical; if TRUE, the timestamp will be included in the hash calculation.}
+\item{hash_includes_timestamp}{Logical. If \code{TRUE}, the timestamp is included in the hash generation.}
 
-\item{ignore_na}{Logical; if TRUE, NA values in \code{args_list} will be ignored for hash generation.}
+\item{ignore_na}{Logical. If \code{TRUE}, \code{NA} values in \code{args_list} are ignored during hash generation.}
 
-\item{alphabetical_order}{Logical; if TRUE, the arguments in \code{args_list} will be sorted alphabetically before hash generation.}
+\item{alphabetical_order}{Logical. If \code{TRUE}, the names in \code{args_list} are sorted alphabetically before hash generation.}
 
-\item{overwrite}{Logical; if TRUE, existing files with the same hash name will be overwritten.}
+\item{overwrite}{Logical. If \code{TRUE}, existing files with the same hash will be overwritten.}
 
-\item{include_timestamp}{Logical; if TRUE, a timestamp will be added to \code{args_list} before hash generation.}
+\item{include_timestamp}{Logical. If \code{TRUE}, a timestamp is added to \code{args_list}.}
+
+\item{algo}{Character string specifying the hashing algorithm to use. Default is \code{"xxhash64"}.}
+
+\item{get_script_name}{Logical. If \code{TRUE}, attempts to get the script name and add it to \code{args_list}.}
+
+\item{ignore_script_name}{Logical. If \code{TRUE}, the script name is ignored during hash generation.}
+
+\item{incremental}{Logical. If \code{TRUE}, results are saved incrementally in a subfolder named after the hash.}
+
+\item{identifier}{Character string used to identify the incremental save files. If \code{NULL}, a random identifier is generated.}
 }
 \value{
-Invisible NULL. This function is used for its side effect of saving files.
+No return value. This function is called for its side effects.
 }
 \description{
-Saves a list of R objects to a file in a specified directory, with filenames
-based on a hash of their parameters. Optionally includes timestamps in the
-parameter list before hashing and provides options for overwriting existing
-files, ignoring NA values, and sorting parameters alphabetically.
+Saves R objects to a specified folder with options for hashing, timestamp inclusion, and incremental saving.
+}
+\details{
+This function saves R objects to disk with a filename based on a generated hash of the provided arguments. It supports incremental saving, where multiple results can be saved under the same hash in a subdirectory.
 }
 \examples{
 \dontrun{
-args_list <- list(param1 = "value1", param2 = 100)
-save_objects("path/to/save", args_list)
+# Define the folder to save the objects
+folder_path <- "/your/directory/path"
+
+# Define the results to save
+results <- list(data = mtcars, summary = summary(mtcars))
+
+# Define the arguments list used for hashing
+args_list <- list(param1 = "value1", param2 = 42)
+
+# Save objects with default settings
+save_objects(folder = folder_path, results = results, args_list = args_list)
+
+# Save objects with incremental saving
+save_objects(folder = folder_path, results = results, args_list = args_list,
+             incremental = TRUE, identifier = "experiment1")
 }
 }

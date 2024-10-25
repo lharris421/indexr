@@ -1,3 +1,42 @@
+#' Save Objects with Hashing and Incremental Saving Options
+#'
+#' Saves R objects to a specified folder with options for hashing, timestamp inclusion, and incremental saving.
+#'
+#' @param folder Character string specifying the path to the directory where the objects will be saved.
+#' @param results The R object or list of objects to be saved.
+#' @param args_list A named list of arguments used to generate a unique hash for the file. If \code{NULL}, the function attempts to extract it from \code{results}.
+#' @param hash_includes_timestamp Logical. If \code{TRUE}, the timestamp is included in the hash generation.
+#' @param ignore_na Logical. If \code{TRUE}, \code{NA} values in \code{args_list} are ignored during hash generation.
+#' @param alphabetical_order Logical. If \code{TRUE}, the names in \code{args_list} are sorted alphabetically before hash generation.
+#' @param overwrite Logical. If \code{TRUE}, existing files with the same hash will be overwritten.
+#' @param include_timestamp Logical. If \code{TRUE}, a timestamp is added to \code{args_list}.
+#' @param algo Character string specifying the hashing algorithm to use. Default is \code{"xxhash64"}.
+#' @param get_script_name Logical. If \code{TRUE}, attempts to get the script name and add it to \code{args_list}.
+#' @param ignore_script_name Logical. If \code{TRUE}, the script name is ignored during hash generation.
+#' @param incremental Logical. If \code{TRUE}, results are saved incrementally in a subfolder named after the hash.
+#' @param identifier Character string used to identify the incremental save files. If \code{NULL}, a random identifier is generated.
+#' @return No return value. This function is called for its side effects.
+#' @export
+#' @details
+#' This function saves R objects to disk with a filename based on a generated hash of the provided arguments. It supports incremental saving, where multiple results can be saved under the same hash in a subdirectory.
+#' @examples
+#' \dontrun{
+#' # Define the folder to save the objects
+#' folder_path <- "/your/directory/path"
+#'
+#' # Define the results to save
+#' results <- list(data = mtcars, summary = summary(mtcars))
+#'
+#' # Define the arguments list used for hashing
+#' args_list <- list(param1 = "value1", param2 = 42)
+#'
+#' # Save objects with default settings
+#' save_objects(folder = folder_path, results = results, args_list = args_list)
+#'
+#' # Save objects with incremental saving
+#' save_objects(folder = folder_path, results = results, args_list = args_list,
+#'              incremental = TRUE, identifier = "experiment1")
+#' }
 save_objects <- function(folder, results, args_list = NULL,
                          hash_includes_timestamp = FALSE, ignore_na = TRUE,
                          alphabetical_order = TRUE, overwrite = FALSE,
