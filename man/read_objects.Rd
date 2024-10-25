@@ -2,10 +2,10 @@
 % Please edit documentation in R/read_objects.R
 \name{read_objects}
 \alias{read_objects}
-\title{Read Objects Based on Parameter Grid}
+\title{Read Objects from Multiple Folders and Tag with Hash and Timestamp}
 \usage{
 read_objects(
-  folder,
+  folders,
   args_list,
   hash_includes_timestamp = FALSE,
   ignore_script_name = FALSE,
@@ -16,26 +16,38 @@ read_objects(
 )
 }
 \arguments{
-\item{folder}{A string specifying the directory where the objects are stored.}
+\item{folders}{Character vector specifying the paths to directories containing the saved objects. The function will check each folder in order to find the file.}
 
-\item{hash_includes_timestamp}{Logical; if TRUE, includes timestamps in the hash generation process.}
+\item{args_list}{A named list of arguments used to generate a unique hash for the file.}
 
-\item{ignore_na}{Logical; if TRUE, NA values are ignored during hash generation.}
+\item{hash_includes_timestamp}{Logical. If \code{TRUE}, the timestamp is included in the hash generation.}
 
-\item{alphabetical_order}{Logical; if TRUE, parameters are sorted alphabetically before hash generation.}
+\item{ignore_script_name}{Logical. If \code{TRUE}, the script name is ignored during hash generation.}
 
-\item{args}{A data frame or matrix where each row represents a different set of parameters to be hashed and checked for corresponding files.}
+\item{ignore_na}{Logical. If \code{TRUE}, \code{NA} values in \code{args_list} are ignored during hash generation.}
+
+\item{alphabetical_order}{Logical. If \code{TRUE}, the names in \code{args_list} are sorted alphabetically before hash generation.}
+
+\item{algo}{Character string specifying the hashing algorithm to use. Default is \code{"xxhash64"}.}
+
+\item{print_hash}{Logical. If \code{TRUE}, prints the generated hash.}
 }
 \value{
-The function invisibly returns \code{NULL} and is primarily used for its side effect of loading objects into the global environment.
+The second element of the loaded object list, typically the results. Returns \code{NULL} if the file is not found in any of the specified folders.
 }
 \description{
-Reads objects from files in a specified directory. The files are identified based on a hash generated from a grid of parameters. This function iterates over each combination of parameters in the grid, generates a hash for each, and attempts to load the corresponding object from the directory.
+Reads R objects from specified folders based on a generated hash of the provided arguments. If the object is successfully read, the function appends the hash and the current timestamp to the \code{indexer_tagging.txt} file in the folder where the file was found.
+}
+\details{
+This function attempts to read an R object from files located in one of the specified folders. The file name is based on the hash of the provided arguments. If successful, it appends the hash and the timestamp when it was read to the \code{indexer_tagging.txt} file in the folder where the file was found.
 }
 \examples{
 \dontrun{
-folder_path <- "path/to/your/saved/objects"
-args <- data.frame(param1 = c("a", "b"), param2 = c(1, 2))
-read_objects(folder_path, args)
+# Read objects from multiple folders and save the hash and timestamp if the tagging file exists
+loaded_object <- read_objects(
+  folders = c("/folder1/path", "/folder2/path"),
+  args_list = list(arg1 = "value1", arg2 = "value2"),
+  print_hash = TRUE
+)
 }
 }

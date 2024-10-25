@@ -4,7 +4,7 @@
 \alias{cleanup}
 \title{Clean Up Untagged .rds Files in a Directory}
 \usage{
-cleanup(folder)
+cleanup(folder, cutoff_date = NULL)
 }
 \arguments{
 \item{folder}{A character string specifying the path to the directory to clean up.}
