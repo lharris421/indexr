@@ -45,7 +45,7 @@ sticker(
   l_width = 3,                  # Width of the spotlight
   l_height = 3,                 # Height of the spotlight
   p_color = "#37474F",          # Package name color (dark blue-grey)
-  url = "cran.r-project.org",   # Optional URL at the bottom
+  url = "github.com/lharris421/indexr",   # Optional URL at the bottom
   u_color = "#37474F",          # URL text color
   u_size = 5,                   # URL text size
   filename = "./man/figures/indexr_hex_sticker.png"  # Output filename
