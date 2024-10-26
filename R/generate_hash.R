@@ -24,7 +24,7 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
   }
 
   # Check for 'function_name' and process through combine_arguments_with_defaults
-  if (!is.null(args_list$function_name)) {
+  if (!is.null(args_list$function_name) && !is.na(args_list$function_name)) {
     args_list <- combine_arguments_with_defaults(args_list)
   }
 

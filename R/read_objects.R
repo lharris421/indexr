@@ -11,6 +11,7 @@
 #' @param algo Character string specifying the hashing algorithm to use. Default is \code{"xxhash64"}.
 #' @param print_hash Logical. If \code{TRUE}, prints the generated hash.
 #' @return The second element of the loaded object list, typically the results. Returns \code{NULL} if the file is not found in any of the specified folders.
+#' @export
 #' @details
 #' This function attempts to read an R object from files located in one of the specified folders. The file name is based on the hash of the provided arguments. If successful, it appends the hash and the timestamp when it was read to the \code{indexer_tagging.txt} file in the folder where the file was found.
 #' @examples

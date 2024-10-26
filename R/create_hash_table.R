@@ -24,30 +24,30 @@
 #' create_hash_table(directory_path, save_path = "path/to/save/hash_table.csv")
 #' }
 create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
-  # Determine the file pattern based on save_method
-  file_pattern <- "\\.rds$"
 
   # List all files in the given directory based on the file pattern
-  files <- list.files(path, pattern = file_pattern, full.names = TRUE)
+  files <- list.files(path, pattern = "\\.rds$", full.names = TRUE)
 
   # Initialize an empty list to store the args_lists along with their hashes
   all_args_lists <- list()
 
   for (file in files) {
+
     loaded_objects <- readRDS(file)
     if (length(loaded_objects) < 1 || !("args_list" %in% names(loaded_objects))) {
+      warning(glue("arg_list not found for file {file}"))
       next  # Skip if the args_list is not found
     }
 
     args_list <- lapply(loaded_objects[[1]], convert_type)
 
-    args_list$hash <- stringr::str_remove(basename(file), file_pattern)
+    args_list$hash <- stringr::str_remove(basename(file), "\\.rds$")
     args_list <- convert_vectors_to_c_strings(args_list)
 
     # Flatten the nested list with descriptive column names
     flat_args_list <- flatten_nested_list(args_list)
 
-    # Convert all elements to characters
+    # Convert all elements to characters (probably unnecssary)
     flat_args_list <- lapply(flat_args_list, as.character)
 
     all_args_lists[[basename(file)]] <- flat_args_list
@@ -66,7 +66,7 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
 
   # Save the table if a save_path is provided
   if (!is.null(save_path)) {
-    write.csv(args_df, file = save_path, row.names = FALSE)
+    readr::write_csv(args_df, file = save_path, quote = "needed")
   }
 
   return(args_df)
@@ -74,19 +74,20 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
 
 # Recursively flatten a nested list and create descriptive column names
 flatten_nested_list <- function(lst, parent_name = NULL) {
+
   flat_list <- list()
 
   for (name in names(lst)) {
+
     item <- lst[[name]]
 
-    # Only wrap sub-elements with [[]]
-    col_name <- if (is.null(parent_name)) {
-      name
+    if (is.null(parent_name)) {
+      col_name <- name
     } else {
-      paste0(parent_name, "[[", name, "]]")
+      col_name <- paste0(parent_name, "[[", name, "]]")
     }
 
-    if (is.list(item)) {
+    if (is.list(item) && !is.data.frame(item)) {
       # Recursively flatten the nested list
       flat_list <- c(flat_list, flatten_nested_list(item, col_name))
     } else {
@@ -97,15 +98,25 @@ flatten_nested_list <- function(lst, parent_name = NULL) {
   return(flat_list)
 }
 
+# Convert vectors to c() strings for CSV representation
 convert_vectors_to_c_strings <- function(lst) {
   lapply(lst, function(element) {
     if (is.list(element)) {
       convert_vectors_to_c_strings(element)
     } else if (is.vector(element) && length(element) > 1) {
-      # Convert vector to a c() string without quotes
-      paste0("c(", paste(element, collapse = ", "), ")")
+      # Convert vector to a c() string
+      paste0("c(", paste(sapply(element, function(x) {
+        if (is.character(x)) {
+          x
+        } else {
+          as.character(x)
+        }
+      }), collapse = ", "), ")")
     } else {
       element
     }
   })
 }
+
+
+

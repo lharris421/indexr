@@ -1,4 +1,5 @@
 extract_call_details <- function(obj) {
+
   if (is.null(obj$call)) {
     stop("The object does not have a 'call' element.")
   }
@@ -64,6 +65,7 @@ get_default_arguments <- function(input) {
   return(defaults)
 }
 combine_arguments_with_defaults <- function(user_args) {
+
   if (!is.list(user_args) || is.null(user_args$function_name)) {
     stop("The input must be a list containing a 'function_name' element.")
   }
@@ -75,12 +77,5 @@ combine_arguments_with_defaults <- function(user_args) {
   combined_args <- modifyList(defaults, user_args)
 
   return(combined_args)
-}
-if_vector <- function(x) {
-  if (is.vector(x)) {
-    return(x[1])
-  } else {
-    return(x)
-  }
 }
 
