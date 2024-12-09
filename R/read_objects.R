@@ -46,7 +46,7 @@ read_objects <- function(folders, args_list, hash_includes_timestamp = FALSE,
     stop("args_list must be a list, data frame, or matrix.")
   }
 
-  # Generate hash using generate_hash function
+  # Generate hash
   res <- generate_hash(
     args_list, hash_includes_timestamp = hash_includes_timestamp,
     ignore_na = ignore_na, alphabetical_order = alphabetical_order,
@@ -74,14 +74,30 @@ read_objects <- function(folders, args_list, hash_includes_timestamp = FALSE,
       # Check if the tagging file exists in the same directory
       tagging_file <- file.path(folder, "indexer_tagging.txt")
       if (file.exists(tagging_file)) {
+        # Read the current tagging data
+        tagging_data <- read.table(tagging_file, header = FALSE, sep = "\t",
+                                   stringsAsFactors = FALSE, col.names = c("hash", "timestamp"))
         # Get the current timestamp
         timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
-        # Append the hash and timestamp to the tagging file
-        cat(paste(hash, timestamp, sep = "\t"), file = tagging_file, append = TRUE, sep = "\n")
+
+        # Check if hash already exists
+        existing_idx <- which(tagging_data$hash == hash)
+        if (length(existing_idx) > 0) {
+          # Update the timestamp for the existing entry
+          tagging_data$timestamp[existing_idx] <- timestamp
+        } else {
+          # Append a new entry if it doesn't exist
+          new_entry <- data.frame(hash = hash, timestamp = timestamp, stringsAsFactors = FALSE)
+          tagging_data <- rbind(tagging_data, new_entry)
+        }
+
+        # Write updated tagging data back
+        write.table(tagging_data, tagging_file, sep = "\t", row.names = FALSE,
+                    col.names = FALSE, quote = FALSE)
       }
 
-      # Return the loaded object
-      return(loaded_objects[[2]]) # Return the second item of the list
+      # Return the second item of the list
+      return(loaded_objects[[2]])
     }
   }
 

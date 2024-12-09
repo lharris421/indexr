@@ -55,7 +55,6 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
         # if (!is.na(row[[col_name]])) {
         # Retrieve the current value from args_list (if it exists)
         current_value <- get_nested_value_from_list(updated_args_list, col_name)
-        if (is.null(current_value)) next ## Not an argument used for that sim, need to only use NA in res lsits
 
         # Convert the value from CSV using c_string_to_vector
         if (is.character(row[[col_name]])) {
@@ -64,13 +63,18 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
           new_value <- row[[col_name]]
         }
 
-        if (all(is.na(current_value)) & all(is.na(new_value))) next
+        # if ( is.null(current_value) ) next ## Not an argument used for that sim, need to only use NA in res lsits
+        ## If they are both NA but different NA types, the NA type is not coerced
+        if ((is.null(current_value) | all(is.na(current_value))) & all(is.na(new_value))) next
 
         # Coerce new_value to the type of current_value
         if (!all(is.na(new_value))) {
           new_value <- tryCatch({
-            # If current_value is NULL, keep new_value as is
-            if (is.na(current_value)) {
+            # If current_value is NULL or NA, keep new_value as is
+            ## Do I want to coerce if it is a specific NA type??
+            # if (is.null(current_value) | all(is.na(current_value))) {
+            ## This now currently does that, this may help with consistency between sims
+            if (is.null(current_value)) {
               new_value
             } else {
               # Coerce new_value to the class of current_value
