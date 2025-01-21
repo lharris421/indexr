@@ -23,12 +23,8 @@ generate_hash <- function(args_list, hash_includes_timestamp = FALSE, ignore_na 
     args_list$script_name <- NULL
   }
 
-  # Check for 'function_name' and process through combine_arguments_with_defaults
-  if (!is.null(args_list$function_name) && !is.na(args_list$function_name)) {
-    args_list <- combine_arguments_with_defaults(args_list)
-  }
-
-  # Filter out NULL and empty list values
+  ## Filter out NULL and empty list values
+  ## Was more important when generating from call object
   args_list <- Filter(function(x) !is.null(x), args_list)
   args_list <- Filter(function(x) !(is.list(x) && length(x) == 0), args_list)
 

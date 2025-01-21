@@ -45,13 +45,8 @@ save_objects <- function(folder, results, args_list = NULL,
                          incremental = FALSE, identifier = NULL) {
 
   # If args_list is not provided, attempt to construct it from the first object passed
-  if (is.null(args_list) && !missing(results)) {
-    if (class(results) == "list" && !is.null(results$call)) {
-      # Extract call details and then combine arguments with defaults
-      args_list <- extract_call_details(results)
-    } else {
-      stop("Either provide an args_list or a results list with a call.")
-    }
+  if (is.null(args_list)) {
+      stop("An args_list must be provided.")
   }
 
   # Try to get the script name and add to args_list if it doesn't already exist
@@ -68,11 +63,8 @@ save_objects <- function(folder, results, args_list = NULL,
           script_name <- basename(script_path)
           tools::file_path_sans_ext(script_name)
         } else {
-          # For interactive sessions, fallback to sys.calls
-          script_call <- sys.calls()[[1]]
-          # Extract script name from call
-          script_name <- basename(deparse(script_call))
-          tools::file_path_sans_ext(script_name)
+          # For interactive sessions, return NULL
+          NULL
         }
       }, error = function(e) {
         NA

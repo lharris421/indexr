@@ -24,6 +24,7 @@
 #' missing_combinations <- check_parameters_existence(folder_path, args_list, "missing")
 #' }
 check_parameters_existence <- function(folder, args_list, check_for = c("missing", "existing"), halt = FALSE, hash_includes_timestamp = FALSE, ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
+
   # Validate 'check_for' option
   check_for <- match.arg(check_for)
 
