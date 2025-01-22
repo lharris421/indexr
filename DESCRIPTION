@@ -1,6 +1,6 @@
 Package: indexr
 Title: A Thoughtful Saver of Results
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person("Logan", "Harris", , "logan-harris@uiowa.edu", role = c("aut", "cre"))
 Description: Helps with the thoughtful saving, reading, and management of simulations files.
