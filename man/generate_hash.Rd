@@ -5,7 +5,7 @@
 \title{Generate a Consistent Hash for an Argument List}
 \usage{
 generate_hash(
-  args_list,
+  parameters_list,
   hash_includes_timestamp = FALSE,
   ignore_na = TRUE,
   alphabetical_order = TRUE,
@@ -14,13 +14,13 @@ generate_hash(
 )
 }
 \arguments{
-\item{args_list}{A named list of arguments for which the hash will be generated. Each element in the list should correspond to a parameter.}
+\item{parameters_list}{A named list of arguments for which the hash will be generated. Each element in the list should correspond to a parameter.}
 
-\item{hash_includes_timestamp}{Logical; if FALSE, any timestamp included in args_list will be removed before hash generation. If TRUE, the timestamp will be included in the hash calculation.}
+\item{hash_includes_timestamp}{Logical; if FALSE, any timestamp included in parameters_list will be removed before hash generation. If TRUE, the timestamp will be included in the hash calculation.}
 
-\item{ignore_na}{Logical; if TRUE, any NA values in args_list will be removed before hash generation.}
+\item{ignore_na}{Logical; if TRUE, any NA values in parameters_list will be removed before hash generation.}
 
-\item{alphabetical_order}{Logical; if TRUE, the arguments in args_list will be sorted alphabetically by their names before hash generation.}
+\item{alphabetical_order}{Logical; if TRUE, the arguments in parameters_list will be sorted alphabetically by their names before hash generation.}
 }
 \value{
 A character string representing the hash value of the provided argument list.

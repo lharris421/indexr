@@ -4,7 +4,7 @@
 \alias{close_tagging}
 \title{Close Tagging Session by Deleting the Tagging File}
 \usage{
-close_tagging(folder)
+close_tagging(folder, tagging_file_name = "indexr_tagging.txt")
 }
 \arguments{
 \item{folder}{A character string specifying the path to the directory containing the tagging file.}

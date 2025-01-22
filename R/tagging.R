@@ -10,9 +10,9 @@
 #' # Start tagging in the desired folder
 #' start_tagging("/your/directory/path")
 #' }
-start_tagging <- function(path) {
+start_tagging <- function(path, tagging_file_name = "indexr_tagging.txt") {
   # Combine the provided path with the filename
-  file_path <- file.path(path, "indexer_tagging.txt")
+  file_path <- file.path(path, tagging_file_name)
 
   # Create the file at the specified location if it doesn't exist
   if (!file.exists(file_path)) {
@@ -32,9 +32,9 @@ start_tagging <- function(path) {
 #' # Clean up untagged .rds files in the folder
 #' cleanup("/your/directory/path")
 #' }
-cleanup <- function(folder, cutoff_date = NULL) {
+cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_date = NULL) {
   # Path to the tagging file
-  tagging_file <- file.path(folder, "indexer_tagging.txt")
+  tagging_file <- file.path(folder, tagging_file_name)
 
   # Check if the tagging file exists
   if (!file.exists(tagging_file)) {
@@ -53,10 +53,13 @@ cleanup <- function(folder, cutoff_date = NULL) {
   tagging_data$timestamp <- as.POSIXct(tagging_data$timestamp, format = "%Y-%m-%d %H:%M:%S")
 
   # Get the latest timestamp for each hash (in case of multiple entries)
-  tagging_data <- aggregate(timestamp ~ hash, data = tagging_data, FUN = max)
+  ## I believe this is now depricated
+  ## tagging_data <- aggregate(timestamp ~ hash, data = tagging_data, FUN = max)
 
   # Get a list of all .rds files in the folder
   rds_files <- list.files(folder, pattern = "\\.rds$", full.names = TRUE)
+  ## rds_parameter_files <- rds_files[stringr::str_detect(rds_files, "_parameters\\.rds")]
+  rds_files <- rds_files[!stringr::str_detect(rds_files, "_parameters\\.rds")]
 
   # Extract the hashes (filenames without extension) from the .rds files
   rds_hashes <- basename(rds_files)
@@ -91,6 +94,7 @@ cleanup <- function(folder, cutoff_date = NULL) {
 
   # Remove duplicates in case of overlap
   files_to_delete <- unique(files_to_delete)
+  files_to_delete <- c(files_to_delete, str_replace(files_to_delete, "\\.rds", "_parameters\\.rds"))
 
   # Check if there are any files to delete
   if (length(files_to_delete) > 0) {
@@ -127,16 +131,16 @@ cleanup <- function(folder, cutoff_date = NULL) {
 #' # Close tagging by deleting the tagging file
 #' close_tagging("/your/directory/path")
 #' }
-close_tagging <- function(folder) {
+close_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
   # Path to the tagging file
-  tagging_file <- file.path(folder, "indexer_tagging.txt")
+  tagging_file <- file.path(folder, tagging_file_name)
 
   # Check if the tagging file exists
   if (file.exists(tagging_file)) {
     # Delete the tagging file
     file.remove(tagging_file)
-    message("Tagging file 'indexer_tagging.txt' has been deleted.")
+    message(glue::glue("Tagging file '{tagging_file_name}' has been deleted."))
   } else {
-    warning("Tagging file 'indexer_tagging.txt' does not exist in the specified folder.")
+    warning(glue::glue("Tagging file '{tagging_file_name}' does not exist in the specified folder."))
   }
 }

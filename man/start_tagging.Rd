@@ -4,7 +4,7 @@
 \alias{start_tagging}
 \title{Start Tagging Files in a Directory}
 \usage{
-start_tagging(path)
+start_tagging(path, tagging_file_name = "indexr_tagging.txt")
 }
 \arguments{
 \item{path}{A character string specifying the path to the directory where the tagging file will be created.}
