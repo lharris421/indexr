@@ -6,7 +6,7 @@
 \usage{
 read_objects(
   folders,
-  args_list,
+  parameters_list,
   hash_includes_timestamp = FALSE,
   ignore_script_name = FALSE,
   ignore_na = TRUE,
@@ -18,15 +18,15 @@ read_objects(
 \arguments{
 \item{folders}{Character vector specifying the paths to directories containing the saved objects. The function will check each folder in order to find the file.}
 
-\item{args_list}{A named list of arguments used to generate a unique hash for the file.}
+\item{parameters_list}{A named list of arguments used to generate a unique hash for the file.}
 
 \item{hash_includes_timestamp}{Logical. If \code{TRUE}, the timestamp is included in the hash generation.}
 
 \item{ignore_script_name}{Logical. If \code{TRUE}, the script name is ignored during hash generation.}
 
-\item{ignore_na}{Logical. If \code{TRUE}, \code{NA} values in \code{args_list} are ignored during hash generation.}
+\item{ignore_na}{Logical. If \code{TRUE}, \code{NA} values in \code{parameters_list} are ignored during hash generation.}
 
-\item{alphabetical_order}{Logical. If \code{TRUE}, the names in \code{args_list} are sorted alphabetically before hash generation.}
+\item{alphabetical_order}{Logical. If \code{TRUE}, the names in \code{parameters_list} are sorted alphabetically before hash generation.}
 
 \item{algo}{Character string specifying the hashing algorithm to use. Default is \code{"xxhash64"}.}
 
@@ -46,7 +46,7 @@ This function attempts to read an R object from files located in one of the spec
 # Read objects from multiple folders and save the hash and timestamp if the tagging file exists
 loaded_object <- read_objects(
   folders = c("/folder1/path", "/folder2/path"),
-  args_list = list(arg1 = "value1", arg2 = "value2"),
+  parameters_list = list(arg1 = "value1", arg2 = "value2"),
   print_hash = TRUE
 )
 }

@@ -22,7 +22,7 @@
 update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = FALSE,
                               ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
-  # Read the updated CSV table without converting strings to factors
+  # Read the updated CSV table
   updated_table <- readr::read_csv(table_path)
 
   # Loop over each row in the CSV
@@ -32,29 +32,22 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
 
     # Load the old RDS file
     old_file_path <- file.path(rds_folder, paste0(old_hash, ".rds"))
-    print(old_file_path)
+    old_file_parameters_path <- file.path(rds_folder, paste0(old_hash, "_parameters.rds"))
 
-    if (file.exists(old_file_path)) {
+    if (file.exists(old_file_path) & file.exists(old_file_parameters_path)) {
+
       res_list <- readRDS(old_file_path)
+      parameters_list <- readRDS(old_file_parameters_path)
 
-      if (!("args_list" %in% names(res_list))) {
-        warning(glue("args_list not found in RDS file: {old_file_path}"))
-        next
-      }
-
-      args_list <- res_list$args_list
-
-      # Update args_list with values from the updated table row
-      updated_args_list <- args_list
+      # Update parameters_list with values from the updated table row
+      updated_parameters_list <- parameters_list
 
       for (col_name in names(row)) {
         # Skip the hash column
         if (col_name == "hash") next
 
-        # If the value in the CSV is not NA, update the args_list
-        # if (!is.na(row[[col_name]])) {
-        # Retrieve the current value from args_list (if it exists)
-        current_value <- get_nested_value_from_list(updated_args_list, col_name)
+        # Retrieve the current value from parameters_list (if it exists)
+        current_value <- get_nested_value_from_list(updated_parameters_list, col_name)
 
         # Convert the value from CSV using c_string_to_vector
         if (is.character(row[[col_name]])) {
@@ -63,42 +56,47 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
           new_value <- row[[col_name]]
         }
 
-        # if ( is.null(current_value) ) next ## Not an argument used for that sim, need to only use NA in res lsits
         ## If they are both NA but different NA types, the NA type is not coerced
         if ((is.null(current_value) | all(is.na(current_value))) & all(is.na(new_value))) next
 
         # Coerce new_value to the type of current_value
         if (!all(is.na(new_value))) {
+
           new_value <- tryCatch({
+
             # If current_value is NULL or NA, keep new_value as is
-            ## Do I want to coerce if it is a specific NA type??
-            # if (is.null(current_value) | all(is.na(current_value))) {
-            ## This now currently does that, this may help with consistency between sims
             if (is.null(current_value)) {
+
               new_value
+
             } else {
+
               # Coerce new_value to the class of current_value
-              ## May need to rethink this
               as(new_value, class(current_value))
+
             }
           }, error = function(e) {
+
             # If coercion fails, keep new_value as is
             new_value
+
           })
         }
 
         # Compare values before updating
         if (!identical(current_value, new_value)) {
-          message(glue("Updating {col_name} in args_list: {current_value} -> {new_value}"))
-          updated_args_list <- update_nested_list_from_csv(updated_args_list, col_name, new_value)
+
+          message(glue::glue("Updating {col_name} in parameters_list: {current_value} -> {new_value}"))
+          updated_parameters_list <- update_nested_list_from_csv(updated_parameters_list, col_name, new_value)
+
         }
       }
 
-      # Check if args_list has been updated
-      if (!identical(args_list, updated_args_list)) {
-        # Calculate new hash for updated args_list using generate_hash
+      # Check if parameters_list has been updated
+      if (!identical(parameters_list, updated_parameters_list)) {
+        # Calculate new hash for updated parameters_list using generate_hash
         new_hash <- generate_hash(
-          args_list = updated_args_list,
+          parameters_list = updated_parameters_list,
           hash_includes_timestamp = hash_includes_timestamp,
           ignore_na = ignore_na,
           alphabetical_order = alphabetical_order,
@@ -109,27 +107,26 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
 
         # Check if the new hash file already exists
         if (file.exists(new_file_path)) {
-          message(glue("Hash {new_hash} already exists, skipping update for {old_hash}."))
+          message(glue::glue("Hash {new_hash} already exists, skipping update for {old_hash}."))
         } else {
-          # Update res_list with the updated args_list
-          res_list$args_list <- updated_args_list
 
           # Save the updated objects under the new hash
-          saveRDS(res_list, file = new_file_path)
-          message(glue("Updated hash {old_hash} to {new_hash}."))
+          save_objects(rds_folder, res_list, updated_parameters_list)
+          message(glue::glue("Updated hash {old_hash} to {new_hash}."))
 
           # Delete the old file if hashes differ
           if (old_hash != new_hash) {
             file.remove(old_file_path)
-            message(glue("Deleted old hash {old_hash}."))
+            file.remove(old_file_parameters_path)
+            message(glue::glue("Deleted old hash {old_hash}."))
           }
         }
       } else {
-        message(glue("No changes detected for hash {old_hash}, skipping update."))
+        message(glue::glue("No changes detected for hash {old_hash}, skipping update."))
       }
 
     } else {
-      warning(glue("Old file not found for hash: {old_hash}"))
+      warning(glue::glue("Old file not found for hash: {old_hash}"))
     }
   }
 }

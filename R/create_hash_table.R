@@ -26,7 +26,7 @@
 create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
 
   # List all files in the given directory based on the file pattern
-  files <- list.files(path, pattern = "\\.rds$", full.names = TRUE)
+  files <- list.files(path, pattern = "_parameters\\.rds$", full.names = TRUE)
 
   # Initialize an empty list to store the args_lists along with their hashes
   all_args_lists <- list()
@@ -34,20 +34,15 @@ create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
   for (file in files) {
 
     loaded_objects <- readRDS(file)
-    if (length(loaded_objects) < 1 || !("args_list" %in% names(loaded_objects))) {
-      warning(glue("arg_list not found for file {file}"))
-      next  # Skip if the args_list is not found
-    }
+    args_list <- lapply(loaded_objects, convert_type)
 
-    args_list <- lapply(loaded_objects[[1]], convert_type)
-
-    args_list$hash <- stringr::str_remove(basename(file), "\\.rds$")
+    args_list$hash <- stringr::str_remove(basename(file), "_parameters\\.rds$")
     args_list <- convert_vectors_to_c_strings(args_list)
 
     # Flatten the nested list with descriptive column names
     flat_args_list <- flatten_nested_list(args_list)
 
-    # Convert all elements to characters (probably unnecssary)
+    # Convert all elements to characters to avoid type conflict
     flat_args_list <- lapply(flat_args_list, as.character)
 
     all_args_lists[[basename(file)]] <- flat_args_list

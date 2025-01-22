@@ -7,7 +7,7 @@
 save_objects(
   folder,
   results,
-  args_list = NULL,
+  parameters_list = NULL,
   hash_includes_timestamp = FALSE,
   ignore_na = TRUE,
   alphabetical_order = TRUE,
@@ -25,21 +25,21 @@ save_objects(
 
 \item{results}{The R object or list of objects to be saved.}
 
-\item{args_list}{A named list of arguments used to generate a unique hash for the file. If \code{NULL}, the function attempts to extract it from \code{results}.}
+\item{parameters_list}{A named list of arguments used to generate a unique hash for the file. If \code{NULL}, the function attempts to extract it from \code{results}.}
 
 \item{hash_includes_timestamp}{Logical. If \code{TRUE}, the timestamp is included in the hash generation.}
 
-\item{ignore_na}{Logical. If \code{TRUE}, \code{NA} values in \code{args_list} are ignored during hash generation.}
+\item{ignore_na}{Logical. If \code{TRUE}, \code{NA} values in \code{parameters_list} are ignored during hash generation.}
 
-\item{alphabetical_order}{Logical. If \code{TRUE}, the names in \code{args_list} are sorted alphabetically before hash generation.}
+\item{alphabetical_order}{Logical. If \code{TRUE}, the names in \code{parameters_list} are sorted alphabetically before hash generation.}
 
 \item{overwrite}{Logical. If \code{TRUE}, existing files with the same hash will be overwritten.}
 
-\item{include_timestamp}{Logical. If \code{TRUE}, a timestamp is added to \code{args_list}.}
+\item{include_timestamp}{Logical. If \code{TRUE}, a timestamp is added to \code{parameters_list}.}
 
 \item{algo}{Character string specifying the hashing algorithm to use. Default is \code{"xxhash64"}.}
 
-\item{get_script_name}{Logical. If \code{TRUE}, attempts to get the script name and add it to \code{args_list}.}
+\item{get_script_name}{Logical. If \code{TRUE}, attempts to get the script name and add it to \code{parameters_list}.}
 
 \item{ignore_script_name}{Logical. If \code{TRUE}, the script name is ignored during hash generation.}
 
@@ -65,13 +65,13 @@ folder_path <- "/your/directory/path"
 results <- list(data = mtcars, summary = summary(mtcars))
 
 # Define the arguments list used for hashing
-args_list <- list(param1 = "value1", param2 = 42)
+parameters_list <- list(param1 = "value1", param2 = 42)
 
 # Save objects with default settings
-save_objects(folder = folder_path, results = results, args_list = args_list)
+save_objects(folder = folder_path, results = results, parameters_list = parameters_list)
 
 # Save objects with incremental saving
-save_objects(folder = folder_path, results = results, args_list = args_list,
+save_objects(folder = folder_path, results = results, parameters_list = parameters_list,
              incremental = TRUE, identifier = "experiment1")
 }
 }
