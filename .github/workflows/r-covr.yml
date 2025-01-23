@@ -31,6 +31,7 @@ jobs:
             any::digest
             any::glue
             any::testthat
+            any::devtools
           needs: coverage
 
       - name: Test coverage
