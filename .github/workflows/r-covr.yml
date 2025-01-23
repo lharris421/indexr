@@ -6,7 +6,9 @@ on:
 
 name: test-coverage
 
-permissions: read-all
+permissions:
+  contents: read
+  checks: write
 
 jobs:
   test-coverage:
@@ -30,12 +32,12 @@ jobs:
             any::glue
             any::testthat
             any::devtools
-          needs: coverage
 
-      - name: Test coverage
-        run: Rscript -e 'covr::codecov()'
-
+      - name: Generate coverage report
+        run: Rscript -e 'covr::package_coverage()'
+      
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          with:
+            token: ${{ secrets.CODECOV_TOKEN || '' }}
+
