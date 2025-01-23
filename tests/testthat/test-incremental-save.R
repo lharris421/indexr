@@ -15,3 +15,5 @@ testthat::expect_equal(length(list.files(tmp_dir)), 20)
 compress_incremental(test_dir, params)
 testthat::expect_error(check_is_directory(tmp_dir))
 testthat::expect_equal(length(list.files(test_dir)), 2)
+
+unlink(test_dir, recursive = TRUE)
