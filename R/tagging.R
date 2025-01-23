@@ -159,8 +159,18 @@ close_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
   }
 }
 
-cleanup_from_hash_table <- function(hash_table,
-                                    folder,
+#' Title
+#'
+#' @param hash_table
+#' @param folder
+#' @param mode
+#' @param column
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cleanup_from_hash_table <- function(folder, hash_table,
                                     mode = c("manual", "all"),
                                     column = NULL) {
   mode <- match.arg(mode)

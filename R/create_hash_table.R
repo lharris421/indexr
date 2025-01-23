@@ -5,7 +5,7 @@
 #' the arguments used for one RDS file, identified by its hash. Optionally, the function can
 #' filter the data frame based on specified criteria and save it to a file.
 #'
-#' @param path A string specifying the directory containing the RDS files.
+#' @param folder A string specifying the directory containing the RDS files.
 #' @param save_path An optional string specifying the path to save the resulting hash table as a CSV file.
 #'                 If `NULL`, the hash table is not saved.
 #' @param filter_list An optional list of filters to apply to the hash table.
@@ -23,15 +23,15 @@
 #' # To save the hash table to a file
 #' create_hash_table(directory_path, save_path = "path/to/save/hash_table.csv")
 #' }
-create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
+create_hash_table <- function(folder, save_path = NULL, filter_list = NULL) {
 
-  check_is_directory(path)
-  check_missing_pairs(path)
+  check_is_directory(folder)
+  check_missing_pairs(folder)
 
   if (!is.null(save_path)) save_path <- check_and_fix_extension(save_path, "csv")
 
   # List all files in the given directory based on the file pattern
-  files <- list.files(path, pattern = "_parameters\\.rds$", full.names = TRUE)
+  files <- list.files(folder, pattern = "_parameters\\.rds$", full.names = TRUE)
 
   # Initialize an empty list to store the args_lists along with their hashes
   all_args_lists <- list()

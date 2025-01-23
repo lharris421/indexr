@@ -2,6 +2,7 @@
 
 export(check_hash_existence)
 export(cleanup)
+export(cleanup_from_hash_table)
 export(close_tagging)
 export(create_hash_table)
 export(generate_hash)
