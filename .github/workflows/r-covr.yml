@@ -19,13 +19,13 @@ jobs:
 
     - name: Install dependencies
       run: |
-        install.packages('devtools')
-        devtools::install_deps(dependencies = TRUE)
+        Rscript -e "install.packages('devtools')"
+        Rscript -e "devtools::install_deps(dependencies = TRUE)"
 
     - name: Run tests and collect coverage
       run: |
-        install.packages('covr')
-        covr::codecov()
+        Rscript -e "install.packages('covr')"
+        Rscript -e "covr::codecov()"
 
     - name: Upload coverage to Codecov
       env:
