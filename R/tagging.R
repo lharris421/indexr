@@ -158,3 +158,68 @@ close_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
     warning(glue::glue("Tagging file '{tagging_file_name}' does not exist in the specified folder."))
   }
 }
+
+cleanup_from_hash_table <- function(hash_table,
+                                    folder,
+                                    mode = c("manual", "all"),
+                                    column = NULL) {
+  mode <- match.arg(mode)
+
+  # Basic checks
+  check_is_directory(folder)
+
+  # In "manual" mode, we look for rows where 'column' == TRUE
+  # In "all" mode, we remove every hash in hash_table
+  if (mode == "manual") {
+    if (is.null(column)) {
+      stop("In 'manual' mode, you must specify the column name containing the deletion indicator.")
+    }
+    if (!column %in% names(hash_table)) {
+      stop("Column '", column, "' not found in the hash table.")
+    }
+    # Identify rows for which the user has marked deletion
+    del_rows <- which(isTRUE(hash_table[[column]]) | hash_table[[column]] == TRUE)
+    if (length(del_rows) == 0) {
+      message("No rows with '", column, "' == TRUE. Nothing to delete.")
+      return(invisible(NULL))
+    }
+    # Subset to those hashes
+    del_hashes <- hash_table$hash[del_rows]
+  } else {
+    # "all" mode: remove every hash in the hash_table
+    del_hashes <- hash_table$hash
+  }
+
+  # Construct full paths for results and parameter files
+  results_files  <- file.path(folder, paste0(del_hashes, ".rds"))
+  params_files   <- file.path(folder, paste0(del_hashes, "_parameters.rds"))
+  files_to_delete <- c(results_files, params_files)
+
+  # Check which actually exist on disk
+  files_to_delete <- files_to_delete[file.exists(files_to_delete)]
+
+  if (length(files_to_delete) == 0) {
+    message("No matching files found on disk to delete.")
+    return(invisible(NULL))
+  }
+
+  message("The following files will be removed:")
+  print(files_to_delete)
+
+  # Ask for user confirmation
+  confirm <- utils::askYesNo("Do you want to proceed with deleting these files?")
+  if (isTRUE(confirm)) {
+    file.remove(files_to_delete)
+    message("Specified files have been deleted.")
+  } else if (isFALSE(confirm)) {
+    message("Deletion canceled by the user.")
+  } else {
+    message("No response detected. Deletion canceled.")
+  }
+
+  # Optionally, re-check pairs
+  check_missing_pairs(folder)
+
+  invisible(NULL)
+}
+
