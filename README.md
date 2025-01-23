@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![codecov](https://codecov.io/gh/lharris421/indexr/coverage.svg?branch=master)](https://codecov.io/gh/lharris421/indexr)
+<!-- badges: end -->
+
 # indexr: Stop naming simulation results <img src="man/figures/indexr_hex_sticker.png" align="right" height="150" />
 
 `indexr` is an R package designed to automate the saving and reading of R objects resulting from simulations based on their parameter configurations. It provides tools for saving, reading, updating, and managing objects with hashed file names, enabling efficient and organized data handling. This package is especially useful for scenarios involving extensive parameter tuning, simulations, or any context where managing a large number of R objects is required.
