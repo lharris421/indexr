@@ -16,4 +16,7 @@ compress_incremental(test_dir, params)
 testthat::expect_error(check_is_directory(tmp_dir))
 testthat::expect_equal(length(list.files(test_dir)), 2)
 
+res <- read_objects(test_dir, params)
+hist(res$val)
+
 unlink(test_dir, recursive = TRUE)

@@ -5,8 +5,8 @@
 \title{Title}
 \usage{
 cleanup_from_hash_table(
-  hash_table,
   folder,
+  hash_table,
   mode = c("manual", "all"),
   column = NULL
 )
