@@ -2,22 +2,23 @@
 % Please edit documentation in R/tagging.R
 \name{start_tagging}
 \alias{start_tagging}
-\title{Start Tagging Files in a Directory}
+\title{Start Tagging File in a Directory}
 \usage{
 start_tagging(path, tagging_file_name = "indexr_tagging.txt")
 }
 \arguments{
 \item{path}{A character string specifying the path to the directory where the tagging file will be created.}
+
+\item{tagging_file_name}{A character string for a txt file the tagging information is to be saved under.}
 }
 \value{
 No return value. This function is called for its side effects.
 }
 \description{
-Initializes the tagging process by creating an \code{indexer_tagging.txt} file in the specified directory.
+Initializes the tagging process by creating an \code{txt} file in the specified directory. Tagging is mainly helpful for removing unused results.
 }
 \examples{
 \dontrun{
-# Start tagging in the desired folder
 start_tagging("/your/directory/path")
 }
 }

@@ -8,16 +8,19 @@ cleanup(folder, tagging_file_name = "indexr_tagging.txt", cutoff_date = NULL)
 }
 \arguments{
 \item{folder}{A character string specifying the path to the directory to clean up.}
+
+\item{tagging_file_name}{A character string for a txt file the tagging information is saved under.}
+
+\item{cutoff_date}{A character string in "\%Y-\%m-\%d \%H:\%M:\%S" format used to specify that any tagged files before the date should also be removed.}
 }
 \value{
 No return value. This function is called for its side effects.
 }
 \description{
-Removes any \code{.rds} files in the specified folder that are not listed in the \code{indexer_tagging.txt} tagging file.
+Removes any \code{.rds} files in the specified folder that are not listed in the tagging file.
 }
 \examples{
 \dontrun{
-# Clean up untagged .rds files in the folder
 cleanup("/your/directory/path")
 }
 }

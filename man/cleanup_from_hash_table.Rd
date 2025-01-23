@@ -2,7 +2,7 @@
 % Please edit documentation in R/tagging.R
 \name{cleanup_from_hash_table}
 \alias{cleanup_from_hash_table}
-\title{Title}
+\title{Remove Files Based on Hash Table}
 \usage{
 cleanup_from_hash_table(
   folder,
@@ -12,8 +12,29 @@ cleanup_from_hash_table(
 )
 }
 \arguments{
-\item{column}{}
+\item{folder}{A string specifying the directory containing the RDS files.}
+
+\item{hash_table}{A \code{data.frame} from \code{create_hash_table}.}
+
+\item{mode}{A character string. When \code{mode = "manual"} (default) the function expects that the user will add a column to a hash table that indicated which files to delete. When \code{mode = "all"}, any results in the hash table will be removed.}
+
+\item{column}{A character string indicating the logical column in \code{hash_table} specifying which files to delete.}
+}
+\value{
+Nothing, this function is called for its side effects.
 }
 \description{
-Title
+Allows the user to leverage the \code{generate_hash} function to generate a table that is subsequently used to remove indicated results.
+}
+\details{
+There are a few ways to use this. When \code{mode = "manual"} (default) the function expects that the user will add a column to a hash table that indicated which files to delete. When \code{mode = "all"}, any results in the hash table will be removed. This is generally only used when a \code{filter_list} is passed to \code{create_hash_table}.
+}
+\examples{
+\dontrun{
+Create a hash table
+hash_table <- create_hash_table(folder = ".")
+
+Delete files based on hash table
+cleanup_from_hash_table(folder = ".", hash_table = hash_table, mode = "all")
+}
 }

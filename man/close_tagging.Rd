@@ -8,16 +8,17 @@ close_tagging(folder, tagging_file_name = "indexr_tagging.txt")
 }
 \arguments{
 \item{folder}{A character string specifying the path to the directory containing the tagging file.}
+
+\item{tagging_file_name}{A character string for a txt file the tagging information was saved under.}
 }
 \value{
 No return value. This function is called for its side effects.
 }
 \description{
-Deletes the \code{indexer_tagging.txt} tagging file from the specified folder, ending the tagging session.
+Deletes the tagging file from the specified folder, ending the tagging session.
 }
 \examples{
 \dontrun{
-# Close tagging by deleting the tagging file
 close_tagging("/your/directory/path")
 }
 }
