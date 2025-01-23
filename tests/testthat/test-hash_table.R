@@ -64,7 +64,6 @@ update_hash_table(hash_table_file, test_dir)
 changes <- glue::glue("{saved_hash_table$hash[c(1, 2)]}.rds")
 no_changes <- glue::glue("{saved_hash_table$hash[c(3, 4)]}.rds")
 
-
 saved_files_3 <- list.files(test_dir)
 saved_files_3 <- saved_files_3[stringr::str_detect(saved_files_3, "rds")]
 expect_true(all(!(changes %in% saved_files_3)))

@@ -63,11 +63,11 @@ save_objects <- function(folder, results, parameters_list = NULL,
           base_name <- basename(script_path)
           tools::file_path_sans_ext(base_name)
         } else {
-          NULL
+          NA
         }
       }, error = function(e) NA)
 
-      if (!is.na(script_name) && !is.null(script_name)) {
+      if (!is.na(script_name)) {
         parameters_list$script_name <- script_name
       }
     }

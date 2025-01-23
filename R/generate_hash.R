@@ -23,11 +23,6 @@ generate_hash <- function(parameters_list, hash_includes_timestamp = FALSE, igno
     parameters_list$script_name <- NULL
   }
 
-  ## Filter out NULL and empty list values
-  ## Was more important when generating from call object
-  parameters_list <- Filter(function(x) !is.null(x), parameters_list)
-  parameters_list <- Filter(function(x) !(is.list(x) && length(x) == 0), parameters_list)
-
   # Order alphabetically if alphabetical_order is TRUE
   if (alphabetical_order) {
     parameters_list <- sort_list_recursive(parameters_list)
