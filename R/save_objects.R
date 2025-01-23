@@ -42,8 +42,7 @@ save_objects <- function(folder, results, parameters_list = NULL,
                          alphabetical_order = TRUE, overwrite = FALSE,
                          include_timestamp = TRUE, algo = "xxhash64",
                          get_script_name = TRUE, ignore_script_name = FALSE,
-                         incremental = FALSE, identifier = NULL,
-                         silent = FALSE) {
+                         incremental = FALSE, silent = FALSE) {
 
   ## Checks
   check_is_directory(folder)
@@ -98,45 +97,28 @@ save_objects <- function(folder, results, parameters_list = NULL,
     # The folder we plan to write to
     temp_folder <- file.path(folder, hash)
 
-    # If that folder already exists AND we are not overwriting, create a new "temporary" hash
-    if (dir.exists(temp_folder) && !overwrite) {
-      # One simple approach: add a timestamp or random suffix
-      tmp_suffix <- paste0("_temp_", paste0(sample(c(0:9, letters, LETTERS), 5, replace = TRUE), collapse = ""))
-      hash <- paste0(hash, tmp_suffix)
-      temp_folder <- file.path(folder, hash)
-      warning(glue::glue(
-        "A folder for incremental results already exists with these parameters, ",
-        "results saved under a temporary hash: {hash}"
-      ))
-    }
-
     # Now we can safely create the folder
     dir.create(temp_folder, recursive = TRUE, showWarnings = FALSE)
-
-    # If no identifier is provided, generate one
-    if (is.null(identifier)) {
-      identifier <- paste0(sample(c(0:9, letters, LETTERS), 10, replace = TRUE), collapse = "")
-    }
 
     # Generate a unique subscript (random) to avoid collisions
     existing_files <- list.files(
       temp_folder,
-      pattern = paste0("^", identifier, "_[0-9A-Za-z]+\\.rds$")
+      pattern = paste0("^", hash, "_[0-9A-Za-z]+\\.rds$")
     )
 
     repeat {
       # Example: 5-character numeric subscript
       subscript <- paste0(sample(c(0:9), 5, replace = TRUE), collapse = "")
       # Check if a file with this subscript already exists
-      match_pattern <- paste0("^", identifier, "_", subscript, "\\.rds$")
+      match_pattern <- paste0("^", hash, "_", subscript, "\\.rds$")
       if (!any(grepl(match_pattern, existing_files))) {
         break
       }
     }
 
     # Filenames for parameters and results
-    parameters_filename <- paste0(identifier, "_", subscript, "_parameters.rds")
-    results_filename    <- paste0(identifier, "_", subscript, ".rds")
+    parameters_filename <- paste0(hash, "_", subscript, "_parameters.rds")
+    results_filename    <- paste0(hash, "_", subscript, ".rds")
 
     parameters_file_path <- file.path(temp_folder, parameters_filename)
     results_file_path    <- file.path(temp_folder, results_filename)
@@ -253,5 +235,4 @@ compress_incremental <- function(folder,
     unlink(temp_folder, recursive = TRUE, force = FALSE)
   }
 
-  invisible(final_file_path)
 }
