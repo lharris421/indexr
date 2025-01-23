@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_objects.R
 \name{read_objects}
 \alias{read_objects}
-\title{Read Objects from Multiple Folders and Tag with Hash and Timestamp}
+\title{Read Objects Based on Parameter List}
 \usage{
 read_objects(
   folders,
@@ -32,24 +32,34 @@ read_objects(
 
 \item{algo}{Character string specifying the hashing algorithm to use. Default is \code{"xxhash64"}.}
 
-\item{print_hash}{Logical. If \code{TRUE}, prints the generated hash.}
+\item{print_hash}{Logical. If \code{TRUE}, prints the generated hash. This is helpful for debugging.}
+
+\item{tagging_file_name}{Character string of a txt file that is being used for tagging results. See \code{?start_tagging}.}
+
+\item{silent}{Logical. If \code{TRUE}, no check is done that pairs of results files (parameters and associated results) is done. This check is not necessary, but done by default to keep the user aware of a scenario that usually results from manual file manipulation.}
 }
 \value{
-The second element of the loaded object list, typically the results. Returns \code{NULL} if the file is not found in any of the specified folders.
+The data stored in the file retrieved, typically the results. Returns \code{NULL} if the file is not found in any of the specified folders.
 }
 \description{
-Reads R objects from specified folders based on a generated hash of the provided arguments. If the object is successfully read, the function appends the hash and the current timestamp to the \code{indexer_tagging.txt} file in the folder where the file was found.
+Reads R objects from specified folders based on a generated hash of the provided \code{parameters_list}.
 }
 \details{
-This function attempts to read an R object from files located in one of the specified folders. The file name is based on the hash of the provided arguments. If successful, it appends the hash and the timestamp when it was read to the \code{indexer_tagging.txt} file in the folder where the file was found.
+This function attempts to read an R object from files located in one of the specified folders. The file name is based on the hash of the provided arguments. If the object is successfully read and a tagging files exists and is specified, the function appends the hash and the current timestamp to the tagging file in the folder where the file was found.
 }
 \examples{
 \dontrun{
-# Read objects from multiple folders and save the hash and timestamp if the tagging file exists
-loaded_object <- read_objects(
-  folders = c("/folder1/path", "/folder2/path"),
-  parameters_list = list(arg1 = "value1", arg2 = "value2"),
-  print_hash = TRUE
+# Run after example in \code{save_objects}
+parameters_list <- list(
+  iterations = 1000,
+  x_dist = "rnorm",
+  x_dist_options = list(n = 10, mean = 1, sd = 2),
+  error_dist = "rnorm",
+  error_dist_options = list(n = 10, mean = 0, sd = 1),
+  beta0 = 1,
+  beta1 = 1
 )
+
+betas <- read_objects(folder = ".", parameters_list = parameters_list)
 }
 }

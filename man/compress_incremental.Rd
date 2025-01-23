@@ -2,7 +2,7 @@
 % Please edit documentation in R/compress_incremental.R
 \name{compress_incremental}
 \alias{compress_incremental}
-\title{Combine results saved by \code{save_objects} with \code{incremental=TRUE}}
+\title{Combine Results Saved by \code{save_objects} with \code{incremental=TRUE}}
 \usage{
 compress_incremental(
   folder,

@@ -1,4 +1,4 @@
-#' Save simulation results with names as hashes from the parameters that generated them
+#' Save Simulation Results with Names as Hashes from the Parameters that Generated Them
 #'
 #' Saves RDS files to a specified folder with a name that is a hash generated from a list of parameters used for the simulation. There are a number of options that control the behavior, however, the default functionality likely covers 99% of use cases.
 #'

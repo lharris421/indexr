@@ -2,7 +2,7 @@
 % Please edit documentation in R/save_objects.R
 \name{save_objects}
 \alias{save_objects}
-\title{Save simulation results with names as hashes from the parameters that generated them}
+\title{Save Simulation Results with Names as Hashes from the Parameters that Generated Them}
 \usage{
 save_objects(
   folder,

@@ -1,4 +1,4 @@
-#' Combine results saved by \code{save_objects} with \code{incremental=TRUE}
+#' Combine Results Saved by \code{save_objects} with \code{incremental=TRUE}
 #'
 #' This function is only intended to be used after \code{save_objects} with \code{incremental=TRUE}. In this case, \code{save_objects} with save results under temporary hashes in a folder with the hash corresponding the the parameters. \code{compress_incremental} then combines the results and saves them under the corresponding hash and deletes the old directory with the temporary results.
 #'
