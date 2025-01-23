@@ -13,6 +13,8 @@ permissions:
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -37,13 +39,4 @@ jobs:
         run: Rscript -e 'devtools::test()'
 
       - name: Generate and save coverage report
-        run: Rscript -e 'covr::package_coverage(path = ".", type = "lcov", output_file = "coverage.lcov")'
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          files: coverage.lcov
-          token: ${{ secrets.CODECOV_TOKEN || '' }}
-
-      - name: Debug coverage generation
-        run: Rscript -e 'print(covr::package_coverage())'
+        run: Rscript -e 'covr::codecov(quiet=FALSE)'
