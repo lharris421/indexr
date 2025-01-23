@@ -102,4 +102,14 @@ check_is_directory <- function(path) {
   # If everything is okay, return invisibly
   invisible(TRUE)
 }
-
+convert_type <- function(x) {
+  if (is.logical(x) | is.character(x) | is.list(x)) {
+    return(x)
+  } else if (is.numeric(x)) {
+    as.numeric(x) ## Make everything a numeric (not int)
+  } else if (is.call(x)) {
+    return(deparse(x))
+  } else {
+    return(as.character(x))
+  }
+}
