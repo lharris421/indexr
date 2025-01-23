@@ -30,8 +30,6 @@ jobs:
             any::dplyr
             any::digest
             any::glue
-            any::utils
-            any::tools
           needs: coverage
 
       - name: Test coverage
