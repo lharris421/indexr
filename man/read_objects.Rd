@@ -13,7 +13,8 @@ read_objects(
   alphabetical_order = TRUE,
   algo = "xxhash64",
   print_hash = FALSE,
-  tagging_file_name = "indexr_tagging.txt"
+  tagging_file_name = "indexr_tagging.txt",
+  silent = FALSE
 )
 }
 \arguments{

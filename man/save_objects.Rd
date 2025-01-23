@@ -17,7 +17,7 @@ save_objects(
   get_script_name = TRUE,
   ignore_script_name = FALSE,
   incremental = FALSE,
-  identifier = NULL
+  silent = FALSE
 )
 }
 \arguments{
