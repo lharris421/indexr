@@ -22,6 +22,11 @@
 update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = FALSE,
                               ignore_na = TRUE, alphabetical_order = TRUE, algo = "xxhash64") {
 
+  ## Checks
+  check_is_directory(rds_folder)
+  table_path <- check_and_fix_extension(table_path, "csv")
+  check_missing_pairs(rds_folder) ## Could make more specific for this function in future
+
   # Read the updated CSV table
   updated_table <- readr::read_csv(table_path)
 
@@ -115,7 +120,7 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
           message(glue::glue("Updated hash {old_hash} to {new_hash}."))
 
           # Delete the old file if hashes differ
-          if (old_hash != new_hash) {
+          if (old_hash != new_hash) { # This check should be redundant
             file.remove(old_file_path)
             file.remove(old_file_parameters_path)
             message(glue::glue("Deleted old hash {old_hash}."))
@@ -126,7 +131,11 @@ update_hash_table <- function(table_path, rds_folder, hash_includes_timestamp = 
       }
 
     } else {
-      warning(glue::glue("Old file not found for hash: {old_hash}"))
+      results_found <- file.exists(old_file_path)
+      parameters_found <- file.exists(old_file_parameters_path)
+      if (!parameters_found & !results_found) warning(glue::glue("Parameters and results file not found for hash: {old_hash}"))
+      else if (!parameters_found) warning(glue::glue("Parameters file not found for hash: {old_hash}"))
+      else if (!results_found) warning(glue::glue("Results file not found for hash: {old_hash}"))
     }
   }
 }

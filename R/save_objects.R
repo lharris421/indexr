@@ -42,7 +42,11 @@ save_objects <- function(folder, results, parameters_list = NULL,
                          alphabetical_order = TRUE, overwrite = FALSE,
                          include_timestamp = TRUE, algo = "xxhash64",
                          get_script_name = TRUE, ignore_script_name = FALSE,
-                         incremental = FALSE, identifier = NULL) {
+                         incremental = FALSE, identifier = NULL,
+                         silent = FALSE) {
+
+  ## Checks
+  check_is_directory(folder)
 
   # If parameters_list is not provided, we must stop or build from results
   if (is.null(parameters_list)) {
@@ -97,11 +101,13 @@ save_objects <- function(folder, results, parameters_list = NULL,
     # If that folder already exists AND we are not overwriting, create a new "temporary" hash
     if (dir.exists(temp_folder) && !overwrite) {
       # One simple approach: add a timestamp or random suffix
-      # e.g., hash_temp_ABC3
       tmp_suffix <- paste0("_temp_", paste0(sample(c(0:9, letters, LETTERS), 5, replace = TRUE), collapse = ""))
       hash <- paste0(hash, tmp_suffix)
       temp_folder <- file.path(folder, hash)
-      warning(glue::glue("A folder for incremental results already exists with these paramters, results saved under a temporary hash: {hash}"))
+      warning(glue::glue(
+        "A folder for incremental results already exists with these parameters, ",
+        "results saved under a temporary hash: {hash}"
+      ))
     }
 
     # Now we can safely create the folder
@@ -112,16 +118,20 @@ save_objects <- function(folder, results, parameters_list = NULL,
       identifier <- paste0(sample(c(0:9, letters, LETTERS), 10, replace = TRUE), collapse = "")
     }
 
-    # Create a unique subscript
+    # Generate a unique subscript (random) to avoid collisions
     existing_files <- list.files(
       temp_folder,
-      pattern = paste0("^", identifier, "_[0-9]+\\.rds$")
+      pattern = paste0("^", identifier, "_[0-9A-Za-z]+\\.rds$")
     )
-    if (length(existing_files) == 0) {
-      subscript <- 1
-    } else {
-      subscripts <- as.numeric(sub("^.*_([0-9]+)\\.rds$", "\\1", existing_files))
-      subscript <- max(subscripts, na.rm = TRUE) + 1
+
+    repeat {
+      # Example: 5-character numeric subscript
+      subscript <- paste0(sample(c(0:9), 5, replace = TRUE), collapse = "")
+      # Check if a file with this subscript already exists
+      match_pattern <- paste0("^", identifier, "_", subscript, "\\.rds$")
+      if (!any(grepl(match_pattern, existing_files))) {
+        break
+      }
     }
 
     # Filenames for parameters and results
@@ -144,13 +154,12 @@ save_objects <- function(folder, results, parameters_list = NULL,
 
     # If the file already exists and we can't overwrite, append a suffix
     if ((file.exists(results_file_path) || file.exists(parameters_file_path)) && !overwrite) {
-
-      # Append a suffix, e.g. _temp_<random>
       tmp_suffix <- paste0("_temp_", paste0(sample(c(0:9, letters, LETTERS), 5, replace = TRUE), collapse = ""))
       new_hash <- paste0(hash, tmp_suffix)
 
-      # Warning
-      warning(glue::glue("A file already exists with these paramters, results saved under a temporary hash: {new_hash}"))
+      warning(glue::glue(
+        "A file already exists with these parameters, results saved under a temporary hash: {new_hash}"
+      ))
 
       # Update the paths
       results_file_path    <- file.path(folder, paste0(new_hash, ".rds"))
@@ -161,6 +170,9 @@ save_objects <- function(folder, results, parameters_list = NULL,
     saveRDS(parameters_list, file = parameters_file_path)
     saveRDS(results, file = results_file_path)
   }
+
+  # For a hypothetical function that checks missing parameter/result pairs in the folder
+  if (!silent) check_missing_pairs(folder)
 
   invisible()
 }
@@ -173,6 +185,10 @@ compress_incremental <- function(folder,
                                  get_script_name = TRUE,
                                  ignore_script_name = FALSE,
                                  remove_folder = TRUE) {
+
+  ## Checks
+  check_is_directory(folder)
+
   # 1) Generate the hash from the parameters_list
   hash_res <- generate_hash(
     parameters_list,

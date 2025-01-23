@@ -25,6 +25,11 @@
 #' }
 create_hash_table <- function(path, save_path = NULL, filter_list = NULL) {
 
+  check_is_directory(path)
+  check_missing_pairs(path)
+
+  if (!is.null(save_path)) save_path <- check_and_fix_extension(save_path, "csv")
+
   # List all files in the given directory based on the file pattern
   files <- list.files(path, pattern = "_parameters\\.rds$", full.names = TRUE)
 

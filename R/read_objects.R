@@ -27,7 +27,9 @@ read_objects <- function(folders, parameters_list, hash_includes_timestamp = FAL
                          ignore_script_name = FALSE,
                          ignore_na = TRUE, alphabetical_order = TRUE,
                          algo = "xxhash64", print_hash = FALSE,
-                         tagging_file_name = "indexr_tagging.txt") {
+                         tagging_file_name = "indexr_tagging.txt",
+                         silent = FALSE) {
+
 
   # Validate folders input
   if (missing(folders) || is.null(folders)) {
@@ -36,6 +38,15 @@ read_objects <- function(folders, parameters_list, hash_includes_timestamp = FAL
   if (!is.character(folders)) {
     stop("'folders' must be a character vector of folder paths.")
   }
+
+  ## Checks
+  sapply(folders, check_is_directory)
+
+  if (!silent) {
+    sapply(folders, check_missing_pairs)
+  }
+
+  tagging_file_name <- check_and_fix_extension(tagging_file_name, "txt")
 
   # Convert args to a list if it's a single row of a data frame or matrix
   if (is.data.frame(parameters_list) || is.matrix(parameters_list)) {

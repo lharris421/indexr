@@ -11,6 +11,11 @@
 #' start_tagging("/your/directory/path")
 #' }
 start_tagging <- function(path, tagging_file_name = "indexr_tagging.txt") {
+
+  ## Checks
+  check_is_directory(path)
+  tagging_file_name <- check_and_fix_extension(tagging_file_name, "txt")
+
   # Combine the provided path with the filename
   file_path <- file.path(path, tagging_file_name)
 
@@ -33,6 +38,11 @@ start_tagging <- function(path, tagging_file_name = "indexr_tagging.txt") {
 #' cleanup("/your/directory/path")
 #' }
 cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_date = NULL) {
+
+  ## Checks
+  check_is_directory(folder)
+  tagging_file_name <- check_and_fix_extension(tagging_file_name, "txt")
+
   # Path to the tagging file
   tagging_file <- file.path(folder, tagging_file_name)
 
@@ -51,10 +61,6 @@ cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_dat
 
   # Convert timestamps to POSIXct objects
   tagging_data$timestamp <- as.POSIXct(tagging_data$timestamp, format = "%Y-%m-%d %H:%M:%S")
-
-  # Get the latest timestamp for each hash (in case of multiple entries)
-  ## I believe this is now depricated
-  ## tagging_data <- aggregate(timestamp ~ hash, data = tagging_data, FUN = max)
 
   # Get a list of all .rds files in the folder
   rds_files <- list.files(folder, pattern = "\\.rds$", full.names = TRUE)
@@ -116,6 +122,9 @@ cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_dat
   } else {
     message("No .rds files to remove.")
   }
+
+  check_missing_pairs(folder)
+
 }
 
 
@@ -132,6 +141,11 @@ cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_dat
 #' close_tagging("/your/directory/path")
 #' }
 close_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
+
+  ## Checks
+  check_is_directory(path)
+  tagging_file_name <- check_and_fix_extension(tagging_file_name, "txt")
+
   # Path to the tagging file
   tagging_file <- file.path(folder, tagging_file_name)
 
