@@ -8,7 +8,8 @@ cleanup_from_hash_table(
   folder,
   hash_table,
   mode = c("manual", "all"),
-  column = NULL
+  column = NULL,
+  verify = TRUE
 )
 }
 \arguments{

@@ -5,7 +5,7 @@ devtools::load_all()
 
 test_that("save_objects and read_objects work correctly", {
   # Setup
-  test_dir <- "./tests/testing_grounds"
+  test_dir <- testthat::test_path("testing_grounds")
   unlink(test_dir, recursive = TRUE)
   dir.create(test_dir)
 
@@ -57,7 +57,7 @@ test_that("save_objects and read_objects work correctly", {
 })
 
 test_that("update_hash_table works correctly", {
-  test_dir <- "./tests/testing_grounds"
+  test_dir <- testthat::test_path("testing_grounds")
   hash_table_file <- glue::glue("{test_dir}/test_hash_table.csv")
 
   # Create hash table and validate
@@ -86,7 +86,7 @@ test_that("update_hash_table works correctly", {
 })
 
 test_that("new parameters in hash table trigger updates", {
-  test_dir <- "./tests/testing_grounds"
+  test_dir <- testthat::test_path("testing_grounds")
   hash_table_file <- glue::glue("{test_dir}/test_hash_table.csv")
 
   # Create and update hash table with new parameters
@@ -106,4 +106,4 @@ test_that("new parameters in hash table trigger updates", {
 })
 
 # Clean up after tests
-unlink("./tests/testing_grounds", recursive = TRUE)
+unlink(testthat::test_path("testing_grounds"), recursive = TRUE)

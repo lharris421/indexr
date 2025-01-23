@@ -13,6 +13,4 @@ Imports:
   readr,
   dplyr,
   digest,
-  glue,
-  utils,
-  tools
+  glue

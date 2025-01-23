@@ -5,7 +5,7 @@ devtools::load_all()
 
 test_that("incremental saving and compression work correctly", {
   # Setup
-  test_dir <- "./tests/incremental_save"
+  test_dir <- testthat::test_path("incremental_save")
   unlink(test_dir, recursive = TRUE)
   dir.create(test_dir)
 

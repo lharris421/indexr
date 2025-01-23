@@ -172,7 +172,7 @@ close_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
 #' }
 cleanup_from_hash_table <- function(folder, hash_table,
                                     mode = c("manual", "all"),
-                                    column = NULL) {
+                                    column = NULL, verify = TRUE) {
   mode <- match.arg(mode)
 
   ## Basic checks
@@ -213,7 +213,12 @@ cleanup_from_hash_table <- function(folder, hash_table,
   print(files_to_delete)
 
   ## Ask for user confirmation
-  confirm <- utils::askYesNo("Do you want to proceed with deleting these files?")
+  if (verify) {
+    confirm <- utils::askYesNo("Do you want to proceed with deleting these files?")
+  } else {
+    confirm <- TRUE
+  }
+
   if (isTRUE(confirm)) {
     file.remove(files_to_delete)
     message("Specified files have been deleted.")
