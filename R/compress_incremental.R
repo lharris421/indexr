@@ -90,9 +90,6 @@ compress_incremental <- function(folder,
   ## Save combined results
   save_objects(folder, combined_results, parameters_list)
 
-  ## Remove all the RDS files in the temp folder
-  file.remove(all_rds_files)
-
   ## Optionally remove old files and directory
   if (remove_folder) {
 
