@@ -30,6 +30,7 @@ jobs:
             any::dplyr
             any::digest
             any::glue
+            any::testthat
           needs: coverage
 
       - name: Test coverage
