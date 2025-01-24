@@ -1,6 +1,6 @@
 <!-- badges: start -->
-  [![Codecov test coverage](https://codecov.io/gh/lharris421/indexr/graph/badge.svg)](https://app.codecov.io/gh/lharris421/indexr)
-  <!-- badges: end -->
+[![Codecov test coverage](https://codecov.io/gh/lharris421/indexr/graph/badge.svg)](https://app.codecov.io/gh/lharris421/indexr)
+<!-- badges: end -->
 
 # indexr: Stop naming simulation results <img src="man/figures/indexr_hex_sticker.png" align="right" height="150" />
 
