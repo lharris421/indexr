@@ -6,6 +6,8 @@
 #' @param hash_includes_timestamp Logical; if FALSE, any timestamp included in parameters_list will be removed before hash generation. If TRUE, the timestamp will be included in the hash calculation.
 #' @param ignore_na Logical; if TRUE, any NA values in parameters_list will be removed before hash generation.
 #' @param alphabetical_order Logical; if TRUE, the arguments in parameters_list will be sorted alphabetically by their names before hash generation.
+#' @param algo The hash algorithm to use (See \code{?digest})
+#' @param ignore_script_name Logical. If \code{TRUE}, the script name is ignored during hash generation.
 #'
 #' @return A character string representing the hash value of the provided argument list.
 #' @export

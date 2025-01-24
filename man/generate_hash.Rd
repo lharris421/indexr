@@ -21,6 +21,10 @@ generate_hash(
 \item{ignore_na}{Logical; if TRUE, any NA values in parameters_list will be removed before hash generation.}
 
 \item{alphabetical_order}{Logical; if TRUE, the arguments in parameters_list will be sorted alphabetically by their names before hash generation.}
+
+\item{algo}{The hash algorithm to use (See \code{?digest})}
+
+\item{ignore_script_name}{Logical. If \code{TRUE}, the script name is ignored during hash generation.}
 }
 \value{
 A character string representing the hash value of the provided argument list.
