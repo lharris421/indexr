@@ -20,6 +20,10 @@ test_that("incremental saving and compression work correctly", {
   # Compress incremental files
   compress_incremental(test_dir, params)
 
+  # Check for hash
+  expect_equal(check_hash_existence(test_dir, params), TRUE)
+  expect_error(check_hash_existence(test_dir, params, halt = TRUE))
+
   # Validate the incremental folder is removed
   expect_error(check_is_directory(tmp_dir))
 
