@@ -99,7 +99,7 @@ save_objects <- function(folder, results, parameters_list = NULL,
   parameters_list <- res$parameters_list
 
   ## Save logic
-  if (incremental == TRUE) {
+  if (incremental) {
 
     temp_folder <- file.path(folder, hash)
     dir.create(temp_folder, recursive = TRUE, showWarnings = FALSE)

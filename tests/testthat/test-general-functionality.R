@@ -1,8 +1,4 @@
 # tests/testthat/test_save_and_read_objects.R
-
-# Load package
-devtools::load_all()
-
 test_that("save_objects and read_objects work correctly", {
   # Setup
   test_dir <- testthat::test_path("testing_grounds")

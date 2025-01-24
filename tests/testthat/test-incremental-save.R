@@ -1,8 +1,4 @@
 # tests/testthat/test_incremental_save.R
-
-# Load package
-devtools::load_all()
-
 test_that("incremental saving and compression work correctly", {
   # Setup
   test_dir <- testthat::test_path("incremental_save")

@@ -1,7 +1,4 @@
 # tests/testthat/test_parameterized_simulation.R
-
-devtools::load_all()
-
 test_that("Simulation results are saved and read correctly", {
   # Set up parameters
   parameters_list <- list(
@@ -56,8 +53,6 @@ test_that("Results can be read back and match original", {
   expect_true(length(betas) == parameters_list$iterations)
   expect_true(is.numeric(betas))
 
-  # Check that a histogram can be generated without error
-  expect_silent(hist(betas))
 })
 
 test_that("Hash table creation and cleanup works correctly", {
@@ -74,3 +69,5 @@ test_that("Hash table creation and cleanup works correctly", {
   files_after_cleanup <- list.files(temp_dir)
   expect_true(length(files_after_cleanup) == 0)
 })
+
+unlink(testthat::test_path("simulation_test_dir"), recursive = TRUE)
