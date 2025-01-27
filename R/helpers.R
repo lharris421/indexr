@@ -1,26 +1,28 @@
 check_missing_pairs <- function(folder) {
-  # 1. Collect all .rds files
+
+  ## Collect all .rds files
   all_files <- list.files(folder, pattern = "\\.rds$", full.names = TRUE)
 
-  # 2. Separate out files that match "<hash>_parameters.rds"
+  ## Separate out files that match "<hash>_parameters.rds"
   param_files <- grep("_parameters\\.rds$", all_files, value = TRUE)
-  # Everything else is considered a "results" file
+
+  ## Everything else is considered a "results" file
   results_files <- setdiff(all_files, param_files)
 
-  # Extract the "hash" portion:
-  #    - For param_files, remove the "_parameters.rds" part
-  #    - For results_files, remove the ".rds" part
+  ## Extract the "hash" portion:
+  ##    - For param_files, remove the "_parameters.rds" part
+  ##    - For results_files, remove the ".rds" part
   param_hashes   <- sub("_parameters\\.rds$", "", basename(param_files))
   results_hashes <- sub("\\.rds$", "", basename(results_files))
 
-  # Find all unique hashes
+  ## Find all unique hashes
   unique_hashes <- unique(c(param_hashes, results_hashes))
 
-  # Containers to track missing pairs
-  missing_params  <- character(0)  # Will store hashes missing parameter files
-  missing_results <- character(0)  # Will store hashes missing results files
+  ## Containers to track missing pairs
+  missing_params  <- character(0)
+  missing_results <- character(0)
 
-  # For each hash, check if it has both a param file AND a results file
+  ## For each hash, check if it has both a param file AND a results file
   for (h in unique_hashes) {
     has_param   <- h %in% param_hashes
     has_results <- h %in% results_hashes
@@ -33,7 +35,7 @@ check_missing_pairs <- function(folder) {
     }
   }
 
-  # If there are any mismatches, generate a single warning that lists them
+  ## If there are any mismatches, generate a single warning that lists them
   if (length(missing_params) > 0 || length(missing_results) > 0) {
     msg <- character(0)
 
@@ -55,16 +57,17 @@ check_missing_pairs <- function(folder) {
   }
 }
 check_and_fix_extension <- function(filename, ext) {
-  # 1) Normalize the extension the user provides, ensuring it starts with "."
+
+  ## Normalize the extension the user provides, ensuring it starts with "."
   if (!grepl("^\\.", ext)) {
     ext <- paste0(".", ext)
   }
 
-  # 2) Extract the current extension from the filename
+  ## Extract the current extension from the filename
   current_ext <- tools::file_ext(filename)         # e.g. "txt", "rds", or ""
   base_name   <- tools::file_path_sans_ext(filename) # Filename minus any extension
 
-  # 3) Check the logic
+  ## Check extension of the filename provided by user
   if (nzchar(current_ext)) {
     # There is some extension present
     dot_current_ext <- paste0(".", current_ext)  # e.g. ".txt"

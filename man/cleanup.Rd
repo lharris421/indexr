@@ -4,7 +4,12 @@
 \alias{cleanup}
 \title{Clean Up Untagged .rds Files in a Directory}
 \usage{
-cleanup(folder, tagging_file_name = "indexr_tagging.txt", cutoff_date = NULL)
+cleanup(
+  folder,
+  tagging_file_name = "indexr_tagging.txt",
+  cutoff_date = NULL,
+  request_confirmation = TRUE
+)
 }
 \arguments{
 \item{folder}{A character string specifying the path to the directory to clean up.}

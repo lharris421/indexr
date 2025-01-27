@@ -30,7 +30,7 @@ generate_hash(
 A character string representing the hash value of the provided argument list.
 }
 \description{
-This function generates a hash value for a given list of arguments. It is designed to produce a consistent hash by optionally removing NA values, ordering arguments alphabetically, and handling timestamp inclusion.
+This function generates a hash value for a given list of arguments. It is designed to produce a consistent hash by optionally removing NA values, ordering arguments alphabetically, handling timestamp inclusion, etc.
 }
 \examples{
 \dontrun{

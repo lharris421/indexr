@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_hash_existence.R
 \name{check_hash_existence}
 \alias{check_hash_existence}
-\title{Check for the Existence of Parameter Combinations in RDS Files}
+\title{Check for the Existence of Results Under a Set of Parameters}
 \usage{
 check_hash_existence(
   folder,
@@ -18,10 +18,9 @@ check_hash_existence(
 \arguments{
 \item{folder}{A string specifying the directory containing the RDS files.}
 
-\item{parameters_list}{A list of parameters for which combinations are checked.
-Each element of the list should be a vector of values for one parameter.}
+\item{parameters_list}{A list of parameters for which a corresponding hash named file is checked.}
 
-\item{halt}{Logical; if TRUE, the function stops execution and prints the combinations found when a specified condition ('missing' or 'existing') is met.}
+\item{halt}{Logical; if TRUE, the function stops execution if an existing file is found. This may be useful as a check before running a simulation.}
 
 \item{hash_includes_timestamp}{Logical; if TRUE, timestamps are included in the hash generation process.}
 
@@ -29,21 +28,39 @@ Each element of the list should be a vector of values for one parameter.}
 
 \item{alphabetical_order}{Logical; if TRUE, parameters are sorted alphabetically before hash generation.}
 
-\item{check_for}{Character vector to specify whether to check for 'missing' or 'existing' combinations.
-Default options are 'missing' and 'existing'.}
+\item{algo}{Character string specifying the hashing algorithm to use. Default is \code{"xxhash64"}. See \code{?digest}}
+
+\item{ignore_script_name}{Logical. If \code{TRUE}, the script name is ignored during hash generation.}
 }
 \value{
-A data frame with each row representing a parameter combination and an additional column indicating whether the combination is 'missing' or 'existing'.
+A logical of whether or not a file exists, unless \code{halt = TRUE} and a file is found, then an error is thrown.
 }
 \description{
-This function checks for the existence or absence of specified parameter combinations
-in RDS files within a given folder. It generates hashes for each parameter combination
-and compares them against a hash table created from the RDS files.
+This function checks for the existence of results saved under specified parameter list
+in RDS files (saved with \code{indexr}) within a given folder.
 }
 \examples{
 \dontrun{
-folder_path <- "path/to/your/rds/files"
-parameters_list <- list(param1 = c("value1", "value2"), param2 = c(1, 2))
-missing_combinations <- check_parameters_existence(folder_path, parameters_list, "missing")
+parameters_list <- list(
+  iterations = 1000,
+  x_dist = "rnorm",
+  x_dist_options = list(n = 10, mean = 1, sd = 2),
+  error_dist = "rnorm",
+  error_dist_options = list(n = 10, mean = 0, sd = 1),
+  beta0 = 1,
+  beta1 = 1
+)
+
+betas <- numeric(parameters_list$iterations)
+for (i in 1:parameters_list$iterations) {
+  x <- do.call(parameters_list$x_dist, parameters_list$x_dist_options)
+  err <- do.call(parameters_list$error_dist, parameters_list$error_dist_options)
+  y <- parameters_list$beta0 + parameters_list$beta1*x + err
+  betas[i] <- coef(lm(y ~ x))["x"]
+}
+
+save_objects(folder = ".", results = betas, parameters_list = parameters_list)
+
+check_hash_existence(parameters_list)
 }
 }
