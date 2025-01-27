@@ -53,6 +53,11 @@ test_that("Manual cleanup from hash table", {
   # Validate that directory is cleaned up
   files_after_cleanup <- list.files(temp_dir)
   expect_true(length(files_after_cleanup) == 0)
+
+  # Run again, expect message that no matching files are found
+  testthat::expect_message(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", verify = FALSE, column = "delete"))
+
+
 })
 
 unlink(testthat::test_path("testing_grounds"), recursive = TRUE)

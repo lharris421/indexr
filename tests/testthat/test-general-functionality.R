@@ -34,7 +34,7 @@ test_that("save_objects and read_objects work correctly", {
   )
 
   # Read objects and validate
-  obj1_in <- read_objects(test_dir, params1)
+  obj1_in <- read_objects(test_dir, params1, print_hash = TRUE) ## Test print hash
   obj2_in <- read_objects(test_dir, params2)
   obj3_in <- read_objects(test_dir, params3)
 

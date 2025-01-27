@@ -55,13 +55,7 @@ read_objects <- function(folders, parameters_list, hash_includes_timestamp = FAL
 
   tagging_file_name <- check_and_fix_extension(tagging_file_name, "txt")
 
-  ## Convert args to a list if it's a single row of a data frame or matrix
-  if (is.data.frame(parameters_list) || is.matrix(parameters_list)) {
-    if (nrow(parameters_list) != 1) {
-      stop("parameters_list must be a single row of a data frame or matrix.")
-    }
-    parameters_list <- setNames(as.list(parameters_list[1, ]), names(parameters_list))
-  } else if (!is.list(parameters_list)) {
+  if (!is.list(parameters_list)) {
     stop("parameters_list must be a list, data frame, or matrix.")
   }
 

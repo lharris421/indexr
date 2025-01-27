@@ -32,6 +32,7 @@ test_that("general cleanup with tagging functionalty", {
   # Read objects 1/3
   obj1_in <- read_objects(test_dir, params1)
   obj3_in <- read_objects(test_dir, params3)
+  obj3_in <- read_objects(test_dir, params3) ## Test tagging file timestamp update
 
   ## Try to cleanup with incorrect date format
   testthat::expect_error(cleanup(test_dir, cutoff_date = "10-20-2000"))
