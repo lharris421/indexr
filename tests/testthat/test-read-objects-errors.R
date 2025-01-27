@@ -1,5 +1,5 @@
 # tests/testthat/test_save_and_read_objects.R
-test_that("save_objects and read_objects work correctly", {
+testthat::test_that("save_objects and read_objects work correctly", {
 
   params1 <- list(distribution = "normal", other_params = list(param1 = TRUE, param2 = 1, param3 = NA))
   params2 <- list(distribution = "normal", other_params = list(param1 = TRUE, param2 = 1, param3 = 1))

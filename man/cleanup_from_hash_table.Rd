@@ -9,7 +9,7 @@ cleanup_from_hash_table(
   hash_table,
   mode = c("manual", "all"),
   column = NULL,
-  verify = TRUE
+  request_confirmation = TRUE
 )
 }
 \arguments{
@@ -20,6 +20,8 @@ cleanup_from_hash_table(
 \item{mode}{A character string. When \code{mode = "manual"} (default) the function expects that the user will add a column to a hash table that indicated which files to delete. When \code{mode = "all"}, any results in the hash table will be removed.}
 
 \item{column}{A character string indicating the logical column in \code{hash_table} specifying which files to delete.}
+
+\item{request_confirmation}{Logical, if TRUE will request user input before proceeding to delete files.}
 }
 \value{
 Nothing, this function is called for its side effects.

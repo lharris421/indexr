@@ -17,6 +17,8 @@ cleanup(
 \item{tagging_file_name}{A character string for a txt file the tagging information is saved under.}
 
 \item{cutoff_date}{A character string in "\%Y-\%m-\%d \%H:\%M:\%S" format used to specify that any tagged files before the date should also be removed.}
+
+\item{request_confirmation}{Logical, if TRUE will request user input before proceeding to delete files.}
 }
 \value{
 No return value. This function is called for its side effects.

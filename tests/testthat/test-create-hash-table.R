@@ -1,4 +1,4 @@
-test_that("test filter list for hash table", {
+testthat::test_that("test filter list for hash table", {
 
   # Setup
   test_dir <- testthat::test_path("testing_grounds")
@@ -18,7 +18,7 @@ test_that("test filter list for hash table", {
 
   # Create hash table and validate
   tab <- create_hash_table(test_dir, filter_list = list(`other_params[[param1]]` = TRUE))
-  expect_equal(nrow(tab), 1)
+  testthat::expect_equal(nrow(tab), 1)
 
 })
 

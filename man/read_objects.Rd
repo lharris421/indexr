@@ -62,4 +62,5 @@ parameters_list <- list(
 
 betas <- read_objects(folder = ".", parameters_list = parameters_list)
 }
+
 }

@@ -10,6 +10,7 @@
 #' \dontrun{
 #' start_tagging("/your/directory/path")
 #' }
+#' @importFrom utils read.table
 start_tagging <- function(path, tagging_file_name = "indexr_tagging.txt") {
 
   ## Checks
@@ -31,6 +32,7 @@ start_tagging <- function(path, tagging_file_name = "indexr_tagging.txt") {
 #' @param folder A character string specifying the path to the directory to clean up.
 #' @param tagging_file_name A character string for a txt file the tagging information is saved under.
 #' @param cutoff_date A character string in "%Y-%m-%d %H:%M:%S" format used to specify that any tagged files before the date should also be removed.
+#' @param request_confirmation Logical, if TRUE will request user input before proceeding to delete files.
 #' @return No return value. This function is called for its side effects.
 #' @export
 #' @examples
@@ -160,6 +162,7 @@ close_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
 #' @param hash_table A \code{data.frame} from \code{create_hash_table}.
 #' @param mode A character string. When \code{mode = "manual"} (default) the function expects that the user will add a column to a hash table that indicated which files to delete. When \code{mode = "all"}, any results in the hash table will be removed.
 #' @param column A character string indicating the logical column in \code{hash_table} specifying which files to delete.
+#' @param request_confirmation Logical, if TRUE will request user input before proceeding to delete files.
 #'
 #' @details
 #' There are a few ways to use this. When \code{mode = "manual"} (default) the function expects that the user will add a column to a hash table that indicated which files to delete. When \code{mode = "all"}, any results in the hash table will be removed. This is generally only used when a \code{filter_list} is passed to \code{create_hash_table}.
@@ -177,7 +180,7 @@ close_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
 #' }
 cleanup_from_hash_table <- function(folder, hash_table,
                                     mode = c("manual", "all"),
-                                    column = NULL, verify = TRUE) {
+                                    column = NULL, request_confirmation = TRUE) {
   mode <- match.arg(mode)
 
   ## Basic checks
@@ -218,7 +221,7 @@ cleanup_from_hash_table <- function(folder, hash_table,
   print(files_to_delete)
 
   ## Ask for user confirmation
-  if (verify) {
+  if (request_confirmation) {
     confirm <- utils::askYesNo("Do you want to proceed with deleting these files?")
   } else {
     confirm <- TRUE

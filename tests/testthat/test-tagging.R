@@ -1,4 +1,4 @@
-test_that("general cleanup with tagging functionalty", {
+testthat::test_that("general cleanup with tagging functionalty", {
 
   # Setup
   test_dir <- testthat::test_path("testing_grounds")

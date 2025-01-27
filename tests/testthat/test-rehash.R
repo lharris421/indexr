@@ -1,4 +1,4 @@
-test_that("Check warnings, errors, messages for rehash", {
+testthat::test_that("Check warnings, errors, messages for rehash", {
 
   # Setup
   test_dir <- testthat::test_path("testing_grounds")

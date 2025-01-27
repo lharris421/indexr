@@ -1,4 +1,4 @@
-test_that("Manual cleanup from hash table", {
+testthat::test_that("Manual cleanup from hash table", {
   # Set up parameters
   parameters_list <- list(
     iterations = 1000,
@@ -28,34 +28,34 @@ test_that("Manual cleanup from hash table", {
 
   # Check that results are saved correctly
   files <- list.files(temp_dir)
-  expect_true(length(files) == 2)
-  expect_true(any(grepl("_parameters\\.rds$", files)))
-  expect_true(any(grepl("\\.rds$", files)))
+  testthat::expect_true(length(files) == 2)
+  testthat::expect_true(any(grepl("_parameters\\.rds$", files)))
+  testthat::expect_true(any(grepl("\\.rds$", files)))
 
   # Create hash table
   hash_table <- create_hash_table(folder = temp_dir)
-  expect_true(nrow(hash_table) == 1)
+  testthat::expect_true(nrow(hash_table) == 1)
 
   # Expect error, name not given
-  testthat::expect_error(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", verify = FALSE))
+  testthat::expect_error(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", request_confirmation = FALSE))
 
   # Expect error, column given but does not exist
-  testthat::expect_error(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", verify = FALSE, column = "keep"))
+  testthat::expect_error(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", request_confirmation = FALSE, column = "keep"))
 
   # Nothing to delete
   hash_table$delete <- FALSE
-  testthat::expect_message(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", verify = FALSE, column = "delete"))
+  testthat::expect_message(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", request_confirmation = FALSE, column = "delete"))
 
   # Proper usage
   hash_table$delete <- TRUE
-  cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", verify = FALSE, column = "delete")
+  cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", request_confirmation = FALSE, column = "delete")
 
   # Validate that directory is cleaned up
   files_after_cleanup <- list.files(temp_dir)
-  expect_true(length(files_after_cleanup) == 0)
+  testthat::expect_true(length(files_after_cleanup) == 0)
 
   # Run again, expect message that no matching files are found
-  testthat::expect_message(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", verify = FALSE, column = "delete"))
+  testthat::expect_message(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", request_confirmation = FALSE, column = "delete"))
 
 
 })

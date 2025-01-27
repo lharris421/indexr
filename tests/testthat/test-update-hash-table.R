@@ -1,4 +1,4 @@
-test_that("check and fix extensions", {
+testthat::test_that("check and fix extensions", {
 
   # Setup
   test_dir <- testthat::test_path("testing_grounds")
@@ -20,7 +20,7 @@ test_that("check and fix extensions", {
   save_objects(test_dir, obj3, params3)
 
   # Expect warnings if trying to overwrite
-  expect_warning(save_objects(test_dir, obj1, params1))
+  testthat::expect_warning(save_objects(test_dir, obj1, params1))
 
   # Create and update hash table with new parameters
   hash_table_file <- glue::glue("{test_dir}/test_hash_table.csv")
@@ -42,42 +42,42 @@ test_that("check and fix extensions", {
 
 })
 
-test_that("indexr:::c_string_to_vector handles all cases correctly", {
+testthat::test_that("indexr:::c_string_to_vector handles all cases correctly", {
 
   # 1. Check NA and empty string
-  expect_true(is.na(indexr:::c_string_to_vector(NA)))
-  expect_true(is.na(indexr:::c_string_to_vector("")))
+  testthat::expect_true(is.na(indexr:::c_string_to_vector(NA)))
+  testthat::expect_true(is.na(indexr:::c_string_to_vector("")))
 
   # 2. Check trimming whitespace and numeric conversion
-  expect_equal(indexr:::c_string_to_vector("  42  "), 42)
-  expect_equal(indexr:::c_string_to_vector("-3.14"), -3.14)
+  testthat::expect_equal(indexr:::c_string_to_vector("  42  "), 42)
+  testthat::expect_equal(indexr:::c_string_to_vector("-3.14"), -3.14)
 
   # 3. Check logical conversion
-  expect_true(indexr:::c_string_to_vector("TRUE"))
-  expect_false(indexr:::c_string_to_vector("FALSE"))
+  testthat::expect_true(indexr:::c_string_to_vector("TRUE"))
+  testthat::expect_false(indexr:::c_string_to_vector("FALSE"))
 
   # 4. Check single string with no conversion
   #    (not numeric, not logical, does not start with c(...))
-  expect_equal(indexr:::c_string_to_vector("hello"), "hello")
+  testthat::expect_equal(indexr:::c_string_to_vector("hello"), "hello")
 
   # 5. Check vector of numeric with c(...)
-  expect_equal(indexr:::c_string_to_vector("c(1, 2, 3)"), c(1, 2, 3))
+  testthat::expect_equal(indexr:::c_string_to_vector("c(1, 2, 3)"), c(1, 2, 3))
 
   # 6. Check vector of logical with c(...)
-  expect_equal(indexr:::c_string_to_vector("c(TRUE, FALSE, TRUE)"), c(TRUE, FALSE, TRUE))
+  testthat::expect_equal(indexr:::c_string_to_vector("c(TRUE, FALSE, TRUE)"), c(TRUE, FALSE, TRUE))
 
   # 7. Check vector of mixed numeric formats with c(...)
-  expect_equal(indexr:::c_string_to_vector("c(-1, 2.5, 3)"), c(-1, 2.5, 3))
+  testthat::expect_equal(indexr:::c_string_to_vector("c(-1, 2.5, 3)"), c(-1, 2.5, 3))
 
   # 8. Check vector of character (unquoted) with c(...)
-  expect_equal(indexr:::c_string_to_vector("c(abc, def)"), c("abc", "def"))
+  testthat::expect_equal(indexr:::c_string_to_vector("c(abc, def)"), c("abc", "def"))
 
   # 9. Check vector of quoted character with c(...)
-  expect_equal(indexr:::c_string_to_vector('c("hello", "world")'), c("hello", "world"))
+  testthat::expect_equal(indexr:::c_string_to_vector('c("hello", "world")'), c("hello", "world"))
 
   # 10. Check that malformed c(...) input falls back to plain string
-  expect_equal(indexr:::c_string_to_vector("c(1,2,3"), "c(1,2,3")
-  expect_equal(indexr:::c_string_to_vector("c1,2,3)"), "c1,2,3)")
+  testthat::expect_equal(indexr:::c_string_to_vector("c(1,2,3"), "c(1,2,3")
+  testthat::expect_equal(indexr:::c_string_to_vector("c1,2,3)"), "c1,2,3)")
 
 })
 

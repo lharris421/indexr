@@ -1,3 +1,4 @@
+#' @importFrom methods as
 check_missing_pairs <- function(folder) {
 
   ## Collect all .rds files

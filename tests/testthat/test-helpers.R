@@ -1,4 +1,4 @@
-test_that("check missing pairs", {
+testthat::test_that("check missing pairs", {
   # Setup
   test_dir <- testthat::test_path("testing_grounds")
   unlink(test_dir, recursive = TRUE)
@@ -25,14 +25,14 @@ test_that("check missing pairs", {
 
 })
 
-test_that("check and fix extensions", {
+testthat::test_that("check and fix extensions", {
 
   testthat::expect_error(indexr:::check_and_fix_extension("test.csv", "txt"))
   testthat::expect_equal(indexr:::check_and_fix_extension("test", "txt"), "test.txt")
 
 })
 
-test_that("directory check", {
+testthat::test_that("directory check", {
 
   test_dir <- testthat::test_path("testing_grounds")
   unlink(test_dir, recursive = TRUE)
@@ -43,14 +43,14 @@ test_that("directory check", {
 
 })
 
-test_that("convert type", {
+testthat::test_that("convert type", {
 
   x <- rnorm(100)
   y <- rnorm(100)
   lm_res <- lm(y ~ x)
 
-  expect_type(indexr:::convert_type(lm_res$call), "character")
-  expect_type(indexr:::convert_type(9 + 3i), "character")
+  testthat::expect_type(indexr:::convert_type(lm_res$call), "character")
+  testthat::expect_type(indexr:::convert_type(9 + 3i), "character")
 
 })
 

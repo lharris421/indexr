@@ -75,7 +75,7 @@ save_objects <- function(folder, results, parameters_list = NULL,
         parameters_list$script_name <- script_name
       }
     } else {
-      massage("Using script name provided in parameters_list")
+      message("Using script name provided in parameters_list")
     }
   }
 

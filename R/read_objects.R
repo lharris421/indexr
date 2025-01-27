@@ -31,6 +31,8 @@
 #'
 #' betas <- read_objects(folder = ".", parameters_list = parameters_list)
 #' }
+#'
+#' @importFrom utils read.table write.table
 read_objects <- function(folders, parameters_list, hash_includes_timestamp = FALSE,
                          ignore_script_name = FALSE,
                          ignore_na = TRUE, alphabetical_order = TRUE,

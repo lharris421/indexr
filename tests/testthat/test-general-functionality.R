@@ -1,5 +1,5 @@
 # tests/testthat/test_save_and_read_objects.R
-test_that("save_objects and read_objects work correctly", {
+testthat::test_that("save_objects and read_objects work correctly", {
   # Setup
   test_dir <- testthat::test_path("testing_grounds")
   unlink(test_dir, recursive = TRUE)
@@ -24,11 +24,11 @@ test_that("save_objects and read_objects work correctly", {
 
   # Expect 6 files
   saved_files <- list.files(test_dir)
-  expect_equal(length(saved_files), 6)
+  testthat::expect_equal(length(saved_files), 6)
 
   # Expect warnings if trying to overwrite
-  expect_warning(save_objects(test_dir, obj1, params1))
-  expect_equal(
+  testthat::expect_warning(save_objects(test_dir, obj1, params1))
+  testthat::expect_equal(
     sum(stringr::str_detect(list.files(test_dir), glue::glue("{generate_hash(params1)$hash}_temp"))),
     2
   )
@@ -38,35 +38,35 @@ test_that("save_objects and read_objects work correctly", {
   obj2_in <- read_objects(test_dir, params2)
   obj3_in <- read_objects(test_dir, params3)
 
-  expect_identical(obj1_in, obj1)
-  expect_identical(obj2_in, obj2)
-  expect_identical(obj3_in, obj3)
+  testthat::expect_identical(obj1_in, obj1)
+  testthat::expect_identical(obj2_in, obj2)
+  testthat::expect_identical(obj3_in, obj3)
 
   # Validate parameters
   params1_in <- readRDS(glue::glue("{test_dir}/{generate_hash(params1)$hash}_parameters.rds"))
   params2_in <- readRDS(glue::glue("{test_dir}/{generate_hash(params2)$hash}_parameters.rds"))
   params3_in <- readRDS(glue::glue("{test_dir}/{generate_hash(params3)$hash}_parameters.rds"))
 
-  expect_identical(params1_in, params1)
-  expect_identical(params2_in, params2)
-  expect_identical(params3_in, params3)
+  testthat::expect_identical(params1_in, params1)
+  testthat::expect_identical(params2_in, params2)
+  testthat::expect_identical(params3_in, params3)
 })
 
-test_that("update_hash_table works correctly", {
+testthat::test_that("update_hash_table works correctly", {
   test_dir <- testthat::test_path("testing_grounds")
   hash_table_file <- glue::glue("{test_dir}/test_hash_table.csv")
 
   # Create hash table and validate
   create_hash_table(test_dir, save_path = hash_table_file)
   saved_hash_table <- readr::read_csv(hash_table_file)
-  expect_equal(dim(saved_hash_table), c(4, 6))
+  testthat::expect_equal(dim(saved_hash_table), c(4, 6))
 
   saved_files_before <- list.files(test_dir)
 
   # Update hash table and check consistency
   update_hash_table(hash_table_file, test_dir)
   saved_files_after <- list.files(test_dir)
-  expect_identical(saved_files_before, saved_files_after)
+  testthat::expect_identical(saved_files_before, saved_files_after)
 
   # Modify and validate updates
   saved_hash_table[,"other_params[[param4]]"] <- c("3", NA, NA, NA)
@@ -77,11 +77,11 @@ test_that("update_hash_table works correctly", {
   no_changes <- glue::glue("{saved_hash_table$hash[c(3, 4)]}.rds")
 
   saved_files <- list.files(test_dir, pattern = "\\.rds$")
-  expect_true(all(!(changes %in% saved_files)))
-  expect_true(all(no_changes %in% saved_files))
+  testthat::expect_true(all(!(changes %in% saved_files)))
+  testthat::expect_true(all(no_changes %in% saved_files))
 })
 
-test_that("new parameters in hash table trigger updates", {
+testthat::test_that("new parameters in hash table trigger updates", {
   test_dir <- testthat::test_path("testing_grounds")
   hash_table_file <- glue::glue("{test_dir}/test_hash_table.csv")
 
@@ -97,19 +97,19 @@ test_that("new parameters in hash table trigger updates", {
   no_changes <- glue::glue("{saved_hash_table$hash[c(1, 4)]}.rds")
 
   saved_files <- list.files(test_dir, pattern = "\\.rds$")
-  expect_true(all(!(changes %in% saved_files)))
-  expect_true(all(no_changes %in% saved_files))
+  testthat::expect_true(all(!(changes %in% saved_files)))
+  testthat::expect_true(all(no_changes %in% saved_files))
 })
 
-test_that("Test rehashing", {
+testthat::test_that("Test rehashing", {
 
   test_dir <- testthat::test_path("testing_grounds")
   names_before <- list.files(test_dir, pattern = "rds")
   rehash(test_dir, algo = "xxhash32")
   names_after <- list.files(test_dir, pattern = "rds")
 
-  expect_false(any(names_before %in% names_after))
-  expect_true(length(names_before) == length(names_after))
+  testthat::expect_false(any(names_before %in% names_after))
+  testthat::expect_true(length(names_before) == length(names_after))
 
 })
 

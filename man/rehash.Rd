@@ -36,12 +36,25 @@ the hash generation algorithm or parameters (if the parameters are manually chan
 Running this example as is will save files in your current working directory
 Test data
 obj1 <- rnorm(1000)
-obj2 <- data.frame(x = runif(100), y = "something", z = rep(c(TRUE, FALSE), 50))
+obj2 <- data.frame(
+  x = runif(100),
+  y = "something",
+  z = rep(c(TRUE, FALSE), 50)
+)
 obj3 <- list(obj1, obj2)
 
-params1 <- list(distribution = "normal", other_params = list(param1 = TRUE, param2 = 1, param3 = NA))
-params2 <- list(distribution = "uniform", other_params = list(param1 = FALSE, param2 = 2, param3 = "1", param4 = 4))
-params3 <- list(distribution = "composite", other_params = list(param1 = TRUE, param2 = 3, param3 = 1))
+params1 <- list(
+  distribution = "normal",
+  other_params = list(param1 = TRUE, param2 = 1, param3 = NA)
+)
+params2 <- list(
+  distribution = "uniform",
+  other_params = list(param1 = FALSE, param2 = 2, param3 = "1", param4 = 4)
+)
+params3 <- list(
+  distribution = "composite",
+  other_params = list(param1 = TRUE, param2 = 3, param3 = 1)
+)
 
 # Save objects
 save_objects(".", obj1, params1)
@@ -51,8 +64,5 @@ save_objects(".", obj3, params3)
 
 # Observe current file names before continuing
 rehash(test_dir, algo = "xxhash32")
-
-expect_false(any(names_before \%in\% names_after))
-expect_true(length(names_before) == length(names_after))
 }
 }
