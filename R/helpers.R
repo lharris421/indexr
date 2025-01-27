@@ -94,12 +94,7 @@ check_is_directory <- function(path) {
 
   # If path does not exist (file.info returns NA in isdir)
   if (is.na(info$isdir)) {
-    stop("The provided path does not exist: ", path)
-  }
-
-  # If path exists but is not a directory
-  if (!info$isdir) {
-    stop("The provided path is not a directory: ", path)
+    stop("The provided path does not exist or is not a directory: ", path)
   }
 
   # If everything is okay, return invisibly
@@ -112,7 +107,7 @@ convert_type <- function(x) {
     as.numeric(x) ## Make everything a numeric (not int)
   } else if (is.call(x)) {
     return(deparse(x))
-  } else {
+  } else { ## Currently acts as a safety next, may not be needed
     return(as.character(x))
   }
 }

@@ -171,11 +171,11 @@ update_hash_table <- function(hash_table, rds_folder,
     } else {
       # If missing either or both
       if (!results_found && !parameters_found) {
-        warning(glue::glue("Parameters and results file not found for hash: {old_hash}"))
+        warning(glue::glue("Parameters and results file not found for hash: {old_hash}, no updates were made for this file."))
       } else if (!parameters_found) {
-        warning(glue::glue("Parameters file not found for hash: {old_hash}"))
+        warning(glue::glue("Parameters file not found for hash: {old_hash}, no updates were made for this file."))
       } else if (!results_found) {
-        warning(glue::glue("Results file not found for hash: {old_hash}"))
+        warning(glue::glue("Results file not found for hash: {old_hash}, no updates were made for this file."))
       }
     }
   } # end for-loop
