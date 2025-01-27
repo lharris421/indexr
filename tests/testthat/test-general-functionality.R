@@ -101,5 +101,17 @@ test_that("new parameters in hash table trigger updates", {
   expect_true(all(no_changes %in% saved_files))
 })
 
+test_that("Test rehashing", {
+
+  test_dir <- testthat::test_path("testing_grounds")
+  names_before <- list.files(test_dir, pattern = "rds")
+  rehash(test_dir, algo = "xxhash32")
+  names_after <- list.files(test_dir, pattern = "rds")
+
+  expect_false(any(names_before %in% names_after))
+  expect_true(length(names_before) == length(names_after))
+
+})
+
 # Clean up after tests
 unlink(testthat::test_path("testing_grounds"), recursive = TRUE)

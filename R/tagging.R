@@ -37,7 +37,8 @@ start_tagging <- function(path, tagging_file_name = "indexr_tagging.txt") {
 #' \dontrun{
 #' cleanup("/your/directory/path")
 #' }
-cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_date = NULL) {
+cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_date = NULL,
+                    request_confirmation = TRUE) {
 
   ## Checks
   check_is_directory(folder)
@@ -91,7 +92,7 @@ cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_dat
 
   files_to_delete <- unique(files_to_delete) ## Shouldn't be needed but just a precaution
   ## Add all parameters files to be deleted too
-  files_to_delete <- c(files_to_delete, str_replace(files_to_delete, "\\.rds", "_parameters\\.rds"))
+  files_to_delete <- c(files_to_delete, stringr::str_replace(files_to_delete, "\\.rds", "_parameters\\.rds"))
 
   ## Delete files
   if (length(files_to_delete) > 0) {
@@ -99,7 +100,11 @@ cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_dat
     print(files_to_delete)
 
     ## Ask for user confirmation
-    confirm <- utils::askYesNo("Do you want to proceed with deleting these files?")
+    if (request_confirmation) {
+      confirm <- utils::askYesNo("Do you want to proceed with deleting these files?")
+    } else {
+      confirm <- TRUE
+    }
 
     if (isTRUE(confirm)) {
       # Remove the files
@@ -132,7 +137,7 @@ cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_dat
 close_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
 
   ## Checks
-  check_is_directory(path)
+  check_is_directory(folder)
   tagging_file_name <- check_and_fix_extension(tagging_file_name, "txt")
 
   ## Path to the tagging file
