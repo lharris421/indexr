@@ -1,4 +1,4 @@
-test_that("save_objects and read_objects work correctly", {
+test_that("general cleanup with tagging functionalty", {
 
   # Setup
   test_dir <- testthat::test_path("testing_grounds")
@@ -33,13 +33,19 @@ test_that("save_objects and read_objects work correctly", {
   obj1_in <- read_objects(test_dir, params1)
   obj3_in <- read_objects(test_dir, params3)
 
+  ## Try to cleanup with incorrect date format
+  testthat::expect_error(cleanup(test_dir, cutoff_date = "10-20-2000"))
+
   # Read in file, check there are two entries
   tagging_file <- readr::read_delim(file.path(test_dir, "indexr_tagging.txt"), delim = "\t", col_names = FALSE)
   testthat::expect_equal(nrow(tagging_file), 2)
 
   ## Delete unused file
-  cleanup(test_dir, request_confirmation = FALSE)
+  cleanup(test_dir, request_confirmation = FALSE, cutoff_date = "2000-10-01 12:12:12")
   testthat::expect_equal(length(list.files(test_dir, pattern = "\\.rds")), 4)
+
+  # No files left to remove
+  testthat::expect_message(cleanup(test_dir))
 
   ## Remove the tagging file
   close_tagging(test_dir)
