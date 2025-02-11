@@ -1,3 +1,7 @@
+# Save results
+temp_dir <- file.path(tempdir(), "testing_grounds")
+dir.create(temp_dir)
+
 testthat::test_that("Manual cleanup from hash table", {
   # Set up parameters
   parameters_list <- list(
@@ -18,11 +22,6 @@ testthat::test_that("Manual cleanup from hash table", {
     y <- parameters_list$beta0 + parameters_list$beta1 * x + err
     betas[i] <- coef(lm(y ~ x))["x"]
   }
-
-  # Save results
-  temp_dir <- testthat::test_path("testing_grounds")
-  unlink(temp_dir, recursive = TRUE)
-  dir.create(temp_dir)
 
   save_objects(folder = temp_dir, results = betas, parameters_list = parameters_list)
 
@@ -60,4 +59,4 @@ testthat::test_that("Manual cleanup from hash table", {
 
 })
 
-unlink(testthat::test_path("testing_grounds"), recursive = TRUE)
+unlink(temp_dir, recursive = TRUE)

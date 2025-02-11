@@ -57,7 +57,11 @@ Saves RDS files to a specified folder with a name that is a hash generated from 
 This function saves R objects to disk with a file name based on a generated hash of the provided arguments. It supports incremental saving, where multiple results can be saved under the same hash in a subdirectory and later collected. This can be helpful for a simulation that runs and saves results in parallel for the SAME set of simulation parameters.
 }
 \examples{
-\dontrun{
+## Setup
+tmp_dir <- file.path(tempdir(), "example")
+dir.create(tmp_dir)
+
+## Example using parameter list to run simulation and save results
 parameters_list <- list(
   iterations = 1000,
   x_dist = "rnorm",
@@ -76,6 +80,24 @@ for (i in 1:parameters_list$iterations) {
   betas[i] <- coef(lm(y ~ x))["x"]
 }
 
-save_objects(folder = ".", results = betas, parameters_list = parameters_list)
-}
+save_objects(folder = tmp_dir, results = betas, parameters_list = parameters_list)
+
+## Read back in (consider clearing environment before running)
+## Re-setup
+tmp_dir <- file.path(tempdir(), "example")
+
+parameters_list <- list(
+  iterations = 1000,
+  x_dist = "rnorm",
+  x_dist_options = list(n = 10, mean = 1, sd = 2),
+  error_dist = "rnorm",
+  error_dist_options = list(n = 10, mean = 0, sd = 1),
+  beta0 = 1,
+  beta1 = 1
+)
+
+betas <- read_objects(folder = tmp_dir, parameters_list = parameters_list)
+
+## Cleanup
+unlink(tmp_dir, recursive = TRUE)
 }

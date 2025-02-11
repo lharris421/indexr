@@ -48,8 +48,11 @@ Reads R objects from specified folders based on a generated hash of the provided
 This function attempts to read an R object from files located in one of the specified folders. The file name is based on the hash of the provided arguments. If the object is successfully read and a tagging files exists and is specified, the function appends the hash and the current timestamp to the tagging file in the folder where the file was found.
 }
 \examples{
-\dontrun{
-# Run after example in \code{save_objects}
+## Setup
+tmp_dir <- file.path(tempdir(), "example")
+dir.create(tmp_dir)
+
+## Example using parameter list to run simulation and save results
 parameters_list <- list(
   iterations = 1000,
   x_dist = "rnorm",
@@ -60,7 +63,33 @@ parameters_list <- list(
   beta1 = 1
 )
 
-betas <- read_objects(folder = ".", parameters_list = parameters_list)
+betas <- numeric(parameters_list$iterations)
+for (i in 1:parameters_list$iterations) {
+  x <- do.call(parameters_list$x_dist, parameters_list$x_dist_options)
+  err <- do.call(parameters_list$error_dist, parameters_list$error_dist_options)
+  y <- parameters_list$beta0 + parameters_list$beta1*x + err
+  betas[i] <- coef(lm(y ~ x))["x"]
 }
+
+save_objects(folder = tmp_dir, results = betas, parameters_list = parameters_list)
+
+## Read back in (consider clearing environment before running)
+## Re-setup
+tmp_dir <- file.path(tempdir(), "example")
+
+parameters_list <- list(
+  iterations = 1000,
+  x_dist = "rnorm",
+  x_dist_options = list(n = 10, mean = 1, sd = 2),
+  error_dist = "rnorm",
+  error_dist_options = list(n = 10, mean = 0, sd = 1),
+  beta0 = 1,
+  beta1 = 1
+)
+
+betas <- read_objects(folder = tmp_dir, parameters_list = parameters_list)
+
+## Cleanup
+unlink(tmp_dir, recursive = TRUE)
 
 }

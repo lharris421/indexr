@@ -1,9 +1,8 @@
-testthat::test_that("test filter list for hash table", {
+# Setup
+test_dir <- file.path(tempdir(), "testing_grounds")
+dir.create(test_dir)
 
-  # Setup
-  test_dir <- testthat::test_path("testing_grounds")
-  unlink(test_dir, recursive = TRUE)
-  dir.create(test_dir)
+testthat::test_that("test filter list for hash table", {
 
   # Test data
   obj1 <- rnorm(1000)
@@ -23,4 +22,4 @@ testthat::test_that("test filter list for hash table", {
 })
 
 # Clean up after tests
-unlink(testthat::test_path("testing_grounds"), recursive = TRUE)
+unlink(test_dir, recursive = TRUE)

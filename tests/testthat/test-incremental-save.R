@@ -1,9 +1,9 @@
+# Setup
+test_dir <- file.path(tempdir(), "testing_grounds")
+dir.create(test_dir)
+
 # tests/testthat/test_incremental_save.R
 testthat::test_that("incremental saving and compression work correctly", {
-  # Setup
-  test_dir <- testthat::test_path("incremental_save")
-  unlink(test_dir, recursive = TRUE)
-  dir.create(test_dir)
 
   # Parameters
   params <- list(a = "1", b = "2")
@@ -40,8 +40,8 @@ testthat::test_that("incremental saving and compression work correctly", {
 })
 
 testthat::test_that("incremental saving and compression work correctly for lists", {
+
   # Setup
-  test_dir <- testthat::test_path("incremental_save")
   unlink(test_dir, recursive = TRUE)
   dir.create(test_dir)
 
@@ -83,6 +83,7 @@ testthat::test_that("incremental saving and compression work correctly for lists
   unlink(inc_folder, recursive = TRUE)
   testthat::expect_error(compress_incremental(test_dir, params))
 
-  # Clean up
-  unlink(test_dir, recursive = TRUE)
 })
+
+# Clean up
+unlink(test_dir, recursive = TRUE)

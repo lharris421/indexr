@@ -31,9 +31,11 @@ Saving the hash table can be helpful for the manipulation of parameters (see \co
 or for removal of unwanted results (see \code{?cleanup_from_hash_table}).
 }
 \examples{
-\dontrun{
-Running this example as is will save files in your current working directory
-Test data
+## Setup
+tmp_dir <- file.path(tempdir(), "example")
+dir.create(tmp_dir)
+
+## Save objects
 obj1 <- rnorm(1000)
 obj2 <- data.frame(
   x = runif(100),
@@ -55,12 +57,16 @@ params3 <- list(
   other_params = list(param1 = TRUE, param2 = 3, param3 = 1)
 )
 
-# Save objects
-save_objects(".", obj1, params1)
-save_objects(".", obj2, params2)
-save_objects(".", obj3, params3)
+save_objects(tmp_dir, obj1, params1)
+save_objects(tmp_dir, obj2, params2)
+save_objects(tmp_dir, obj3, params3)
 
-create_hash_table(".", save_path = "hash_table.csv")
+## Create hash table
+create_hash_table(tmp_dir, save_path = file.path(tmp_dir, "hash_table.csv"))
 
-}
+## View created hash table
+read.csv(file.path(tmp_dir, "hash_table.csv"))
+
+## Cleanup
+unlink(tmp_dir, recursive = TRUE)
 }

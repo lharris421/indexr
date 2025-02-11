@@ -40,27 +40,17 @@ This function checks for the existence of results saved under specified paramete
 in RDS files (saved with \code{indexr}) within a given folder.
 }
 \examples{
-\dontrun{
-parameters_list <- list(
-  iterations = 1000,
-  x_dist = "rnorm",
-  x_dist_options = list(n = 10, mean = 1, sd = 2),
-  error_dist = "rnorm",
-  error_dist_options = list(n = 10, mean = 0, sd = 1),
-  beta0 = 1,
-  beta1 = 1
-)
+## Setup
+tmp_dir <- file.path(tempdir(), "example")
+dir.create(tmp_dir)
 
-betas <- numeric(parameters_list$iterations)
-for (i in 1:parameters_list$iterations) {
-  x <- do.call(parameters_list$x_dist, parameters_list$x_dist_options)
-  err <- do.call(parameters_list$error_dist, parameters_list$error_dist_options)
-  y <- parameters_list$beta0 + parameters_list$beta1*x + err
-  betas[i] <- coef(lm(y ~ x))["x"]
-}
+## Save an object
+parameters_list <- list(example = "check_hash_existence")
+save_objects(folder = tmp_dir, results = 1, parameters_list = parameters_list)
 
-save_objects(folder = ".", results = betas, parameters_list = parameters_list)
+## Check that an object under specified parameters is saved
+check_hash_existence(folder = tmp_dir, parameters_list)
 
-check_hash_existence(parameters_list)
-}
+## Cleanup
+unlink(tmp_dir, recursive = TRUE)
 }

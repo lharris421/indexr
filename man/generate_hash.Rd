@@ -33,8 +33,6 @@ A character string representing the hash value of the provided argument list.
 This function generates a hash value for a given list of arguments. It is designed to produce a consistent hash by optionally removing NA values, ordering arguments alphabetically, handling timestamp inclusion, etc.
 }
 \examples{
-\dontrun{
 args <- list(param1 = "value1", param2 = 100, param3 = NA)
 hash_val <- generate_hash(args)
-}
 }

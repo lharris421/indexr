@@ -1,9 +1,8 @@
-testthat::test_that("check and fix extensions", {
+# Setup
+test_dir <- file.path(tempdir(), "testing_grounds")
+dir.create(test_dir)
 
-  # Setup
-  test_dir <- testthat::test_path("testing_grounds")
-  unlink(test_dir, recursive = TRUE)
-  dir.create(test_dir)
+testthat::test_that("check and fix extensions", {
 
   # Test data
   obj1 <- rnorm(1000)
@@ -82,4 +81,4 @@ testthat::test_that("indexr:::c_string_to_vector handles all cases correctly", {
 })
 
 
-unlink(testthat::test_path("testing_grounds"), recursive = TRUE)
+unlink(test_dir, recursive = TRUE)

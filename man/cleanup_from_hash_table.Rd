@@ -33,11 +33,30 @@ Allows the user to leverage the \code{generate_hash} function to generate a tabl
 There are a few ways to use this. When \code{mode = "manual"} (default) the function expects that the user will add a column to a hash table that indicated which files to delete. When \code{mode = "all"}, any results in the hash table will be removed. This is generally only used when a \code{filter_list} is passed to \code{create_hash_table}.
 }
 \examples{
-\dontrun{
-Create a hash table
-hash_table <- create_hash_table(folder = ".")
+## Setup
+tmp_dir <- file.path(tempdir(), "example")
+dir.create(tmp_dir)
 
-Delete files based on hash table
-cleanup_from_hash_table(folder = ".", hash_table = hash_table, mode = "all")
-}
+## Save example objects
+parameters_list1 <- list(example = "tagging1")
+parameters_list2 <- list(example = "tagging2")
+save_objects(folder = tmp_dir, results = 1, parameters_list = parameters_list1)
+save_objects(folder = tmp_dir, results = 2, parameters_list = parameters_list2)
+
+## See the files saved
+list.files(tmp_dir)
+
+## Create hash table (flat file of result parameters)
+hash_table <- create_hash_table(folder = tmp_dir)
+
+## Delete "all" files based on hash table, without confirmation
+cleanup_from_hash_table(
+  folder = tmp_dir, hash_table = hash_table, mode = "all", request_confirmation = FALSE
+)
+
+## See the files have been deleted
+list.files(tmp_dir)
+
+## Cleanup
+unlink(tmp_dir, recursive = TRUE)
 }

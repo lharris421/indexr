@@ -32,9 +32,11 @@ for each file's \code{args_list} and renaming the files accordingly. It's useful
 the hash generation algorithm or parameters (if the parameters are manually changed for some reason).
 }
 \examples{
-\dontrun{
-Running this example as is will save files in your current working directory
-Test data
+## Setup
+tmp_dir <- file.path(tempdir(), "example")
+dir.create(tmp_dir)
+
+# Save example objects
 obj1 <- rnorm(1000)
 obj2 <- data.frame(
   x = runif(100),
@@ -56,13 +58,19 @@ params3 <- list(
   other_params = list(param1 = TRUE, param2 = 3, param3 = 1)
 )
 
-# Save objects
-save_objects(".", obj1, params1)
-save_objects(".", obj2, params2)
-save_objects(".", obj3, params3)
+save_objects(tmp_dir, obj1, params1)
+save_objects(tmp_dir, obj2, params2)
+save_objects(tmp_dir, obj3, params3)
 
+## See current file names
+list.files(tmp_dir)
 
-# Observe current file names before continuing
-rehash(test_dir, algo = "xxhash32")
-}
+## Rehash with new algo
+rehash(tmp_dir, algo = "xxhash32")
+
+## Observe new file names
+list.files(tmp_dir)
+
+## Cleanup
+unlink(tmp_dir, recursive = TRUE)
 }

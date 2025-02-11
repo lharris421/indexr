@@ -18,7 +18,35 @@ No return value. This function is called for its side effects.
 Initializes the tagging process by creating an \code{txt} file in the specified directory. Tagging is mainly helpful for removing unused results.
 }
 \examples{
-\dontrun{
-start_tagging("/your/directory/path")
-}
+## Setup
+tmp_dir <- file.path(tempdir(), "example")
+dir.create(tmp_dir)
+
+## Save example objects
+parameters_list1 <- list(example = "tagging1")
+parameters_list2 <- list(example = "tagging2")
+save_objects(folder = tmp_dir, results = 1, parameters_list = parameters_list1)
+save_objects(folder = tmp_dir, results = 2, parameters_list = parameters_list2)
+
+## See the files have been saved
+list.files(tmp_dir)
+
+## Start tagging
+start_tagging(tmp_dir)
+
+## Read back in one the first file, this causes this file to be tagged
+res1 <- read_objects(folder = tmp_dir, parameters_list = parameters_list1)
+
+## Remove untagged file without confirmation (that for parameters_list2)
+cleanup(tmp_dir, request_confirmation = FALSE)
+
+## See that one file was removed
+list.files(tmp_dir)
+
+## Close tagging (just removes tagging file)
+close_tagging(tmp_dir)
+
+## Cleanup
+unlink(tmp_dir, recursive = TRUE)
+
 }

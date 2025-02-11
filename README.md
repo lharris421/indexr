@@ -28,7 +28,7 @@ devtools::install_github("lharris421/indexr")
 
 ## Usage
 
-Here's a quick start guide to using `indexr`. This will have an delete two files to your current working directory.
+Here's a quick start guide to using `indexr`. Running this code will save and delete two files to R sessions temp directory.
 
 ```r
 library(indexr)
@@ -53,11 +53,11 @@ for (i in 1:parameters_list$iterations) {
   betas[i] <- coef(lm(y ~ x))["x"]
 }
 
-save_objects(folder = ".", results = betas, parameters_list = parameters_list)
+tmp_dir <- file.path(tempdir(), "example")
+dir.create(tmp_dir)
+save_objects(folder = tmp_dir, results = betas, parameters_list = parameters_list)
 
-# Example usage of read_objects
-
-rm(list = ls())
+# Example usage of read_objects (consider clearing environment before running)
 
 parameters_list <- list(
   iterations = 1000,
@@ -69,14 +69,18 @@ parameters_list <- list(
   beta1 = 1
 )
 
-betas <- read_objects(folder = ".", parameters_list = parameters_list) 
+tmp_dir <- file.path(tempdir(), "example")
+betas <- read_objects(folder = tmp_dir, parameters_list = parameters_list) 
 hist(betas)
 
 # Create a hash table
-hash_table <- create_hash_table(folder = ".")
+hash_table <- create_hash_table(folder = tmp_dir)
 
 # Delete files based on hash table
-cleanup_from_hash_table(folder = ".", hash_table = hash_table, mode = "all")
+cleanup_from_hash_table(folder = tmp_dir, hash_table = hash_table, mode = "all")
+
+# Remove the tmp folder
+unlink(tmp_dir, recursive = TRUE)
 ```
 
 For detailed usage, please refer to the package documentation.

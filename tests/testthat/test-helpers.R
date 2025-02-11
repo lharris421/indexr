@@ -1,8 +1,8 @@
+# Setup
+test_dir <- file.path(tempdir(), "testing_grounds")
+dir.create(test_dir)
+
 testthat::test_that("check missing pairs", {
-  # Setup
-  test_dir <- testthat::test_path("testing_grounds")
-  unlink(test_dir, recursive = TRUE)
-  dir.create(test_dir)
 
   # Test data
   obj1 <- rnorm(1000)
@@ -34,7 +34,6 @@ testthat::test_that("check and fix extensions", {
 
 testthat::test_that("directory check", {
 
-  test_dir <- testthat::test_path("testing_grounds")
   unlink(test_dir, recursive = TRUE)
   dir.create(test_dir)
   write.csv(data.frame("1" = 2, file.path(test_dir, "test.csv")))
@@ -55,4 +54,4 @@ testthat::test_that("convert type", {
 })
 
 
-unlink(testthat::test_path("testing_grounds"), recursive = TRUE)
+unlink(test_dir, recursive = TRUE)

@@ -1,3 +1,7 @@
+# Setup
+test_dir <- file.path(tempdir(), "testing_grounds")
+dir.create(test_dir)
+
 # tests/testthat/test_parameterized_simulation.R
 testthat::test_that("Simulation results are saved and read correctly", {
   # Set up parameters
@@ -20,15 +24,10 @@ testthat::test_that("Simulation results are saved and read correctly", {
     betas[i] <- coef(lm(y ~ x))["x"]
   }
 
-  # Save results
-  temp_dir <- testthat::test_path("simulation_test_dir")
-  unlink(temp_dir, recursive = TRUE)
-  dir.create(temp_dir)
-
-  save_objects(folder = temp_dir, results = betas, parameters_list = parameters_list)
+  save_objects(folder = test_dir, results = betas, parameters_list = parameters_list)
 
   # Check that results are saved correctly
-  files <- list.files(temp_dir)
+  files <- list.files(test_dir)
   testthat::expect_true(length(files) == 2)
   testthat::expect_true(any(grepl("_parameters\\.rds$", files)))
   testthat::expect_true(any(grepl("\\.rds$", files)))
@@ -46,8 +45,7 @@ testthat::test_that("Results can be read back and match original", {
     beta1 = 1
   )
 
-  temp_dir <- testthat::test_path("simulation_test_dir")
-  betas <- read_objects(folder = temp_dir, parameters_list = parameters_list)
+  betas <- read_objects(folder = test_dir, parameters_list = parameters_list)
 
   # Validate betas
   testthat::expect_true(length(betas) == parameters_list$iterations)
@@ -56,18 +54,17 @@ testthat::test_that("Results can be read back and match original", {
 })
 
 testthat::test_that("Hash table creation and cleanup works correctly", {
-  temp_dir <- testthat::test_path("simulation_test_dir")
 
   # Create hash table
-  hash_table <- create_hash_table(folder = temp_dir)
+  hash_table <- create_hash_table(folder = test_dir)
   testthat::expect_true(nrow(hash_table) == 1)
 
   # Cleanup files
-  cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "all", request_confirmation = FALSE)
+  cleanup_from_hash_table(folder = test_dir, hash_table = hash_table, mode = "all", request_confirmation = FALSE)
 
   # Validate that directory is cleaned up
-  files_after_cleanup <- list.files(temp_dir)
+  files_after_cleanup <- list.files(test_dir)
   testthat::expect_true(length(files_after_cleanup) == 0)
 })
 
-unlink(testthat::test_path("simulation_test_dir"), recursive = TRUE)
+unlink(test_dir, recursive = TRUE)

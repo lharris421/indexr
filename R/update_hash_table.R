@@ -18,13 +18,57 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # Path to the existing hash table CSV
-#' hash_hash_table <- "path/to/hash_table.csv"
-#' # Directory containing the associated RDS files
-#' rds_directory <- "path/to/rds_files"
-#' update_hash_table(hash_hash_table, rds_directory)
-#' }
+#' ## Setup
+#' tmp_dir <- file.path(tempdir(), "example")
+#' dir.create(tmp_dir)
+#'
+#' ## Save objects
+#' obj1 <- rnorm(1000)
+#' obj2 <- data.frame(
+#'   x = runif(100),
+#'   y = "something",
+#'   z = rep(c(TRUE, FALSE), 50)
+#' )
+#' obj3 <- list(obj1, obj2)
+#'
+#' params1 <- list(
+#'   distribution = "normal",
+#'   other_params = list(param1 = TRUE, param2 = 1, param3 = NA)
+#' )
+#' params2 <- list(
+#'   distribution = "uniform",
+#'   other_params = list(param1 = FALSE, param2 = 2, param3 = "1", param4 = 4)
+#' )
+#' params3 <- list(
+#'   distribution = "composite",
+#'   other_params = list(param1 = TRUE, param2 = 3, param3 = 1)
+#' )
+#'
+#' save_objects(tmp_dir, obj1, params1)
+#' save_objects(tmp_dir, obj2, params2)
+#' save_objects(tmp_dir, obj3, params3)
+#'
+#' ## Create hash table
+#' create_hash_table(tmp_dir, save_path = file.path(tmp_dir, "hash_table.csv"))
+#'
+#' ## Read in hash table, make a change, and save
+#' hash_table <- read.csv(file.path(tmp_dir, "hash_table.csv"))
+#' hash_table$distribution <- "something different"
+#' write.csv(hash_table, file.path(tmp_dir, "hash_table.csv"))
+#'
+#' ## See file names before change
+#' list.files(tmp_dir)
+#'
+#' update_hash_table(
+#'   hash_table = file.path(tmp_dir, "hash_table.csv"),
+#'   rds_folder = tmp_dir
+#' )
+#'
+#' ## See difference to before running update_hash_table()
+#' list.files(tmp_dir)
+#'
+#' ## Cleanup
+#' unlink(tmp_dir, recursive = TRUE)
 update_hash_table <- function(hash_table, rds_folder,
                               hash_includes_timestamp = FALSE,
                               ignore_na = TRUE,

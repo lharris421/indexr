@@ -1,9 +1,9 @@
+# Setup
+test_dir <- file.path(tempdir(), "testing_grounds")
+dir.create(test_dir)
+
 # tests/testthat/test_save_and_read_objects.R
 testthat::test_that("save_objects and read_objects work correctly", {
-  # Setup
-  test_dir <- testthat::test_path("testing_grounds")
-  unlink(test_dir, recursive = TRUE)
-  dir.create(test_dir)
 
   # Test data
   obj1 <- rnorm(1000)
@@ -53,7 +53,7 @@ testthat::test_that("save_objects and read_objects work correctly", {
 })
 
 testthat::test_that("update_hash_table works correctly", {
-  test_dir <- testthat::test_path("testing_grounds")
+
   hash_table_file <- glue::glue("{test_dir}/test_hash_table.csv")
 
   # Create hash table and validate
@@ -82,7 +82,7 @@ testthat::test_that("update_hash_table works correctly", {
 })
 
 testthat::test_that("new parameters in hash table trigger updates", {
-  test_dir <- testthat::test_path("testing_grounds")
+
   hash_table_file <- glue::glue("{test_dir}/test_hash_table.csv")
 
   # Create and update hash table with new parameters
@@ -103,7 +103,6 @@ testthat::test_that("new parameters in hash table trigger updates", {
 
 testthat::test_that("Test rehashing", {
 
-  test_dir <- testthat::test_path("testing_grounds")
   names_before <- list.files(test_dir, pattern = "rds")
   rehash(test_dir, algo = "xxhash32")
   names_after <- list.files(test_dir, pattern = "rds")
@@ -114,4 +113,4 @@ testthat::test_that("Test rehashing", {
 })
 
 # Clean up after tests
-unlink(testthat::test_path("testing_grounds"), recursive = TRUE)
+unlink(test_dir, recursive = TRUE)

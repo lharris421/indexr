@@ -17,17 +17,22 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' ## Save results incrementally
 #' params <- list(a = "1", b = "2")
 #'
+#' tmp_dir <- file.path(tempdir(), "example")
+#' dir.create(tmp_dir)
 #' for (i in 1:10) {
-#'   save_objects(".", data.frame(idx = i, val = rnorm(1)), params, incremental = TRUE)
+#'   save_objects(tmp_dir, data.frame(idx = i, val = rnorm(1)), params, incremental = TRUE)
 #' }
 #'
-#' compress_incremental(".", params)
-#' res <- read_objects(".", params)
+#' ## Compress results into a single file and view
+#' compress_incremental(tmp_dir, params)
+#' res <- read_objects(tmp_dir, params)
 #' hist(res$val)
-#' }
+#'
+#' ## Cleanup
+#' unlink(tmp_dir, recursive = TRUE)
 compress_incremental <- function(folder,
                                  parameters_list,
                                  hash_includes_timestamp = FALSE,
