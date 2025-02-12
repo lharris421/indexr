@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' args <- list(param1 = "value1", param2 = 100, param3 = NA)
-#' hash_val <- generate_hash(args)
+#' generate_hash(args)
 generate_hash <- function(parameters_list, hash_includes_timestamp = FALSE, ignore_na = TRUE,
                           alphabetical_order = TRUE, algo = "xxhash64", ignore_script_name = FALSE) {
 

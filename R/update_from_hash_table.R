@@ -59,7 +59,7 @@
 #' ## See file names before change
 #' list.files(tmp_dir)
 #'
-#' update_hash_table(
+#' update_from_hash_table(
 #'   hash_table = file.path(tmp_dir, "hash_table.csv"),
 #'   rds_folder = tmp_dir
 #' )
@@ -69,7 +69,8 @@
 #'
 #' ## Cleanup
 #' unlink(tmp_dir, recursive = TRUE)
-update_hash_table <- function(hash_table, rds_folder,
+#' @seealso [create_hash_table()]
+update_from_hash_table <- function(hash_table, rds_folder,
                               hash_includes_timestamp = FALSE,
                               ignore_na = TRUE,
                               alphabetical_order = TRUE,
@@ -81,7 +82,7 @@ update_hash_table <- function(hash_table, rds_folder,
   check_missing_pairs(rds_folder)  # Could be refined for more specific checks
 
   # Read the updated CSV table
-  updated_table <- readr::read_csv(hash_table)
+  updated_table <- readr::read_csv(hash_table, show_col_types = FALSE)
 
   # Loop over each row in the CSV
   for (i in seq_len(nrow(updated_table))) {

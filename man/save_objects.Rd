@@ -100,4 +100,8 @@ betas <- read_objects(folder = tmp_dir, parameters_list = parameters_list)
 
 ## Cleanup
 unlink(tmp_dir, recursive = TRUE)
+
+}
+\seealso{
+\code{\link[=read_objects]{read_objects()}}
 }

@@ -62,6 +62,7 @@
 #' unlink(tmp_dir, recursive = TRUE)
 #'
 #' @importFrom utils read.table write.table
+#' @seealso [save_objects()]
 read_objects <- function(folders, parameters_list, hash_includes_timestamp = FALSE,
                          ignore_script_name = FALSE,
                          ignore_na = TRUE, alphabetical_order = TRUE,

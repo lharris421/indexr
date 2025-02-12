@@ -63,6 +63,8 @@
 #'
 #' ## Cleanup
 #' unlink(tmp_dir, recursive = TRUE)
+#'
+#' @seealso [read_objects()]
 save_objects <- function(folder, results, parameters_list = NULL,
                          ignore_na = TRUE,
                          alphabetical_order = TRUE, overwrite = FALSE,

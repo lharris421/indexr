@@ -50,11 +50,8 @@
 #' save_objects(tmp_dir, obj2, params2)
 #' save_objects(tmp_dir, obj3, params3)
 #'
-#' ## Create hash table
+#' ## Create hash table (and save it)
 #' create_hash_table(tmp_dir, save_path = file.path(tmp_dir, "hash_table.csv"))
-#'
-#' ## View created hash table
-#' read.csv(file.path(tmp_dir, "hash_table.csv"))
 #'
 #' ## Cleanup
 #' unlink(tmp_dir, recursive = TRUE)

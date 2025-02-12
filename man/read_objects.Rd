@@ -93,3 +93,6 @@ betas <- read_objects(folder = tmp_dir, parameters_list = parameters_list)
 unlink(tmp_dir, recursive = TRUE)
 
 }
+\seealso{
+\code{\link[=save_objects]{save_objects()}}
+}

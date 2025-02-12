@@ -51,11 +51,19 @@ for (i in 1:10) {
   save_objects(tmp_dir, data.frame(idx = i, val = rnorm(1)), params, incremental = TRUE)
 }
 
-## Compress results into a single file and view
+## See contents of tmp directory for incremental file
+list.files(file.path(tmp_dir, generate_hash(params)))
+
+## Compress results into a single file
 compress_incremental(tmp_dir, params)
-res <- read_objects(tmp_dir, params)
-hist(res$val)
+list.files(tmp_dir)
+
+## Read in compressed file and view results
+read_objects(tmp_dir, params)
 
 ## Cleanup
 unlink(tmp_dir, recursive = TRUE)
+}
+\seealso{
+\code{\link[=save_objects]{save_objects()}}
 }

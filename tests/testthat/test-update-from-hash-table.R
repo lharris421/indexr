@@ -27,7 +27,7 @@ testthat::test_that("check and fix extensions", {
   saved_hash_table <- readr::read_csv(hash_table_file)
   saved_hash_table$a_new_param <- c(NA, NA, "1", "1") ## These files will be the same
   readr::write_csv(saved_hash_table, hash_table_file)
-  testthat::expect_message(update_hash_table(hash_table_file, test_dir))
+  testthat::expect_message(update_from_hash_table(hash_table_file, test_dir))
 
   # Create and update hash table with new parameters
   curr_files <- list.files(test_dir, full.names = TRUE, pattern = "\\.rds$")
@@ -37,7 +37,7 @@ testthat::test_that("check and fix extensions", {
   readr::write_csv(saved_hash_table, hash_table_file)
 
   file.remove(curr_files[c(1, 2, 3, 7)])
-  testthat::expect_warning(update_hash_table(hash_table_file, test_dir))
+  testthat::expect_warning(update_from_hash_table(hash_table_file, test_dir))
 
 })
 

@@ -2,20 +2,38 @@
 % Please edit documentation in R/tagging.R
 \name{start_tagging}
 \alias{start_tagging}
-\title{Start Tagging File in a Directory}
+\alias{cleanup}
+\alias{close_tagging}
+\title{Monitor result file usage and cleanup unused files}
 \usage{
-start_tagging(path, tagging_file_name = "indexr_tagging.txt")
+start_tagging(folder, tagging_file_name = "indexr_tagging.txt")
+
+cleanup(
+  folder,
+  tagging_file_name = "indexr_tagging.txt",
+  cutoff_date = NULL,
+  request_confirmation = TRUE
+)
+
+close_tagging(folder, tagging_file_name = "indexr_tagging.txt")
 }
 \arguments{
-\item{path}{A character string specifying the path to the directory where the tagging file will be created.}
+\item{folder}{A character string specifying the path to the directory where the result files are saved and where the tagging file will be created.}
 
 \item{tagging_file_name}{A character string for a txt file the tagging information is to be saved under.}
+
+\item{cutoff_date}{A character string in "\%Y-\%m-\%d \%H:\%M:\%S" format used to specify that any tagged files before the date should also be removed.}
+
+\item{request_confirmation}{Logical, if TRUE will request user input before proceeding to delete files.}
 }
 \value{
 No return value. This function is called for its side effects.
 }
 \description{
-Initializes the tagging process by creating an \code{txt} file in the specified directory. Tagging is mainly helpful for removing unused results.
+Tagging is mainly helpful for removing unused results.
+\code{start_tagging()} initializes the tagging process by creating a \code{txt} file in the results directory which will keep a record of which results are being read by \code{read_objects()}.
+\code{cleanup()} removes any \code{.rds} files in the specified folder that are not listed in the tagging file.
+\code{close_tagging()} deletes the tagging file, ending the tagging session.
 }
 \examples{
 ## Setup

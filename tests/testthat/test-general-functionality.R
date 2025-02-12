@@ -52,7 +52,7 @@ testthat::test_that("save_objects and read_objects work correctly", {
   testthat::expect_identical(params3_in, params3)
 })
 
-testthat::test_that("update_hash_table works correctly", {
+testthat::test_that("update_from_hash_table works correctly", {
 
   hash_table_file <- glue::glue("{test_dir}/test_hash_table.csv")
 
@@ -64,14 +64,14 @@ testthat::test_that("update_hash_table works correctly", {
   saved_files_before <- list.files(test_dir)
 
   # Update hash table and check consistency
-  update_hash_table(hash_table_file, test_dir)
+  update_from_hash_table(hash_table_file, test_dir)
   saved_files_after <- list.files(test_dir)
   testthat::expect_identical(saved_files_before, saved_files_after)
 
   # Modify and validate updates
   saved_hash_table[,"other_params[[param4]]"] <- c("3", NA, NA, NA)
   readr::write_csv(saved_hash_table, hash_table_file)
-  update_hash_table(hash_table_file, test_dir)
+  update_from_hash_table(hash_table_file, test_dir)
 
   changes <- glue::glue("{saved_hash_table$hash[c(1, 2)]}.rds")
   no_changes <- glue::glue("{saved_hash_table$hash[c(3, 4)]}.rds")
@@ -91,7 +91,7 @@ testthat::test_that("new parameters in hash table trigger updates", {
   saved_hash_table$a_new_param <- c(NA, "1", "2", NA)
   readr::write_csv(saved_hash_table, hash_table_file)
 
-  update_hash_table(hash_table_file, test_dir)
+  update_from_hash_table(hash_table_file, test_dir)
 
   changes <- glue::glue("{saved_hash_table$hash[c(2, 3)]}.rds")
   no_changes <- glue::glue("{saved_hash_table$hash[c(1, 4)]}.rds")
