@@ -26,6 +26,7 @@ The old files are deleted if their hashes differ from the new ones."></head><bod
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/lharris421/indexr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -141,17 +142,17 @@ The old files are deleted if their hashes differ from the new ones.</p>
 <span class="r-in"><span><span class="co">## Create hash table</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="create_hash_table.html">create_hash_table</a></span><span class="op">(</span><span class="va">tmp_dir</span>, save_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tmp_dir</span>, <span class="st">"hash_table.csv"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   distribution other_params[[param1]] other_params[[param2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      uniform                  FALSE                      2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       normal                   TRUE                      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       normal                   TRUE                      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      uniform                  FALSE                      2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3    composite                   TRUE                      3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   other_params[[param3]] other_params[[param4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                      1                      4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                   &lt;NA&gt;                   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                      1                   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                            script_name             hash</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 e7bbbef7-59fc-4f36-8937-23f9faec90e2 4b2b3b7df8f55596</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 e7bbbef7-59fc-4f36-8937-23f9faec90e2 a89f9a21cc5989e1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 e7bbbef7-59fc-4f36-8937-23f9faec90e2 b02173f4d06297de</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   other_params[[param3]]                          script_name             hash</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   &lt;NA&gt; 30294f26-5fd5-4dc2-a48a-f1629624990d 1ab2d2eb839f05dd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                      1 30294f26-5fd5-4dc2-a48a-f1629624990d 93cd21474901eb14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                      1 30294f26-5fd5-4dc2-a48a-f1629624990d f6365b649a903561</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   other_params[[param4]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                   &lt;NA&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Read in hash table, make a change, and save</span></span></span>
 <span class="r-in"><span><span class="va">hash_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tmp_dir</span>, <span class="st">"hash_table.csv"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -160,9 +161,9 @@ The old files are deleted if their hashes differ from the new ones.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## See file names before change</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">tmp_dir</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "4b2b3b7df8f55596.rds"            "4b2b3b7df8f55596_parameters.rds"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "a89f9a21cc5989e1.rds"            "a89f9a21cc5989e1_parameters.rds"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "b02173f4d06297de.rds"            "b02173f4d06297de_parameters.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1ab2d2eb839f05dd.rds"            "1ab2d2eb839f05dd_parameters.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "93cd21474901eb14.rds"            "93cd21474901eb14_parameters.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "f6365b649a903561.rds"            "f6365b649a903561_parameters.rds"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [7] "hash_table.csv"                 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">update_from_hash_table</span><span class="op">(</span></span></span>
@@ -172,29 +173,29 @@ The old files are deleted if their hashes differ from the new ones.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> New names:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> `` -&gt; `...1`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating distribution in parameters_list: normal -&gt; something different</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Renamed 1ab2d2eb839f05dd.rds -&gt; 40a1675afb9da6d9.rds; updated parameters saved.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Updating distribution in parameters_list: uniform -&gt; something different</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Renamed 4b2b3b7df8f55596.rds -&gt; 38f46d069e30f90d.rds; updated parameters saved.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating distribution in parameters_list: normal -&gt; something different</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Renamed a89f9a21cc5989e1.rds -&gt; c6365a4e417ed1fb.rds; updated parameters saved.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Renamed 93cd21474901eb14.rds -&gt; e13042c63ca38593.rds; updated parameters saved.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Updating distribution in parameters_list: composite -&gt; something different</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Renamed b02173f4d06297de.rds -&gt; 41eb355091128dc5.rds; updated parameters saved.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Renamed f6365b649a903561.rds -&gt; 638c91fc9191476d.rds; updated parameters saved.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## See difference to before running update_hash_table()</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">tmp_dir</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "38f46d069e30f90d.rds"            "38f46d069e30f90d_parameters.rds"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "41eb355091128dc5.rds"            "41eb355091128dc5_parameters.rds"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "c6365a4e417ed1fb.rds"            "c6365a4e417ed1fb_parameters.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "40a1675afb9da6d9.rds"            "40a1675afb9da6d9_parameters.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "638c91fc9191476d.rds"            "638c91fc9191476d_parameters.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "e13042c63ca38593.rds"            "e13042c63ca38593_parameters.rds"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [7] "hash_table.csv"                 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Cleanup</span></span></span>
