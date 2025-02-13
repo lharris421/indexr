@@ -13,7 +13,7 @@ filter the data frame based on specified criteria and save it to a file."></head
 
     <a class="navbar-brand me-2" href="../index.html">indexr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,17 +122,17 @@ or for removal of unwanted results (see <code><a href="cleanup_from_hash_table.h
 <span class="r-in"><span><span class="co">## Create hash table (and save it)</span></span></span>
 <span class="r-in"><span><span class="fu">create_hash_table</span><span class="op">(</span><span class="va">tmp_dir</span>, save_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tmp_dir</span>, <span class="st">"hash_table.csv"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   distribution other_params[[param1]] other_params[[param2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    composite                   TRUE                      3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       normal                   TRUE                      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      uniform                  FALSE                      2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   other_params[[param3]]                          script_name             hash</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                      1 76a70caa-4a7a-4ebd-b21d-7e6ad4251bcb 30973081adf4fa56</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                   &lt;NA&gt; 76a70caa-4a7a-4ebd-b21d-7e6ad4251bcb 9248ec49966eba10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                      1 76a70caa-4a7a-4ebd-b21d-7e6ad4251bcb 9f9b801d257c8b11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   other_params[[param4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      uniform                  FALSE                      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    composite                   TRUE                      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       normal                   TRUE                      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   other_params[[param3]] other_params[[param4]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                      1                      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                      1                   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                   &lt;NA&gt;                   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                            script_name             hash</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 12d3c75e-d678-44bd-a9dd-d61ed2ffce52 186e05ce9e86271d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 12d3c75e-d678-44bd-a9dd-d61ed2ffce52 32d1d8c82886ec05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 12d3c75e-d678-44bd-a9dd-d61ed2ffce52 9b3dda3527329e80</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Cleanup</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">tmp_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
