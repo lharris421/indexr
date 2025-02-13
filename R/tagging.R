@@ -63,7 +63,7 @@ start_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
 #' @export
 #' @rdname tagging_functions
 cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_date = NULL,
-                    request_confirmation = TRUE, verbose = TRUE) {
+                    request_confirmation = TRUE) {
 
   ## Checks
   check_is_directory(folder)
