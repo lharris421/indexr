@@ -17,6 +17,8 @@ navbar:
   left:
     - text: Functions
       href: reference/index.html
+    - text: News
+      href: news/index.html
 
 reference:
 - title: Core Functions
