@@ -81,8 +81,9 @@ cleanup_from_hash_table <- function(folder, hash_table,
     return(invisible(NULL))
   }
 
-  message("The following files will be removed:")
-  print(files_to_delete)
+  message("The following .rds files will be removed:\n",
+          paste(files_to_delete, collapse = "\n"))
+
 
   ## Ask for user confirmation
   if (request_confirmation) {

@@ -63,7 +63,7 @@ start_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
 #' @export
 #' @rdname tagging_functions
 cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_date = NULL,
-                    request_confirmation = TRUE) {
+                    request_confirmation = TRUE, verbose = TRUE) {
 
   ## Checks
   check_is_directory(folder)
@@ -121,8 +121,10 @@ cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_dat
 
   ## Delete files
   if (length(files_to_delete) > 0) {
-    message("The following .rds files will be removed:")
-    print(files_to_delete)
+
+    message("The following .rds files will be removed:\n",
+            paste(files_to_delete, collapse = "\n"))
+
 
     ## Ask for user confirmation
     if (request_confirmation) {

@@ -1,6 +1,7 @@
 Package: indexr
 Title: A Thoughtful Saver of Results
 Version: 0.2.0
+Date: 2025-02-13
 Authors@R: 
     person("Logan", "Harris", email = "logan-harris@uiowa.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1211-7623"))
 Description: Helps with the thoughtful saving, reading, and management of result
@@ -10,8 +11,10 @@ Description: Helps with the thoughtful saving, reading, and management of result
   is helpful to avoid clunky file naming when running a large number of
   simulations. Additionally, helper function are available for compiling a flat
   file of parameters for saved results, monitoring result usage, and cleaning up
-  unwanted or unused files.
+  unwanted or unused files. 
+BugReports: https://github.com/lharris421/indexr/issues
 License: GPL-3
+URL: https://lharris421.github.io/indexr/, https://github.com/lharris421/indexr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -24,3 +27,4 @@ Imports:
     methods
 Suggests:
     testthat (>= 3.0.0)
+    

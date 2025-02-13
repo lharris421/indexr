@@ -1,0 +1,41 @@
+url: https://lharris421.github.io/indexr/
+
+template:
+  bootstrap: 5
+  light-switch: true
+
+figures:
+  dev: ragg::agg_png
+  dpi: 96
+  fig.ext: png
+  fig.width: 5
+  fig.height: 5
+  fig.retina: 2
+  bg: "#fff"
+
+navbar:
+  left:
+    - text: Functions
+      href: reference/index.html
+
+reference:
+- title: Core Functions
+  contents:
+  - save_objects
+  - read_objects
+  - generate_hash
+- title: Result Bookkeeping
+  contents:
+  - check_hash_existence
+  - create_hash_table
+  - update_from_hash_table
+  - rehash
+- title: Cleanup Functions
+  contents:
+  - start_tagging
+  - cleanup
+  - close_tagging
+  - cleanup_from_hash_table
+- title: Paralellization Support
+  contents:
+  - compress_incremental
