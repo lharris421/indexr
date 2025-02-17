@@ -1,7 +1,8 @@
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/indexr)](https://CRAN.R-project.org/package=indexr)
+[![GitHub version](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/lharris421/indexr/master/.version.json)](https://github.com/lharris/indexr)
 [![Codecov test coverage](https://codecov.io/gh/lharris421/indexr/graph/badge.svg)](https://app.codecov.io/gh/lharris421/indexr)
 [![R-CMD-check](https://github.com/lharris421/indexr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/lharris421/indexr/actions/workflows/R-CMD-check.yaml)
-[![CRAN status](https://www.r-pkg.org/badges/version/indexr)](https://CRAN.R-project.org/package=indexr)
 <!-- badges: end -->
 
 # indexr: Stop naming simulation results <img src="man/figures/indexr_hex_sticker.png" alt="A hex sticker for indexr: A red arrow going into the hex sticker, indicating saving results, which are depicted by yellow boxes, and a blue arrow going out of the hex sticker, indicating reading results." align="right" width="20%" />
@@ -20,7 +21,11 @@
 
 ## Installation
 
-Install `indexr` from GitHub (future CRAN release planned):
+```R
+install.packages("indexr")
+```
+
+Install development version of `indexr` from GitHub:
 
 ```R
 # install.packages("devtools")
