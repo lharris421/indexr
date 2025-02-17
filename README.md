@@ -1,6 +1,7 @@
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/lharris421/indexr/graph/badge.svg)](https://app.codecov.io/gh/lharris421/indexr)
 [![R-CMD-check](https://github.com/lharris421/indexr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/lharris421/indexr/actions/workflows/R-CMD-check.yaml)
+[![CRAN status](https://www.r-pkg.org/badges/version/indexr)](https://CRAN.R-project.org/package=indexr)
 <!-- badges: end -->
 
 # indexr: Stop naming simulation results <img src="man/figures/indexr_hex_sticker.png" alt="A hex sticker for indexr: A red arrow going into the hex sticker, indicating saving results, which are depicted by yellow boxes, and a blue arrow going out of the hex sticker, indicating reading results." align="right" width="20%" />
