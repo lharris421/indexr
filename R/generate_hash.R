@@ -18,6 +18,9 @@
 generate_hash <- function(parameters_list, hash_includes_timestamp = FALSE, ignore_na = TRUE,
                           alphabetical_order = TRUE, algo = "xxhash64", ignore_script_name = FALSE) {
 
+  ## Original parameter list
+  orig_params <- parameters_list
+
   ## Optionally remove 'script_name' if ignore_script_name is TRUE
   if (ignore_script_name && "script_name" %in% names(parameters_list)) {
     parameters_list$script_name <- NULL
@@ -43,7 +46,7 @@ generate_hash <- function(parameters_list, hash_includes_timestamp = FALSE, igno
   }
 
   ## Generate the hash
-  res <- list(parameters_list = parameters_list, hash = digest::digest(parameters_list, algo = algo))
+  res <- list(parameters_list = orig_params, hash = digest::digest(parameters_list, algo = algo))
 
   return(res)
 }

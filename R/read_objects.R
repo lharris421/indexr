@@ -88,7 +88,7 @@ read_objects <- function(folders, parameters_list, hash_includes_timestamp = FAL
   tagging_file_name <- check_and_fix_extension(tagging_file_name, "txt")
 
   if (!is.list(parameters_list)) {
-    stop("parameters_list must be a list, data frame, or matrix.")
+    stop("parameters_list must be a list")
   }
 
   ## Generate hash

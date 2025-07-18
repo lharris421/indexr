@@ -3,7 +3,7 @@ Title: A Thoughtful Saver of Results
 Version: 0.2.2
 Date: 2025-02-14
 Authors@R: 
-    person("Logan", "Harris", email = "logan-harris@uiowa.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1211-7623"))
+    person("Logan", "Harris", email = "logan-harris@uiowa.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8562-9534"))
 Description: Helps with the thoughtful saving, reading, and management of result
   files (using 'rds' files). The core functions take a list of parameters that are
   used to generate a unique hash to save results under. Then, the same

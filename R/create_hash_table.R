@@ -62,10 +62,10 @@ create_hash_table <- function(folder, save_path = NULL, filter_list = NULL) {
   check_missing_pairs(folder)
   if (!is.null(save_path)) save_path <- check_and_fix_extension(save_path, "csv")
 
-  # List all parameter files in the given directory based on the file pattern
+  ## List all parameter files in the given directory based on the file pattern
   files <- list.files(folder, pattern = "_parameters\\.rds$", full.names = TRUE)
 
-  # Initialize an empty list to store the parameters_lists along with their hashes
+  ## Initialize an empty list to store the parameters_lists along with their hashes
   all_parameters_lists <- list()
 
   for (file in files) {
@@ -80,19 +80,19 @@ create_hash_table <- function(folder, save_path = NULL, filter_list = NULL) {
     ## Process vectors into a character sting like "c(1, 2, 3)"
     parameters_list <- convert_vectors_to_c_strings(parameters_list)
 
-    # Flatten the nested list with descriptive column names
+    ## Flatten the nested list with descriptive column names
     flat_parameters_list <- flatten_nested_list(parameters_list)
 
-    # Convert all elements to characters to avoid type conflict
+    ## Convert all elements to characters to avoid type conflict
     flat_parameters_list <- lapply(flat_parameters_list, as.character)
 
     all_parameters_lists[[basename(file)]] <- flat_parameters_list
   }
 
-  # Combine all parameters_lists into a data frame using bind_rows
+  ## Combine all parameters_lists into a data frame using bind_rows
   args_df <- dplyr::bind_rows(lapply(all_parameters_lists, as.data.frame.list, optional = TRUE))
 
-  # Apply filters if filter_list is provided
+  ## Apply filters if filter_list is provided
   if (!is.null(filter_list) && is.list(filter_list)) {
     for (col_name in names(filter_list)) {
       args_df <- args_df[!is.na(args_df[[col_name]]) & args_df[[col_name]] == filter_list[[col_name]], ]
@@ -100,7 +100,7 @@ create_hash_table <- function(folder, save_path = NULL, filter_list = NULL) {
     args_df <- args_df[, !sapply(args_df, function(col) all(is.na(col)))]
   }
 
-  # Save the table if a save_path is provided
+  ## Save the table if a save_path is provided
   if (!is.null(save_path)) {
     readr::write_csv(args_df, file = save_path, quote = "needed")
   }
