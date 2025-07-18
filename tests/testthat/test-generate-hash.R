@@ -18,6 +18,8 @@ testthat::test_that("generate_hash handles NAs appropriately", {
 
   hash_with_na <- generate_hash(args_with_na, ignore_na = TRUE)
   hash_without_na <- generate_hash(args_without_na, ignore_na = TRUE)
+  hash_with_na$timestamp <- NULL
+  hash_without_na$timestamp <- NULL
 
   testthat::expect_equal(hash_with_na, hash_without_na)
 })

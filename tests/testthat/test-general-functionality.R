@@ -46,6 +46,9 @@ testthat::test_that("save_objects and read_objects work correctly", {
   params1_in <- readRDS(glue::glue("{test_dir}/{generate_hash(params1)$hash}_parameters.rds"))
   params2_in <- readRDS(glue::glue("{test_dir}/{generate_hash(params2)$hash}_parameters.rds"))
   params3_in <- readRDS(glue::glue("{test_dir}/{generate_hash(params3)$hash}_parameters.rds"))
+  params1_in$timestamp <- NULL
+  params2_in$timestamp <- NULL
+  params3_in$timestamp <- NULL
 
   testthat::expect_identical(params1_in, params1)
   testthat::expect_identical(params2_in, params2)
@@ -59,7 +62,7 @@ testthat::test_that("update_from_hash_table works correctly", {
   # Create hash table and validate
   create_hash_table(test_dir, save_path = hash_table_file)
   saved_hash_table <- readr::read_csv(hash_table_file)
-  testthat::expect_equal(dim(saved_hash_table), c(4, 6))
+  testthat::expect_equal(dim(saved_hash_table), c(4, 7))
 
   saved_files_before <- list.files(test_dir)
 
