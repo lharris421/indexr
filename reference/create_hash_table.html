@@ -13,7 +13,7 @@ filter the data frame based on specified criteria and save it to a file."></head
 
     <a class="navbar-brand me-2" href="../index.html">indexr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,17 +122,17 @@ or for removal of unwanted results (see <code><a href="cleanup_from_hash_table.h
 <span class="r-in"><span><span class="co">## Create hash table (and save it)</span></span></span>
 <span class="r-in"><span><span class="fu">create_hash_table</span><span class="op">(</span><span class="va">tmp_dir</span>, save_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tmp_dir</span>, <span class="st">"hash_table.csv"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   distribution other_params[[param1]] other_params[[param2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    composite                   TRUE                      3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      uniform                  FALSE                      2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       normal                   TRUE                      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   other_params[[param3]]                          script_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                      1 2743b896-a00b-4421-a822-95e9e6bb2f44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                      1 2743b896-a00b-4421-a822-95e9e6bb2f44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                   &lt;NA&gt; 2743b896-a00b-4421-a822-95e9e6bb2f44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             timestamp             hash other_params[[param4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2025-07-18 14:54:35 4af00917dc8e2cb9                   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2025-07-18 14:54:35 f0faddcdfc1b3028                      4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 2025-07-18 14:54:35 f7ab967b8a802b83                   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      uniform                  FALSE                      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       normal                   TRUE                      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    composite                   TRUE                      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   other_params[[param3]] other_params[[param4]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                      1                      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                   &lt;NA&gt;                   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                      1                   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                            script_name           timestamp             hash</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 450cff3e-f311-4f69-9cbd-130ef4d85d39 2025-07-21 17:46:13 83a3595f099f4166</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 450cff3e-f311-4f69-9cbd-130ef4d85d39 2025-07-21 17:46:13 f2026b4f4c402e25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 450cff3e-f311-4f69-9cbd-130ef4d85d39 2025-07-21 17:46:13 ff5287f22bcb65a6</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Cleanup</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">tmp_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
