@@ -1,6 +1,6 @@
 Package: indexr
 Title: A Thoughtful Saver of Results
-Version: 0.2.2
+Version: 0.2.3
 Date: 2025-02-14
 Authors@R: 
     person("Logan", "Harris", email = "logan-harris@uiowa.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8562-9534"))

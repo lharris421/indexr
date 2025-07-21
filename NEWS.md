@@ -1,5 +1,8 @@
-# indexr 0.2.2 - 2025-02-14
+# indexr 0.2.3
+  * Bug fixed that was stopping timestamp from being saved
+
+# indexr 0.2.2
   * Updates for CRAN.
 
-# indexr 0.2.0 - 2025-02-11
+# indexr 0.2.0
   * Initial release.
