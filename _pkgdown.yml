@@ -41,3 +41,6 @@ reference:
 - title: Paralellization Support
   contents:
   - compress_incremental
+- title: Legacy Support
+  contents:
+  - update_from_legacy
