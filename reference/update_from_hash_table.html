@@ -146,13 +146,13 @@ The old files are deleted if their hashes differ from the new ones.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2      uniform                  FALSE                      2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3    composite                   TRUE                      3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   other_params[[param3]]                          script_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   &lt;NA&gt; 2b60229c-5acb-441b-a67f-8fd639b8ebe8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                      1 2b60229c-5acb-441b-a67f-8fd639b8ebe8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                      1 2b60229c-5acb-441b-a67f-8fd639b8ebe8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   &lt;NA&gt; 67e0b9f4-91dd-487b-b9b8-8962dd9e01e8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                      1 67e0b9f4-91dd-487b-b9b8-8962dd9e01e8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                      1 67e0b9f4-91dd-487b-b9b8-8962dd9e01e8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             timestamp             hash other_params[[param4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2025-07-23 01:43:06 a2b8539d492f0184                   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2025-07-23 01:43:06 87af3cff28150710                      4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 2025-07-23 01:43:06 d3af31596c2830d3                   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2025-07-23 01:53:08 fdb2c92b663c8c0a                   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2025-07-23 01:53:08 f4284bda5356d562                      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 2025-07-23 01:53:08 2fdab2bf9ecea3b3                   &lt;NA&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Read in hash table, make a change, and save</span></span></span>
 <span class="r-in"><span><span class="va">hash_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tmp_dir</span>, <span class="st">"hash_table.csv"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -161,7 +161,7 @@ The old files are deleted if their hashes differ from the new ones.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## See file names before change</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">tmp_dir</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "87af3cff28150710.rds" "a2b8539d492f0184.rds" "d3af31596c2830d3.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2fdab2bf9ecea3b3.rds" "f4284bda5356d562.rds" "fdb2c92b663c8c0a.rds"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4] "hash_table.csv"       "indexr.yaml"          "indexr.yaml.lock"    </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">update_from_hash_table</span><span class="op">(</span></span></span>
@@ -170,28 +170,28 @@ The old files are deleted if their hashes differ from the new ones.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> New names:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> `` -&gt; `...1`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating '...1' for YAML hash 'a2b8539d492f0184'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'distribution' for YAML hash 'a2b8539d492f0184'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param1..' for YAML hash 'a2b8539d492f0184'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param2..' for YAML hash 'a2b8539d492f0184'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Rehashed YAML 'a2b8539d492f0184' -&gt; '43379b564b3af535'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating '...1' for YAML hash '87af3cff28150710'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'distribution' for YAML hash '87af3cff28150710'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param1..' for YAML hash '87af3cff28150710'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param2..' for YAML hash '87af3cff28150710'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param3..' for YAML hash '87af3cff28150710'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param4..' for YAML hash '87af3cff28150710'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Rehashed YAML '87af3cff28150710' -&gt; 'c9ca6ec9a209780a'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating '...1' for YAML hash 'd3af31596c2830d3'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'distribution' for YAML hash 'd3af31596c2830d3'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param1..' for YAML hash 'd3af31596c2830d3'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param2..' for YAML hash 'd3af31596c2830d3'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param3..' for YAML hash 'd3af31596c2830d3'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Rehashed YAML 'd3af31596c2830d3' -&gt; 'b5a6dfc142a172bd'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating '...1' for YAML hash 'fdb2c92b663c8c0a'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'distribution' for YAML hash 'fdb2c92b663c8c0a'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param1..' for YAML hash 'fdb2c92b663c8c0a'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param2..' for YAML hash 'fdb2c92b663c8c0a'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Rehashed YAML 'fdb2c92b663c8c0a' -&gt; 'e29e4baff10363c5'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating '...1' for YAML hash 'f4284bda5356d562'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'distribution' for YAML hash 'f4284bda5356d562'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param1..' for YAML hash 'f4284bda5356d562'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param2..' for YAML hash 'f4284bda5356d562'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param3..' for YAML hash 'f4284bda5356d562'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param4..' for YAML hash 'f4284bda5356d562'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Rehashed YAML 'f4284bda5356d562' -&gt; '422be61020c15b6a'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating '...1' for YAML hash '2fdab2bf9ecea3b3'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'distribution' for YAML hash '2fdab2bf9ecea3b3'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param1..' for YAML hash '2fdab2bf9ecea3b3'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param2..' for YAML hash '2fdab2bf9ecea3b3'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Updating 'other_params..param3..' for YAML hash '2fdab2bf9ecea3b3'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Rehashed YAML '2fdab2bf9ecea3b3' -&gt; '033d8655795e944c'</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## See difference to before running update_hash_table()</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">tmp_dir</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "43379b564b3af535.rds" "b5a6dfc142a172bd.rds" "c9ca6ec9a209780a.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "033d8655795e944c.rds" "422be61020c15b6a.rds" "e29e4baff10363c5.rds"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4] "hash_table.csv"       "indexr.yaml"          "indexr.yaml.lock"    </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Cleanup</span></span></span>
