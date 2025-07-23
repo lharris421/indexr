@@ -62,81 +62,113 @@ start_tagging <- function(folder, tagging_file_name = "indexr_tagging.txt") {
 }
 #' @export
 #' @rdname tagging_functions
-cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_date = NULL,
+cleanup <- function(folder,
+                    tagging_file_name = "indexr_tagging.txt",
+                    cutoff_date = NULL,
                     request_confirmation = TRUE) {
 
-  ## Checks
+  ## Basic checks
   check_is_directory(folder)
   tagging_file_name <- check_and_fix_extension(tagging_file_name, "txt")
-
-  ## Get tagging data
   tagging_file <- file.path(folder, tagging_file_name)
-
   if (!file.exists(tagging_file)) {
-    stop("Tagging file 'indexer_tagging.txt' does not exist in the specified folder.")
+    stop(glue::glue(
+      "Tagging file '{tagging_file_name}' does not exist in folder: {folder}"
+    ))
   }
 
-  tagging_data <- read.table(tagging_file, header = FALSE, sep = "\t", stringsAsFactors = FALSE, col.names = c("hash", "timestamp"))
-
+  ## Read tagging data
+  tagging_data <- read.table(
+    tagging_file,
+    header = FALSE, sep = "\t", stringsAsFactors = FALSE,
+    col.names = c("hash", "timestamp")
+  )
   if (nrow(tagging_data) == 0) {
-    stop("The tagging file 'indexer_tagging.txt' is empty. No tagged files to compare for cleanup.")
+    stop(glue::glue(
+      "Tagging file '{tagging_file_name}' is empty. No tagged files to compare."
+    ))
+  }
+  tagging_data$timestamp <- as.POSIXct(
+    tagging_data$timestamp,
+    format = "%Y-%m-%d %H:%M:%S"
+  )
+
+  ## Detect backends
+  param_files <- list.files(folder, pattern = "_parameters\\.rds$", full.names = TRUE)
+  has_params  <- length(param_files) > 0
+  yaml_file   <- file.path(folder, "indexr.yaml")
+  has_yaml    <- file.exists(yaml_file)
+
+  if (has_params && has_yaml) {
+    stop("Both parameter RDS files and 'indexr.yaml' found; remove one before cleanup.")
+  }
+  if (!has_params && !has_yaml) {
+    stop(glue::glue(
+      "No parameter RDS files or 'indexr.yaml' found in folder: {folder}"
+    ))
   }
 
-  ## Convert timestamps to POSIXct objects
-  tagging_data$timestamp <- as.POSIXct(tagging_data$timestamp, format = "%Y-%m-%d %H:%M:%S")
+  ## List result .rds files
+  all_rds <- list.files(folder, pattern = "\\.rds$", full.names = TRUE)
+  results_files <- if (has_params) {
+    all_rds[!grepl("_parameters\\.rds$", all_rds)]
+  } else {
+    all_rds
+  }
 
-  ## Get a list of all hashes from results files and put in df with file paths
-  rds_files <- list.files(folder, pattern = "\\.rds$", full.names = TRUE)
-  rds_files <- rds_files[!stringr::str_detect(rds_files, "_parameters\\.rds")]
-  rds_hashes <- basename(rds_files)
-  rds_hashes <- sub("\\.rds$", "", rds_hashes)
-  rds_data <- data.frame(hash = rds_hashes, filepath = rds_files, stringsAsFactors = FALSE)
+  ## Map to hashes
+  file_hashes <- sub("\\.rds$", "", basename(results_files))
+  df <- data.frame(hash = file_hashes, filepath = results_files, stringsAsFactors = FALSE)
 
-  ## Identify untagged files (hashes not in tagging_data)
-  untagged_files <- rds_data$filepath[!rds_data$hash %in% tagging_data$hash]
+  ## Identify untagged
+  to_delete <- df$filepath[!df$hash %in% tagging_data$hash]
 
-  ## Initialize files to delete with untagged files
-  files_to_delete <- untagged_files
-
-  ## If cutoff_date is supplied, identify tagged files not read since cutoff_date
+  ## Identify stale by cutoff
   if (!is.null(cutoff_date)) {
-    # Convert cutoff_date to POSIXct
-    cutoff_datetime <- as.POSIXct(cutoff_date, format = "%Y-%m-%d %H:%M:%S")
-    if (is.na(cutoff_datetime)) {
-      stop("Invalid cutoff_date format. Please use 'YYYY-MM-DD HH:MM:SS'.")
+    cutoff_dt <- as.POSIXct(cutoff_date, format = "%Y-%m-%d %H:%M:%S")
+    if (is.na(cutoff_dt)) {
+      stop("Invalid cutoff_date format. Use 'YYYY-MM-DD HH:MM:SS'.")
     }
-
-    ## Identify hashes with last read timestamp before cutoff_date
-    old_hashes <- tagging_data$hash[tagging_data$timestamp < cutoff_datetime]
-
-    ## Add to files to delete
-    old_files <- rds_data$filepath[rds_data$hash %in% old_hashes]
-    files_to_delete <- unique(c(files_to_delete, old_files))
-
+    old_hashes <- tagging_data$hash[tagging_data$timestamp < cutoff_dt]
+    stale <- df$filepath[df$hash %in% old_hashes]
+    to_delete <- unique(c(to_delete, stale))
   }
+  to_delete <- unique(to_delete)
 
-  files_to_delete <- unique(files_to_delete) ## Shouldn't be needed but just a precaution
-  ## Add all parameters files to be deleted too
-  files_to_delete <- c(files_to_delete, stringr::str_replace(files_to_delete, "\\.rds", "_parameters\\.rds"))
-
-  ## Delete files
-  if (length(files_to_delete) > 0) {
-
+  ## Proceed with deletion
+  if (length(to_delete) > 0) {
     message("The following .rds files will be removed:\n",
-            paste(files_to_delete, collapse = "\n"))
-
-
-    ## Ask for user confirmation
-    if (request_confirmation) {
-      confirm <- utils::askYesNo("Do you want to proceed with deleting these files?")
+            paste(to_delete, collapse = "\n"))
+    confirm <- if (request_confirmation) {
+      utils::askYesNo("Do you want to proceed with deleting these files?")
     } else {
-      confirm <- TRUE
+      TRUE
     }
 
     if (isTRUE(confirm)) {
-      # Remove the files
-      file.remove(files_to_delete)
-      message("Specified .rds files have been deleted.")
+      # Remove result files
+      file.remove(to_delete)
+
+      # In legacy mode, also remove parameter files
+      if (has_params) {
+        param_delete <- sub("\\.rds$", "_parameters.rds", to_delete)
+        file.remove(param_delete)
+      }
+
+      # In YAML mode, also remove entries from indexr.yaml
+      if (has_yaml) {
+        if (!requireNamespace("yaml", quietly = TRUE)) {
+          stop("The 'yaml' package is required for YAML cleanup. Please install it.")
+        }
+        removed_hashes <- sub("\\.rds$", "", basename(to_delete))
+        index_list <- yaml::read_yaml(yaml_file)
+        for (h in removed_hashes) {
+          index_list[[h]] <- NULL
+        }
+        yaml::write_yaml(index_list, yaml_file)
+      }
+
+      message("Specified files have been deleted.")
     } else if (isFALSE(confirm)) {
       message("Deletion canceled by the user.")
     } else {
@@ -146,8 +178,8 @@ cleanup <- function(folder, tagging_file_name = "indexr_tagging.txt", cutoff_dat
     message("No .rds files to remove.")
   }
 
+  ## Final integrity check
   check_missing_pairs(folder)
-
 }
 #' @export
 #' @rdname tagging_functions

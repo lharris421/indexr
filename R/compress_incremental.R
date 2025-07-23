@@ -39,76 +39,76 @@
 #' ## Cleanup
 #' unlink(tmp_dir, recursive = TRUE)
 #' @seealso [save_objects()]
-compress_incremental <- function(folder,
-                                 parameters_list,
-                                 hash_includes_timestamp = FALSE,
-                                 ignore_na = TRUE,
-                                 alphabetical_order = TRUE,
-                                 algo = "xxhash64",
-                                 ignore_script_name = FALSE,
-                                 remove_folder = TRUE) {
-
-  ## Checks
+compress_incremental <- function(
+    folder,
+    parameters_list,
+    hash_includes_timestamp = FALSE,
+    ignore_na = TRUE,
+    alphabetical_order = TRUE,
+    algo = "xxhash64",
+    ignore_script_name = FALSE,
+    remove_folder = TRUE
+) {
+  ## Ensure folder exists
   check_is_directory(folder)
 
-  ## Construct path to temp folder
+  ## Construct hash and temp folder
   hash_res <- generate_hash(
     parameters_list,
     hash_includes_timestamp = hash_includes_timestamp,
-    ignore_na = ignore_na,
-    alphabetical_order = alphabetical_order,
-    algo = algo,
-    ignore_script_name = ignore_script_name
+    ignore_na              = ignore_na,
+    alphabetical_order      = alphabetical_order,
+    algo                    = algo,
+    ignore_script_name      = ignore_script_name
   )
-
-  hash <- hash_res$hash
+  hash        <- hash_res$hash
   temp_folder <- file.path(folder, hash)
-
   if (!dir.exists(temp_folder)) {
     stop("Incremental folder does not exist: ", temp_folder)
   }
 
-  ## Identify all *.rds files
-  all_rds_files <- list.files(
-    temp_folder,
-    pattern = "\\.rds$",
-    full.names = TRUE
-  )
-
-  ## Separate out parameter files vs result files
-  parameter_files <- all_rds_files[grepl("_parameters\\.rds$", all_rds_files)]
-  result_files    <- setdiff(all_rds_files, parameter_files)
-
+  ## Gather .rds files
+  all_rds         <- list.files(temp_folder, pattern = "\\.rds$", full.names = TRUE)
+  parameter_files <- all_rds[grepl("_parameters\\.rds$", all_rds)]
+  result_files    <- setdiff(all_rds, parameter_files)
   if (length(result_files) == 0) {
     warning("No result files found in incremental folder. Nothing to compress.")
     return(invisible(NULL))
   }
 
-  ## Read all results into a list
-  results_list <- lapply(result_files, readRDS)
+  ## If legacy parameters present, override parameters_list
+  if (length(parameter_files) > 0) {
+    parameters_list <- readRDS(parameter_files[[1]])
+  }
 
-  ## Check if all are data frames
-  are_data_frames <- sapply(results_list, inherits, what = "data.frame")
-
-  if (all(are_data_frames)) {
-    ## If all are data frames, rbind them
-    combined_results <- do.call(rbind, results_list)
+  ## Combine results
+  res_list <- lapply(result_files, readRDS)
+  combined <- if (all(sapply(res_list, inherits, "data.frame"))) {
+    do.call(rbind, res_list)
   } else {
-    ## Otherwise, store them as a list
-    combined_results <- results_list
+    res_list
   }
 
-  ## Save combined results
-  save_objects(folder, combined_results, parameters_list)
+  ## Determine backend
+  yaml_file   <- file.path(folder, "indexr.yaml")
+  has_yaml    <- file.exists(yaml_file)
+  has_legacy  <- length(parameter_files) > 0
+  if (has_yaml && has_legacy) {
+    stop("Found both legacy `_parameters.rds` files and 'indexr.yaml'; remove one before compressing.")
+  }
 
-  ## Optionally remove old files and directory
+  ## Save via save_objects (yaml=FALSE for legacy, default TRUE otherwise)
+  if (has_legacy) {
+    save_objects(folder, combined, parameters_list, yaml = FALSE)
+  } else {
+    save_objects(folder, combined, parameters_list)
+  }
+
+  ## Cleanup originals if requested
   if (remove_folder) {
-
-    file.remove(all_rds_files)
-    ## This will only remove the folder if it is empty after removing files
-    ## (On most systems, after removing all files, it should be empty.)
-    unlink(temp_folder, recursive = TRUE, force = FALSE)
-
+    file.remove(all_rds)
+    unlink(temp_folder, recursive = TRUE)
   }
 
+  invisible()
 }

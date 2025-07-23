@@ -42,68 +42,112 @@
 #' ## Cleanup
 #' unlink(tmp_dir, recursive = TRUE)
 #' @seealso [create_hash_table()]
-cleanup_from_hash_table <- function(folder, hash_table,
+cleanup_from_hash_table <- function(folder,
+                                    hash_table,
                                     mode = c("manual", "all"),
-                                    column = NULL, request_confirmation = TRUE) {
+                                    column = NULL,
+                                    request_confirmation = TRUE) {
   mode <- match.arg(mode)
 
   ## Basic checks
   check_is_directory(folder)
 
-  ## In "manual" mode, look for rows where 'column' == TRUE
+  ## Determine deletion candidates
   if (mode == "manual") {
     if (is.null(column)) {
-      stop("In 'manual' mode, you must specify the column name containing the deletion indicator.")
+      stop("In 'manual' mode, you must specify the column name for deletion.")
     }
     if (!column %in% names(hash_table)) {
-      stop("Column '", column, "' not found in the hash table.")
+      stop(glue::glue("Column '{column}' not found in the hash table."))
     }
-    ## Identify hashes for which the user has marked deletion
-    del_rows <- which(isTRUE(hash_table[[column]]) | hash_table[[column]] == TRUE)
+    del_rows <- which(isTRUE(hash_table[[column]]))
     if (length(del_rows) == 0) {
       message("No rows with '", column, "' == TRUE. Nothing to delete.")
       return(invisible(NULL))
     }
     del_hashes <- hash_table$hash[del_rows]
   } else {
-    ## In "all" mode, remove every hash in hash_table
     del_hashes <- hash_table$hash
   }
 
-  ## Construct full paths for results and parameter files
-  results_files  <- file.path(folder, paste0(del_hashes, ".rds"))
-  params_files   <- file.path(folder, paste0(del_hashes, "_parameters.rds"))
-  files_to_delete <- c(results_files, params_files)
-  files_to_delete <- files_to_delete[file.exists(files_to_delete)]
-
-  if (length(files_to_delete) == 0) {
-    message("No matching files found on disk to delete.")
-    return(invisible(NULL))
+  ## Detect backend
+  param_files <- list.files(folder, pattern = "_parameters\\.rds$", full.names = TRUE)
+  yaml_file   <- file.path(folder, "indexr.yaml")
+  has_params  <- length(param_files) > 0
+  has_yaml    <- file.exists(yaml_file)
+  if (has_params && has_yaml) {
+    stop("Both parameter RDS files and 'indexr.yaml' present; remove one before cleanup.")
+  }
+  if (!has_params && !has_yaml) {
+    message(glue::glue("No parameter files or 'indexr.yaml' found in '{folder}'."))
   }
 
-  message("The following .rds files will be removed:\n",
-          paste(files_to_delete, collapse = "\n"))
+  if (has_params) {
+    ## LEGACY MODE: delete .rds and _parameters.rds
+    results_paths <- file.path(folder, paste0(del_hashes, ".rds"))
+    params_paths  <- file.path(folder, paste0(del_hashes, "_parameters.rds"))
+    files_to_delete <- unique(c(results_paths, params_paths))
+    files_to_delete <- files_to_delete[file.exists(files_to_delete)]
 
+    if (length(files_to_delete) == 0) {
+      message("No matching files found on disk to delete.")
+      return(invisible(NULL))
+    }
 
-  ## Ask for user confirmation
-  if (request_confirmation) {
-    confirm <- utils::askYesNo("Do you want to proceed with deleting these files?")
+    message("The following files will be removed:\n",
+            paste(files_to_delete, collapse = "\n"))
+    confirm <- if (request_confirmation) {
+      utils::askYesNo("Proceed with deletion?")
+    } else TRUE
+
+    if (isTRUE(confirm)) {
+      file.remove(files_to_delete)
+      message("Specified files have been deleted.")
+    } else if (isFALSE(confirm)) {
+      message("Deletion canceled by the user.")
+    } else {
+      message("No response detected. Deletion canceled.")
+    }
+
+    check_missing_pairs(folder)
+
   } else {
-    confirm <- TRUE
-  }
 
-  if (isTRUE(confirm)) {
-    file.remove(files_to_delete)
-    message("Specified files have been deleted.")
-  } else if (isFALSE(confirm)) {
-    message("Deletion canceled by the user.")
-  } else {
-    message("No response detected. Deletion canceled.")
-  }
+    rds_paths <- file.path(folder, paste0(del_hashes, ".rds"))
+    existing  <- rds_paths[file.exists(rds_paths)]
+    missing   <- setdiff(del_hashes, sub("\\.rds$", "", basename(existing)))
+    if (length(missing) > 0) {
+      warning(glue::glue("Results file not found for hashes: {paste(missing, collapse = \", \")}"))
+    }
+    if (length(existing) == 0) {
+      message("No .rds files to remove.")
+      return(invisible(NULL))
+    }
 
-  # Optionally, re-check pairs
-  check_missing_pairs(folder)
+    message("The following .rds files will be removed:\n",
+            paste(existing, collapse = "\n"))
+    confirm <- if (request_confirmation) {
+      utils::askYesNo("Proceed with deletion?")
+    } else TRUE
+
+    if (isTRUE(confirm)) {
+      file.remove(existing)
+      index_list <- yaml::read_yaml(yaml_file)
+      for (h in intersect(del_hashes, names(index_list))) {
+        index_list[[h]] <- NULL
+      }
+      yaml::write_yaml(index_list, yaml_file)
+      message("Specified files and YAML entries have been deleted.")
+    } else if (isFALSE(confirm)) {
+      message("Deletion canceled by the user.")
+    } else {
+      message("No response detected. Deletion canceled.")
+    }
+
+    check_missing_pairs(folder)
+  }
 
   invisible(NULL)
 }
+
 

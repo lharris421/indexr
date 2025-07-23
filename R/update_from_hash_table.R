@@ -70,160 +70,183 @@
 #' ## Cleanup
 #' unlink(tmp_dir, recursive = TRUE)
 #' @seealso [create_hash_table()]
-update_from_hash_table <- function(hash_table, rds_folder,
-                              hash_includes_timestamp = FALSE,
-                              ignore_na = TRUE,
-                              alphabetical_order = TRUE,
-                              algo = "xxhash64") {
-
-  ## Checks
+update_from_hash_table <- function(hash_table,
+                                   rds_folder,
+                                   hash_includes_timestamp = FALSE,
+                                   ignore_na = TRUE,
+                                   alphabetical_order = TRUE,
+                                   algo = "xxhash64") {
+  ## Verify folder and inputs
   check_is_directory(rds_folder)
   hash_table <- check_and_fix_extension(hash_table, "csv")
-  check_missing_pairs(rds_folder)  # Could be refined for more specific checks
+  parameter_files <- list.files(rds_folder, pattern = "_parameters\\.rds$", full.names = TRUE)
+  yaml_file      <- file.path(rds_folder, "indexr.yaml")
+  has_params     <- length(parameter_files) > 0
+  has_yaml       <- file.exists(yaml_file)
 
-  # Read the updated CSV table
+  if (has_params && has_yaml) {
+    stop("Both parameter RDS files and 'indexr.yaml' found; remove one before updating.")
+  }
+  if (!has_params && !has_yaml) {
+    stop(glue::glue("No parameter RDS files or 'indexr.yaml' found in folder: {rds_folder}"))
+  }
+
+  ## Read updated CSV
   updated_table <- readr::read_csv(hash_table, show_col_types = FALSE)
 
-  # Loop over each row in the CSV
-  for (i in seq_len(nrow(updated_table))) {
-    row <- updated_table[i, ]
-    old_hash <- row$hash
+  if (has_params) {
+    ## LEGACY MODE: update via _parameters.rds files
+    for (i in seq_len(nrow(updated_table))) {
+      row <- updated_table[i, ]
+      old_hash <- row$hash
+      old_res   <- file.path(rds_folder, paste0(old_hash, ".rds"))
+      old_param <- file.path(rds_folder, paste0(old_hash, "_parameters.rds"))
 
-    old_file_path <- file.path(rds_folder, paste0(old_hash, ".rds"))          # old results
-    old_file_parameters_path <- file.path(rds_folder, paste0(old_hash, "_parameters.rds"))
+      res_exists <- file.exists(old_res)
+      par_exists <- file.exists(old_param)
 
-    results_found <- file.exists(old_file_path)
-    parameters_found <- file.exists(old_file_parameters_path)
+      if (res_exists && par_exists) {
+        parameters_list <- readRDS(old_param)
+        updated_params <- parameters_list
 
-    if (results_found && parameters_found) {
-
-      # Only read the old parameters; do NOT read the old results
-      parameters_list <- readRDS(old_file_parameters_path)
-
-      # Update parameters based on CSV row
-      updated_parameters_list <- parameters_list
-      for (col_name in names(row)) {
-
-        # Skip the 'hash' column
-        if (identical(col_name, "hash")) next
-
-        # Current value from parameters_list
-        current_value <- get_nested_value_from_list(updated_parameters_list, col_name)
-
-        # Convert the value from CSV using c_string_to_vector
-        if (is.character(row[[col_name]])) {
-          new_value <- c_string_to_vector(row[[col_name]])
-        } else {
-          new_value <- row[[col_name]]
-        }
-
-        # If both are NA/null, skip
-        if ((is.null(current_value) || all(is.na(current_value))) && all(is.na(new_value))) {
-          next
-        }
-
-        # Attempt to coerce new_value to the type of current_value
-        if (!all(is.na(new_value))) {
-          new_value <- tryCatch({
-            if (is.null(current_value)) {
-              new_value
-            } else {
-              as(new_value, class(current_value))
-            }
-          }, error = function(e) {
-            # If coercion fails, keep new_value as-is
-            new_value
-          })
-        }
-
-        # Check if anything changed
-        if (!identical(current_value, new_value)) {
-          message(glue::glue("Updating {col_name} in parameters_list: {current_value} -> {new_value}"))
-          updated_parameters_list <- update_nested_list_from_csv(
-            updated_parameters_list, col_name, new_value
-          )
-        }
-      }
-
-      # Compare old vs updated parameters, update if they differ
-      if (!identical(parameters_list, updated_parameters_list)) {
-
-        # Generate the new hash
-        new_hash <- generate_hash(
-          parameters_list = updated_parameters_list,
-          hash_includes_timestamp = hash_includes_timestamp,
-          ignore_na = ignore_na,
-          alphabetical_order = alphabetical_order,
-          algo = algo
-        )$hash
-
-        # If hash changed...
-        if (!identical(old_hash, new_hash)) {
-
-          new_file_path          <- file.path(rds_folder, paste0(new_hash, ".rds"))
-          new_file_parameters_path <- file.path(rds_folder, paste0(new_hash, "_parameters.rds"))
-
-          if (file.exists(new_file_path)) {
-            # If the new hash's results file already exists, add a temporary suffix
-            tmp_suffix <- paste0(
-              "_temp_",
-              paste0(sample(c(0:9, letters, LETTERS), 5, replace = TRUE), collapse = "")
-            ) ## Could make more robust?
-            final_hash <- paste0(new_hash, tmp_suffix)
-            message(glue::glue(
-              "Hash {new_hash} already exists. Using temporary hash: {final_hash}"
-            ))
-
-            # Adjust final paths
-            final_file_path          <- file.path(rds_folder, paste0(final_hash, ".rds"))
-            final_file_parameters_path <- file.path(rds_folder, paste0(final_hash, "_parameters.rds"))
-
-            # Rename the old results file to the final (temp-suffixed) file name
-            file.rename(from = old_file_path, to = final_file_path)
-
-            # Save updated parameters under the final hash
-            saveRDS(updated_parameters_list, final_file_parameters_path)
-
-            # Remove old parameters file
-            file.remove(old_file_parameters_path)
-
-            message(glue::glue(
-              "Renamed {old_hash}.rds -> {final_hash}.rds; updated parameters saved."
-            ))
-
+        ## Update each CSV column
+        for (col in names(row)) {
+          if (col == "hash") next
+          current <- get_nested_value_from_list(updated_params, col)
+          new_val  <- if (is.character(row[[col]])) c_string_to_vector(row[[col]]) else row[[col]]
+          if (is.null(current) || all(is.na(current))) {
+            if (all(is.na(new_val))) next
           } else {
-            # Otherwise, rename old results file to new hash
-            file.rename(from = old_file_path, to = new_file_path)
-            saveRDS(updated_parameters_list, new_file_parameters_path)
-            file.remove(old_file_parameters_path)
-
-            message(glue::glue(
-              "Renamed {old_hash}.rds -> {new_hash}.rds; updated parameters saved."
-            ))
+            new_val <- tryCatch(as(new_val, class(current)), error = function(e) new_val)
+            if (identical(current, new_val)) next
           }
+          message(glue::glue("Updating '{col}': {current} -> {new_val}"))
+          updated_params <- update_nested_list_from_csv(updated_params, col, new_val)
+        }
 
+        if (!identical(parameters_list, updated_params)) {
+          ## Compute new hash
+          new_hash <- generate_hash(
+            parameters_list = updated_params,
+            hash_includes_timestamp = hash_includes_timestamp,
+            ignore_na              = ignore_na,
+            alphabetical_order      = alphabetical_order,
+            algo                    = algo
+          )$hash
+
+          if (!identical(old_hash, new_hash)) {
+            new_res   <- file.path(rds_folder, paste0(new_hash, ".rds"))
+            new_param <- file.path(rds_folder, paste0(new_hash, "_parameters.rds"))
+
+            if (file.exists(new_res) || file.exists(new_param)) {
+              tmp_suf <- paste0("_temp_",
+                                paste0(sample(c(0:9, letters, LETTERS), 5, TRUE), collapse = "")
+              )
+              final_hash <- paste0(new_hash, tmp_suf)
+              message(glue::glue("Collision: using '{final_hash}' instead of '{new_hash}'"))
+              new_res   <- file.path(rds_folder, paste0(final_hash, ".rds"))
+              new_param <- file.path(rds_folder, paste0(final_hash, "_parameters.rds"))
+            }
+
+            file.rename(old_res, new_res)
+            saveRDS(updated_params, new_param)
+            file.remove(old_param)
+            message(glue::glue("Rehashed '{old_hash}' -> '{basename(new_res)}'"))
+          } else {
+            saveRDS(updated_params, old_param)
+            message(glue::glue("Parameters updated for '{old_hash}', hash unchanged."))
+          }
         } else {
-          # The parameters changed in a way that yields the same hash
-          message(glue::glue(
-            "No net hash change for {old_hash} -> {new_hash}; no rename needed."
-          ))
+          message(glue::glue("No updates for '{old_hash}'."))
         }
 
       } else {
-        message(glue::glue("No changes detected for hash {old_hash}, skipping update."))
-      }
-
-    } else {
-      # If missing either or both
-      if (!results_found && !parameters_found) {
-        warning(glue::glue("Parameters and results file not found for hash: {old_hash}, no updates were made for this file."))
-      } else if (!parameters_found) {
-        warning(glue::glue("Parameters file not found for hash: {old_hash}, no updates were made for this file."))
-      } else if (!results_found) {
-        warning(glue::glue("Results file not found for hash: {old_hash}, no updates were made for this file."))
+        if (!res_exists && !par_exists) {
+          warning(glue::glue("Missing both files for hash '{old_hash}', skipping."))
+        } else if (!par_exists) {
+          warning(glue::glue("Missing parameters for '{old_hash}', skipping."))
+        } else {
+          warning(glue::glue("Missing results for '{old_hash}', skipping."))
+        }
       }
     }
-  } # end for-loop
+
+  } else {
+    ## YAML MODE: update via indexr.yaml
+    if (!requireNamespace("yaml", quietly = TRUE)) {
+      stop("The 'yaml' package is required for YAML updates. Please install it.")
+    }
+    index_list <- yaml::read_yaml(yaml_file)
+
+    for (i in seq_len(nrow(updated_table))) {
+      row      <- updated_table[i, ]
+      old_hash <- row$hash
+
+      if (!old_hash %in% names(index_list)) {
+        warning(glue::glue("Hash '{old_hash}' not in YAML index; skipping."))
+        next
+      }
+
+      params       <- index_list[[old_hash]]
+      updated_params <- params
+
+      for (col in names(row)) {
+        if (col == "hash") next
+        current <- get_nested_value_from_list(updated_params, col)
+        new_val  <- if (is.character(row[[col]])) c_string_to_vector(row[[col]]) else row[[col]]
+        if (is.null(current) || all(is.na(current))) {
+          if (all(is.na(new_val))) next
+        } else {
+          new_val <- tryCatch(as(new_val, class(current)), error = function(e) new_val)
+          if (identical(current, new_val)) next
+        }
+        message(glue::glue("Updating '{col}' for YAML hash '{old_hash}'"))
+        updated_params <- update_nested_list_from_csv(updated_params, col, new_val)
+      }
+
+      if (!identical(params, updated_params)) {
+        new_hash <- generate_hash(
+          parameters_list = updated_params,
+          hash_includes_timestamp = hash_includes_timestamp,
+          ignore_na              = ignore_na,
+          alphabetical_order      = alphabetical_order,
+          algo                    = algo
+        )$hash
+
+        if (!identical(old_hash, new_hash)) {
+          old_file <- file.path(rds_folder, paste0(old_hash, ".rds"))
+          new_file <- file.path(rds_folder, paste0(new_hash, ".rds"))
+
+          if (file.exists(new_file) || new_hash %in% names(index_list)) {
+            stop(glue::glue(
+              "Collision on rehash '{old_hash}' -> '{new_hash}'. Aborting."
+            ))
+          }
+
+          if (file.exists(old_file)) {
+            file.rename(old_file, new_file)
+          } else {
+            warning(glue::glue(
+              "Result file for '{old_hash}' missing; updating YAML only."
+            ))
+          }
+
+          index_list[[old_hash]] <- NULL
+          index_list[[new_hash]] <- updated_params
+          message(glue::glue("Rehashed YAML '{old_hash}' -> '{new_hash}'"))
+        } else {
+          index_list[[old_hash]] <- updated_params
+          message(glue::glue("YAML parameters updated for '{old_hash}', hash unchanged."))
+        }
+      } else {
+        message(glue::glue("No changes for YAML hash '{old_hash}'."))
+      }
+    }
+
+    yaml::write_yaml(index_list, yaml_file)
+  }
+
+  invisible()
 }
 # Function to convert a string back into the original R object
 c_string_to_vector <- function(str) {

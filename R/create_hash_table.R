@@ -56,52 +56,58 @@
 #' ## Cleanup
 #' unlink(tmp_dir, recursive = TRUE)
 create_hash_table <- function(folder, save_path = NULL, filter_list = NULL) {
-
   ## Quality checks
   check_is_directory(folder)
-  check_missing_pairs(folder)
-  if (!is.null(save_path)) save_path <- check_and_fix_extension(save_path, "csv")
+  yaml_file <- file.path(folder, "indexr.yaml")
+  param_files <- list.files(folder, pattern = "_parameters\\.rds$", full.names = TRUE)
+  has_yaml <- file.exists(yaml_file)
+  has_params <- length(param_files) > 0
 
-  ## List all parameter files in the given directory based on the file pattern
-  files <- list.files(folder, pattern = "_parameters\\.rds$", full.names = TRUE)
-
-  ## Initialize an empty list to store the parameters_lists along with their hashes
-  all_parameters_lists <- list()
-
-  for (file in files) {
-
-    loaded_objects <- readRDS(file)
-
-    ## Make sure types are consistent
-    parameters_list <- lapply(loaded_objects, convert_type)
-
-    parameters_list$hash <- stringr::str_remove(basename(file), "_parameters\\.rds$")
-
-    ## Process vectors into a character sting like "c(1, 2, 3)"
-    parameters_list <- convert_vectors_to_c_strings(parameters_list)
-
-    ## Flatten the nested list with descriptive column names
-    flat_parameters_list <- flatten_nested_list(parameters_list)
-
-    ## Convert all elements to characters to avoid type conflict
-    flat_parameters_list <- lapply(flat_parameters_list, as.character)
-
-    all_parameters_lists[[basename(file)]] <- flat_parameters_list
+  if (has_yaml && has_params) {
+    stop("Both parameter files and indexr.yaml found; please remove one before creating hash table.")
+  } else if (has_params) {
+    ## Legacy behavior: read parameter RDS files
+    all_parameters_lists <- list()
+    for (file in param_files) {
+      loaded_objects <- readRDS(file)
+      parameters_list <- lapply(loaded_objects, convert_type)
+      parameters_list$hash <- sub("_parameters\\.rds$", "", basename(file))
+      parameters_list <- convert_vectors_to_c_strings(parameters_list)
+      flat_parameters_list <- flatten_nested_list(parameters_list)
+      flat_parameters_list <- lapply(flat_parameters_list, as.character)
+      all_parameters_lists[[parameters_list$hash]] <- flat_parameters_list
+    }
+    args_df <- dplyr::bind_rows(lapply(all_parameters_lists, as.data.frame.list, optional = TRUE))
+  } else if (has_yaml) {
+    ## YAML-based behavior: read indexr.yaml
+    if (!requireNamespace("yaml", quietly = TRUE)) {
+      stop("The 'yaml' package is required for reading indexr.yaml. Please install it.")
+    }
+    index <- yaml::read_yaml(yaml_file)
+    all_parameters_lists <- lapply(names(index), function(h) {
+      parameters_list <- index[[h]]
+      parameters_list$hash <- h
+      parameters_list <- convert_vectors_to_c_strings(parameters_list)
+      flat <- flatten_nested_list(parameters_list)
+      lapply(flat, as.character)
+    })
+    names(all_parameters_lists) <- names(index)
+    args_df <- dplyr::bind_rows(lapply(all_parameters_lists, as.data.frame.list, optional = TRUE))
+  } else {
+    stop("No parameter files or indexr.yaml found in folder: ", folder)
   }
 
-  ## Combine all parameters_lists into a data frame using bind_rows
-  args_df <- dplyr::bind_rows(lapply(all_parameters_lists, as.data.frame.list, optional = TRUE))
-
-  ## Apply filters if filter_list is provided
+  ## Apply filters if provided
   if (!is.null(filter_list) && is.list(filter_list)) {
     for (col_name in names(filter_list)) {
-      args_df <- args_df[!is.na(args_df[[col_name]]) & args_df[[col_name]] == filter_list[[col_name]], ]
+      args_df <- args_df[!is.na(args_df[[col_name]]) & args_df[[col_name]] == filter_list[[col_name]], , drop = FALSE]
     }
-    args_df <- args_df[, !sapply(args_df, function(col) all(is.na(col)))]
+    args_df <- args_df[, !sapply(args_df, function(col) all(is.na(col))), drop = FALSE]
   }
 
-  ## Save the table if a save_path is provided
+  ## Save to CSV if save_path provided
   if (!is.null(save_path)) {
+    save_path <- check_and_fix_extension(save_path, "csv")
     readr::write_csv(args_df, file = save_path, quote = "needed")
   }
 

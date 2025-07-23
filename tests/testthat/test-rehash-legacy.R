@@ -17,9 +17,9 @@ testthat::test_that("Check warnings, errors, messages for rehash", {
   params3 <- list(distribution = "composite", other_params = list(param1 = TRUE, param2 = 3, param3 = 1))
 
   # Save objects
-  save_objects(test_dir, obj1, params1)
-  save_objects(test_dir, obj2, params2)
-  save_objects(test_dir, obj3, params3)
+  save_objects(test_dir, obj1, params1, yaml = FALSE)
+  save_objects(test_dir, obj2, params2, yaml = FALSE)
+  save_objects(test_dir, obj3, params3, yaml = FALSE)
 
   # Rehash with no changes, expect message
   testthat::expect_message(rehash(test_dir))
@@ -27,11 +27,11 @@ testthat::test_that("Check warnings, errors, messages for rehash", {
   ## Remove results file, so that get warning if try to rehash
   current_files <- list.files(test_dir, pattern = "\\.rds", full.names = TRUE)
   current_files <- current_files[!stringr::str_detect(current_files, "parameters")]
-  file.remove(current_files[3])
+  file.remove(current_files[1])
   testthat::expect_warning(rehash(test_dir))
 
   ## Expect collision error
-  testthat::expect_warning(save_objects(test_dir, obj3, params3))
+  testthat::expect_warning(save_objects(test_dir, obj3, params3, yaml = FALSE))
   testthat::expect_warning(testthat::expect_error(rehash(test_dir)))
 
 })

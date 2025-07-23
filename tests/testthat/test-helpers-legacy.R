@@ -14,12 +14,12 @@ testthat::test_that("check missing pairs", {
   params3 <- list(distribution = "composite", other_params = list(param1 = TRUE, param2 = 3, param3 = 1))
 
   # Save objects
-  save_objects(test_dir, obj1, params1)
-  save_objects(test_dir, obj2, params2)
-  save_objects(test_dir, obj3, params3)
+  save_objects(test_dir, obj1, params1, yaml = FALSE)
+  save_objects(test_dir, obj2, params2, yaml = FALSE)
+  save_objects(test_dir, obj3, params3, yaml = FALSE)
 
   curr_files <- list.files(test_dir, full.names = TRUE)
-  file.remove(curr_files[1])
+  file.remove(curr_files[c(1, 6)])
 
   testthat::expect_warning(indexr:::check_missing_pairs(test_dir))
 

@@ -15,22 +15,22 @@ testthat::test_that("save_objects and read_objects work correctly", {
   params3 <- list(distribution = "composite", other_params = list(param1 = TRUE, param2 = 3, param3 = 1))
 
   # Save objects
-  save_objects(test_dir, obj1, params1)
-  save_objects(test_dir, obj2, params2)
-  save_objects(test_dir, obj3, params3)
+  save_objects(test_dir, obj1, params1, yaml = FALSE)
+  save_objects(test_dir, obj2, params2, yaml = FALSE)
+  save_objects(test_dir, obj3, params3, yaml = FALSE)
 
   # Overwrite = TRUE (expect nothing)
-  save_objects(test_dir, obj1, params1, overwrite = TRUE)
+  save_objects(test_dir, obj1, params1, overwrite = TRUE, yaml = FALSE)
 
   # Expect 6 files
   saved_files <- list.files(test_dir)
-  testthat::expect_equal(length(saved_files), 5)
+  testthat::expect_equal(length(saved_files), 6)
 
   # Expect warnings if trying to overwrite
-  testthat::expect_warning(save_objects(test_dir, obj1, params1))
+  testthat::expect_warning(save_objects(test_dir, obj1, params1, yaml = FALSE))
   testthat::expect_equal(
     sum(stringr::str_detect(list.files(test_dir), glue::glue("{generate_hash(params1)$hash}_temp"))),
-    1
+    2
   )
 
   # Read objects and validate
@@ -43,10 +43,9 @@ testthat::test_that("save_objects and read_objects work correctly", {
   testthat::expect_identical(obj3_in, obj3)
 
   # Validate parameters
-  params <- yaml::read_yaml(glue::glue("{test_dir}/indexr.yaml"))
-  params1_in <- params[[generate_hash(params1)$hash]]
-  params2_in <- params[[generate_hash(params2)$hash]]
-  params3_in <- params[[generate_hash(params3)$hash]]
+  params1_in <- readRDS(glue::glue("{test_dir}/{generate_hash(params1)$hash}_parameters.rds"))
+  params2_in <- readRDS(glue::glue("{test_dir}/{generate_hash(params2)$hash}_parameters.rds"))
+  params3_in <- readRDS(glue::glue("{test_dir}/{generate_hash(params3)$hash}_parameters.rds"))
   params1_in$timestamp <- NULL
   params2_in$timestamp <- NULL
   params3_in$timestamp <- NULL

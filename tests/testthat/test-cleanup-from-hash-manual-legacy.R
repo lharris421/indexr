@@ -23,12 +23,12 @@ testthat::test_that("Manual cleanup from hash table", {
     betas[i] <- coef(lm(y ~ x))["x"]
   }
 
-  save_objects(folder = temp_dir, results = betas, parameters_list = parameters_list)
+  save_objects(folder = temp_dir, results = betas, parameters_list = parameters_list, yaml = FALSE)
 
   # Check that results are saved correctly
   files <- list.files(temp_dir)
-  testthat::expect_true(length(files) == 3)
-  testthat::expect_true(!any(grepl("_parameters\\.rds$", files)))
+  testthat::expect_true(length(files) == 2)
+  testthat::expect_true(any(grepl("_parameters\\.rds$", files)))
   testthat::expect_true(any(grepl("\\.rds$", files)))
 
   # Create hash table
@@ -51,7 +51,7 @@ testthat::test_that("Manual cleanup from hash table", {
 
   # Validate that directory is cleaned up
   files_after_cleanup <- list.files(temp_dir)
-  testthat::expect_true(length(files_after_cleanup) == 2)
+  testthat::expect_true(length(files_after_cleanup) == 0)
 
   # Run again, expect message that no matching files are found
   testthat::expect_warning(cleanup_from_hash_table(folder = temp_dir, hash_table = hash_table, mode = "manual", request_confirmation = FALSE, column = "delete"))

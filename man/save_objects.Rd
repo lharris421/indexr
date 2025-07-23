@@ -8,6 +8,7 @@ save_objects(
   folder,
   results,
   parameters_list = NULL,
+  yaml = TRUE,
   ignore_na = TRUE,
   alphabetical_order = TRUE,
   overwrite = FALSE,
@@ -26,6 +27,8 @@ save_objects(
 \item{results}{The R object or list of objects to be saved.}
 
 \item{parameters_list}{A named list of arguments used to generate a unique hash for the file.}
+
+\item{yaml}{Whether results should be saved in indexr.yaml if \code{TRUE} (default) or individual parameter files if \code{FALSE} which is the egacy behavior prior to version 0.3.0.}
 
 \item{ignore_na}{Logical. If \code{TRUE}, \code{NA} values in \code{parameters_list} are ignored during hash generation.}
 

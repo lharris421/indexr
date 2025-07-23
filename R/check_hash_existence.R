@@ -52,11 +52,8 @@ check_hash_existence <- function(folder,
   )
   this_hash <- hash_res$hash
 
-  ## Construct the parameter file path
-  param_file <- file.path(folder, paste0(this_hash, "_parameters.rds"))
-
   ## Check existence
-  file_exists <- file.exists(param_file)
+  file_exists <- file.exists(file.path(folder, paste0(this_hash, ".rds")))
 
   if (file_exists && halt) {
     stop("A file with hash '", this_hash, "' already exists in '", folder, "'.")

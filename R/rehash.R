@@ -60,74 +60,104 @@ rehash <- function(folder,
                    ignore_na = TRUE,
                    alphabetical_order = TRUE,
                    algo = "xxhash64") {
+  ## Ensure folder exists
+  check_is_directory(folder)
+  check_missing_pairs(folder)
 
-  ## Identify parameter files
+  ## Detect parameter files and YAML index
   parameter_files <- list.files(folder, pattern = "_parameters\\.rds$", full.names = TRUE)
+  yaml_file      <- file.path(folder, "indexr.yaml")
+  has_params     <- length(parameter_files) > 0
+  has_yaml       <- file.exists(yaml_file)
 
-  if (length(parameter_files) == 0) {
-    message("No parameter files found in folder: ", folder)
-    return(invisible(NULL))
+  ## Error if both backends are present
+  if (has_params && has_yaml) {
+    stop("Both parameter RDS files and 'indexr.yaml' found; remove one before rehashing.")
   }
 
-  ## Process each parameter file
-  for (param_path in parameter_files) {
+  ## PATH 1: Legacy parameter‐file mode
+  if (has_params) {
+    for (param_path in parameter_files) {
+      old_hash    <- sub("_parameters\\.rds$", "", basename(param_path))
+      old_results <- file.path(folder, paste0(old_hash, ".rds"))
 
-    ## Extract the old hash from the filename
-    old_file_name <- basename(param_path)
-    old_hash <- sub("_parameters\\.rds$", "", old_file_name)
+      if (!file.exists(old_results)) {
+        warning(glue::glue("Results file missing for hash '{old_hash}'. Skipping."))
+        next
+      }
 
-    ## Construct the corresponding results file
-    old_results_path <- file.path(folder, paste0(old_hash, ".rds"))
+      parameters_list <- readRDS(param_path)
+      new_hash <- generate_hash(
+        parameters_list,
+        hash_includes_timestamp = hash_includes_timestamp,
+        ignore_na              = ignore_na,
+        alphabetical_order      = alphabetical_order,
+        algo                    = algo
+      )$hash
 
-    # Check that the results file actually exist
-    if (!file.exists(old_results_path)) {
-      warning(glue::glue(
-        "Results file missing for hash '{old_hash}'. Skipping."
-      ))
-      next
+      if (identical(old_hash, new_hash)) {
+        message(glue::glue("Hash unchanged for '{old_hash}' (algo={algo}). Skipping."))
+        next
+      }
+
+      new_results_path    <- file.path(folder, paste0(new_hash, ".rds"))
+      new_parameters_path <- file.path(folder, paste0(new_hash, "_parameters.rds"))
+
+      if (file.exists(new_results_path) || file.exists(new_parameters_path)) {
+        stop(glue::glue("Target files for new hash '{new_hash}' already exist. Collision."))
+      }
+
+      file.rename(old_results,    new_results_path)
+      file.rename(param_path,     new_parameters_path)
+      message(glue::glue("Rehashed '{old_hash}' -> '{new_hash}' (algo={algo})."))
     }
 
-    ## Read ONLY the parameters
-    parameters_list <- readRDS(param_path)
+    ## PATH 2: YAML‐index mode
+  } else if (has_yaml) {
+    if (!requireNamespace("yaml", quietly = TRUE)) {
+      stop("The 'yaml' package is required for rehashing via YAML index. Please install it.")
+    }
+    index_list <- yaml::read_yaml(yaml_file)
+    new_index  <- list()
 
-    ## Generate the new hash with the desired arguments
-    new_hash <- generate_hash(
-      parameters_list,
-      hash_includes_timestamp = hash_includes_timestamp,
-      ignore_na = ignore_na,
-      alphabetical_order = alphabetical_order,
-      algo = algo
-    )$hash
+    for (old_hash in names(index_list)) {
+      params   <- index_list[[old_hash]]
+      new_hash <- generate_hash(
+        params,
+        hash_includes_timestamp = hash_includes_timestamp,
+        ignore_na              = ignore_na,
+        alphabetical_order      = alphabetical_order,
+        algo                    = algo
+      )$hash
 
-    ## If the new hash is the same as the old hash, do nothing
-    if (identical(old_hash, new_hash)) {
-      message(glue::glue(
-        "Hash unchanged for '{old_hash}' with new algo '{algo}'. Skipping rename."
-      ))
-      next
+      if (identical(old_hash, new_hash)) {
+        new_index[[old_hash]] <- params
+        message(glue::glue("Hash unchanged for '{old_hash}'. Skipping."))
+        next
+      }
+
+      old_file <- file.path(folder, paste0(old_hash, ".rds"))
+      new_file <- file.path(folder, paste0(new_hash, ".rds"))
+
+      if (file.exists(new_file) || new_hash %in% names(new_index)) {
+        stop(glue::glue("Cannot rehash '{old_hash}' -> '{new_hash}': target exists."))
+      }
+
+      if (file.exists(old_file)) {
+        file.rename(old_file, new_file)
+      } else {
+        warning(glue::glue("Result file for '{old_hash}' not found; updating YAML only."))
+      }
+
+      new_index[[new_hash]] <- params
+      message(glue::glue("Rehashed '{old_hash}' -> '{new_hash}' via YAML (algo={algo})."))
     }
 
-    ## Construct the new file paths
-    new_results_path    <- file.path(folder, paste0(new_hash, ".rds"))
-    new_parameters_path <- file.path(folder, paste0(new_hash, "_parameters.rds"))
+    yaml::write_yaml(new_index, yaml_file)
 
-    ## Check for collisions
-    if (file.exists(new_results_path) || file.exists(new_parameters_path)) {
-      stop(glue::glue(
-        "New hash '{new_hash}' already exists in '{folder}'. ",
-        "Potential collision or identical parameter set."
-      ))
-    }
-
-    ## Rename old files to new hash
-    file.rename(from = old_results_path, to = new_results_path)
-    file.rename(from = param_path,        to = new_parameters_path)
-
-    message(glue::glue(
-      "Rehashed '{old_hash}' -> '{new_hash}' (algo = {algo})."
-    ))
+  } else {
+    message("No parameter RDS files or 'indexr.yaml' found in folder: ", folder)
   }
 
-  invisible(NULL)
+  invisible()
 }
-

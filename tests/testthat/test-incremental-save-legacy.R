@@ -10,12 +10,12 @@ testthat::test_that("incremental saving and compression work correctly", {
 
   # Save objects incrementally
   for (i in 1:10) {
-    save_objects(test_dir, data.frame(idx = i, val = rnorm(1)), params, incremental = TRUE)
+    save_objects(test_dir, data.frame(idx = i, val = rnorm(1)), params, incremental = TRUE, yaml = FALSE)
   }
 
   # Validate the number of saved incremental files
   tmp_dir <- file.path(test_dir, generate_hash(params)$hash)
-  testthat::expect_equal(length(list.files(tmp_dir)), 10)
+  testthat::expect_equal(length(list.files(tmp_dir)), 20)
 
   # Compress incremental files
   compress_incremental(test_dir, params)
@@ -27,8 +27,8 @@ testthat::test_that("incremental saving and compression work correctly", {
   # Validate the incremental folder is removed
   testthat::expect_error(check_is_directory(tmp_dir))
 
-  # Validate only two files remain (results, yaml, and lock)
-  testthat::expect_equal(length(list.files(test_dir)), 3)
+  # Validate only two files remain (results and parameters)
+  testthat::expect_equal(length(list.files(test_dir)), 2)
 
   # Read and validate combined results
   res <- read_objects(test_dir, params)
@@ -50,12 +50,12 @@ testthat::test_that("incremental saving and compression work correctly for lists
 
   # Save objects incrementally
   for (i in 1:10) {
-    save_objects(test_dir, list(idx = i, val = rnorm(1)), params, incremental = TRUE)
+    save_objects(test_dir, list(idx = i, val = rnorm(1)), params, incremental = TRUE, yaml = FALSE)
   }
 
   # Validate the number of saved incremental files
   tmp_dir <- file.path(test_dir, generate_hash(params)$hash)
-  testthat::expect_equal(length(list.files(tmp_dir)), 10)
+  testthat::expect_equal(length(list.files(tmp_dir)), 20)
 
   # Compress incremental files
   compress_incremental(test_dir, params, remove_folder = FALSE) ## Dont remove
@@ -66,6 +66,9 @@ testthat::test_that("incremental saving and compression work correctly for lists
   # Check for hash
   testthat::expect_equal(check_hash_existence(test_dir, params), TRUE)
   testthat::expect_error(check_hash_existence(test_dir, params, halt = TRUE))
+
+  # Validate only two files remain (results and parameters)
+  testthat::expect_equal(length(list.files(test_dir, pattern = "\\.rds")), 2)
 
   # Read and validate combined results
   res <- read_objects(test_dir, params)

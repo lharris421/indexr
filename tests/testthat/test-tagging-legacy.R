@@ -14,9 +14,9 @@ testthat::test_that("general cleanup with tagging functionalty", {
   params3 <- list(distribution = "composite", other_params = list(param1 = TRUE, param2 = 3, param3 = 1))
 
   # Save objects
-  save_objects(test_dir, obj1, params1)
-  save_objects(test_dir, obj2, params2)
-  save_objects(test_dir, obj3, params3)
+  save_objects(test_dir, obj1, params1, yaml = FALSE)
+  save_objects(test_dir, obj2, params2, yaml = FALSE)
+  save_objects(test_dir, obj3, params3, yaml = FALSE)
 
   # Start tagging
   start_tagging(test_dir)
@@ -42,7 +42,7 @@ testthat::test_that("general cleanup with tagging functionalty", {
 
   ## Delete unused file
   cleanup(test_dir, request_confirmation = FALSE, cutoff_date = "2000-10-01 12:12:12")
-  testthat::expect_equal(length(list.files(test_dir, pattern = "\\.rds")), 2)
+  testthat::expect_equal(length(list.files(test_dir, pattern = "\\.rds")), 4)
 
   # No files left to remove
   testthat::expect_message(cleanup(test_dir))
@@ -58,6 +58,7 @@ testthat::test_that("general cleanup with tagging functionalty", {
   testthat::expect_warning(close_tagging(test_dir))
 
 })
+
 
 # Clean up after tests
 unlink(test_dir, recursive = TRUE)

@@ -5,6 +5,7 @@
 #' @param folder Character string specifying the path to the directory where the objects will be saved.
 #' @param results The R object or list of objects to be saved.
 #' @param parameters_list A named list of arguments used to generate a unique hash for the file.
+#' @param yaml Whether results should be saved in indexr.yaml if \code{TRUE} (default) or individual parameter files if \code{FALSE} which is the egacy behavior prior to version 0.3.0.
 #' @param ignore_na Logical. If \code{TRUE}, \code{NA} values in \code{parameters_list} are ignored during hash generation.
 #' @param alphabetical_order Logical. If \code{TRUE}, the names in \code{parameters_list} are sorted alphabetically before hash generation.
 #' @param overwrite Logical. If \code{TRUE}, existing files with the same hash will be overwritten. If \code{FALSE} and a conflict occurs, the results will be saved under a temporary hash.
@@ -65,22 +66,31 @@
 #' unlink(tmp_dir, recursive = TRUE)
 #'
 #' @seealso [read_objects()]
-save_objects <- function(folder, results, parameters_list = NULL,
-                         ignore_na = TRUE,
-                         alphabetical_order = TRUE, overwrite = FALSE,
-                         include_timestamp = TRUE, hash_includes_timestamp = FALSE,
-                         algo = "xxhash64",
-                         get_script_name = TRUE, ignore_script_name = FALSE,
-                         incremental = FALSE, silent = FALSE) {
-
-  ## Checks
+save_objects <- function(
+    folder,
+    results,
+    parameters_list = NULL,
+    yaml = TRUE,
+    ignore_na = TRUE,
+    alphabetical_order = TRUE,
+    overwrite = FALSE,
+    include_timestamp = TRUE,
+    hash_includes_timestamp = FALSE,
+    algo = "xxhash64",
+    get_script_name = TRUE,
+    ignore_script_name = FALSE,
+    incremental = FALSE,
+    silent = FALSE
+) {
+  ## Ensure folder exists
   check_is_directory(folder)
 
+  ## Require parameters list
   if (is.null(parameters_list)) {
     stop("A parameters_list must be provided.")
   }
 
-  ## Add script name (if run via command line)
+  ## Add script name if requested
   if (get_script_name) {
     if (!"script_name" %in% names(parameters_list)) {
       script_name <- tryCatch({
@@ -88,13 +98,11 @@ save_objects <- function(folder, results, parameters_list = NULL,
         script_flag <- grep("--file=", cmd_args)
         if (length(script_flag) > 0) {
           script_path <- sub("--file=", "", cmd_args[script_flag])
-          base_name <- basename(script_path)
-          tools::file_path_sans_ext(base_name)
+          tools::file_path_sans_ext(basename(script_path))
         } else {
           NA
         }
       }, error = function(e) NA)
-
       if (!is.na(script_name)) {
         parameters_list$script_name <- script_name
       }
@@ -103,12 +111,12 @@ save_objects <- function(folder, results, parameters_list = NULL,
     }
   }
 
-  ## Add timestamp
+  ## Add timestamp if requested
   if (include_timestamp) {
     parameters_list$timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
   }
 
-  ## Generate hash
+  ## Generate hash and update parameters_list
   res <- generate_hash(
     parameters_list,
     hash_includes_timestamp = hash_includes_timestamp,
@@ -117,73 +125,104 @@ save_objects <- function(folder, results, parameters_list = NULL,
     algo = algo,
     ignore_script_name = ignore_script_name
   )
-
-  ## Unpack
   hash <- res$hash
   parameters_list <- res$parameters_list
 
-  ## Save logic
-  if (incremental) {
+  ## YAML-based indexing with file locking
+  if (yaml) {
 
-    temp_folder <- file.path(folder, hash)
-    dir.create(temp_folder, recursive = TRUE, showWarnings = FALSE)
-
-    ## Generate a unique subscript (random) to avoid collisions
-    existing_files <- list.files(
-      temp_folder,
-      pattern = paste0("^", hash, "_[0-9A-Za-z]+\\.rds$")
-    )
-
-    repeat {
-      ## temp 5-character numeric subscript
-      subscript <- paste0(sample(c(0:9), 5, replace = TRUE), collapse = "")
-      ## Check if a file with this subscript already exists
-      match_pattern <- paste0("^", hash, "_", subscript, "\\.rds$")
-      if (!any(grepl(match_pattern, existing_files))) {
-        break
-      }
+    ## Prevent mixing legacy files with YAML mode
+    legacy_params <- list.files(folder, pattern = "_parameters\\.rds$", full.names = TRUE)
+    if (length(legacy_params) > 0) {
+      warning(
+        "Detected legacy `_parameters.rds` files in '", folder, "'. ",
+        "Consider setting `yaml = FALSE` or running `update_from_legacy()` before proceeding.",
+        "It is not recommended to mix parameter saving methods."
+      )
     }
 
-    ## Save results
-    parameters_filename <- paste0(hash, "_", subscript, "_parameters.rds")
-    results_filename    <- paste0(hash, "_", subscript, ".rds")
+    yaml_file <- file.path(folder, "indexr.yaml")
+    if (!requireNamespace("filelock", quietly = TRUE)) {
+      stop("The 'filelock' package is required for YAML locking. Please install it.")
+    }
+    lock_file <- paste0(yaml_file, ".lock")
+    lock <- filelock::lock(lock_file, timeout = 60000)
+    on.exit(filelock::unlock(lock), add = TRUE)
 
-    parameters_file_path <- file.path(temp_folder, parameters_filename)
-    results_file_path    <- file.path(temp_folder, results_filename)
+    ## Read or init index
+    index <- if (file.exists(yaml_file)) yaml::read_yaml(yaml_file) else list()
 
-    saveRDS(parameters_list, file = parameters_file_path)
-    saveRDS(results, file = results_file_path)
+    ## Save results file
+    if (incremental) {
+      temp_folder <- file.path(folder, hash)
+      dir.create(temp_folder, recursive = TRUE, showWarnings = FALSE)
+      existing <- list.files(
+        temp_folder,
+        pattern = paste0("^", hash, "_[0-9A-Za-z]+\\.rds$")
+      )
+      repeat {
+        subscript <- paste0(sample(c(0:9), 5, TRUE), collapse = "")
+        fname <- paste0(hash, "_", subscript, ".rds")
+        if (!fname %in% existing) break
+      }
+      saveRDS(results, file = file.path(temp_folder, fname))
+      final_key <- hash
+    } else {
+      final_key <- hash
+      fname <- paste0(final_key, ".rds")
+      path_res <- file.path(folder, fname)
+      if (file.exists(path_res) && !overwrite) {
+        tmp_suf <- paste0("_temp_", paste0(sample(c(0:9, letters, LETTERS), 5, replace = TRUE), collapse = ""))
+        final_key <- paste0(hash, tmp_suf)
+        fname <- paste0(final_key, ".rds")
+        warning(glue::glue(
+          "A file already exists with these parameters; saved under temporary hash: {final_key}"
+        ))
+      }
+      saveRDS(results, file = file.path(folder, fname))
+    }
+
+    ## Index by hash key with nested YAML
+    index[[final_key]] <- parameters_list
+    yaml::write_yaml(index, yaml_file)
 
   } else {
-
-    ## Non-incremental
-    results_file_path    <- file.path(folder, paste0(hash, ".rds"))
-    parameters_file_path <- file.path(folder, paste0(hash, "_parameters.rds"))
-
-    ## If the file already exists and overwrite==FALSE, append a suffix
-    if ((file.exists(results_file_path) || file.exists(parameters_file_path)) && !overwrite) {
-
-      tmp_suffix <- paste0("_temp_", paste0(sample(c(0:9, letters, LETTERS), 5, replace = TRUE), collapse = ""))
-      new_hash <- paste0(hash, tmp_suffix)
-
-      warning(glue::glue(
-        "A file already exists with these parameters, results saved under a temporary hash: {new_hash}"
-      ))
-
-      ## Update the paths
-      results_file_path    <- file.path(folder, paste0(new_hash, ".rds"))
-      parameters_file_path <- file.path(folder, paste0(new_hash, "_parameters.rds"))
-
+    ## Original behavior: separate RDS files
+    if (incremental) {
+      temp_folder <- file.path(folder, hash)
+      dir.create(temp_folder, recursive = TRUE, showWarnings = FALSE)
+      existing <- list.files(
+        temp_folder,
+        pattern = paste0("^", hash, "_[0-9A-Za-z]+\\.rds$")
+      )
+      repeat {
+        subscript <- paste0(sample(c(0:9), 5, TRUE), collapse = "")
+        pattern <- paste0("^", hash, "_", subscript, "\\.rds$")
+        if (!any(grepl(pattern, existing))) break
+      }
+      par_file <- paste0(hash, "_", subscript, "_parameters.rds")
+      res_file <- paste0(hash, "_", subscript, ".rds")
+      saveRDS(parameters_list, file = file.path(temp_folder, par_file))
+      saveRDS(results,        file = file.path(temp_folder, res_file))
+    } else {
+      res_file <- paste0(hash, ".rds")
+      par_file <- paste0(hash, "_parameters.rds")
+      path_res <- file.path(folder, res_file)
+      path_par <- file.path(folder, par_file)
+      if ((file.exists(path_res) || file.exists(path_par)) && !overwrite) {
+        tmp_suf <- paste0("_temp_", paste0(sample(c(0:9, letters, LETTERS), 5, replace = TRUE), collapse = ""))
+        new_hash <- paste0(hash, tmp_suf)
+        warning(glue::glue(
+          "A file already exists with these parameters; saved under temporary hash: {new_hash}"
+        ))
+        res_file <- paste0(new_hash, ".rds")
+        par_file <- paste0(new_hash, "_parameters.rds")
+      }
+      saveRDS(parameters_list, file = file.path(folder, par_file))
+      saveRDS(results,        file = file.path(folder, res_file))
     }
-
-    ## Save parameters and results
-    saveRDS(parameters_list, file = parameters_file_path)
-    saveRDS(results, file = results_file_path)
-
+    if (!silent) check_missing_pairs(folder)
   }
-
-  ## Check for missing parameter/result pairs in the folder
-  if (!silent) check_missing_pairs(folder)
 
   invisible()
 }

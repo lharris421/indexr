@@ -14,9 +14,9 @@ testthat::test_that("save_objects and read_objects work correctly", {
   params1_df <- data.frame(distribution = "normal", `other_params[[param1]]` = TRUE, `other_params[[param2]]` = 1)
   testthat::expect_error(read_objects(folders = "folder1", parameters_list = params1_df))
 
-  ## Expect warning (Return NULL)
+  ## Expect warning
   testthat::expect_warning({
-   res <- read_objects(folders = ".", parameters_list = params2)
+    res <- read_objects(folders = ".", parameters_list = params2)
   })
   testthat::expect_equal(res, NULL)
 

@@ -1,60 +1,78 @@
 #' @importFrom methods as
 check_missing_pairs <- function(folder) {
+  ## Ensure folder exists
+  check_is_directory(folder)
 
-  ## Collect all .rds files
-  all_files <- list.files(folder, pattern = "\\.rds$", full.names = TRUE)
-
-  ## Separate out files that match "<hash>_parameters.rds"
-  param_files <- grep("_parameters\\.rds$", all_files, value = TRUE)
-
-  ## Everything else is considered a "results" file
-  results_files <- setdiff(all_files, param_files)
-
-  ## Extract the "hash" portion:
-  ##    - For param_files, remove the "_parameters.rds" part
-  ##    - For results_files, remove the ".rds" part
-  param_hashes   <- sub("_parameters\\.rds$", "", basename(param_files))
-  results_hashes <- sub("\\.rds$", "", basename(results_files))
-
-  ## Find all unique hashes
-  unique_hashes <- unique(c(param_hashes, results_hashes))
-
-  ## Containers to track missing pairs
-  missing_params  <- character(0)
-  missing_results <- character(0)
-
-  ## For each hash, check if it has both a param file AND a results file
-  for (h in unique_hashes) {
-    has_param   <- h %in% param_hashes
-    has_results <- h %in% results_hashes
-
-    if (!has_param) {
-      missing_params <- c(missing_params, h)
-    }
-    if (!has_results) {
-      missing_results <- c(missing_results, h)
-    }
+  ## If directory is empty, skip checks
+  if (length(list.files(folder, all.files = FALSE, no.. = TRUE)) == 0) {
+    message("Folder is empty; skipping missing-pairs check.")
+    return(invisible())
   }
 
-  ## If there are any mismatches, generate a single warning that lists them
-  if (length(missing_params) > 0 || length(missing_results) > 0) {
-    msg <- character(0)
+  ## Detect backends
+  param_files <- list.files(folder, pattern = "_parameters\\.rds$", full.names = TRUE)
+  yaml_file   <- file.path(folder, "indexr.yaml")
+  has_params  <- length(param_files) > 0
+  has_yaml    <- file.exists(yaml_file)
 
-    if (length(missing_params) > 0) {
-      msg <- c(msg, paste0(
-        "The following hashes have results but no parameters: ",
-        paste(missing_params, collapse = ", ")
-      ))
+  ## Error if both or neither
+  if (has_params && has_yaml) {
+    stop("Both parameter RDS files and 'indexr.yaml' found; remove one before checking.")
+  }
+  if (!has_params && !has_yaml) {
+    message(paste0("No parameter RDS files or 'indexr.yaml' found in folder: ", folder))
+  }
+
+  if (has_yaml) {
+
+    index_list     <- yaml::read_yaml(yaml_file)
+    yaml_hashes    <- names(index_list)
+    all_rds        <- list.files(folder, pattern = "\\.rds$", full.names = FALSE)
+    result_files   <- all_rds[!grepl("_parameters\\.rds$", all_rds)]
+    result_hashes  <- sub("\\.rds$", "", result_files)
+
+    missing_in_yaml <- setdiff(result_hashes, yaml_hashes)
+    missing_results <- setdiff(yaml_hashes, result_hashes)
+
+    if (length(missing_in_yaml) || length(missing_results)) {
+      msgs <- character()
+      if (length(missing_in_yaml)) {
+        msgs <- c(msgs,
+                  paste0("Results without YAML entries: ",
+                         paste(missing_in_yaml, collapse = ", ")))
+      }
+      if (length(missing_results)) {
+        msgs <- c(msgs,
+                  paste0("YAML entries without result files: ",
+                         paste(missing_results, collapse = ", ")))
+      }
+      warning(paste(msgs, collapse = "\n"))
     }
 
-    if (length(missing_results) > 0) {
-      msg <- c(msg, paste0(
-        "The following hashes have parameters but no results: ",
-        paste(missing_results, collapse = ", ")
-      ))
-    }
+  } else {
+    ## Legacy parameter-file mode
+    all_rds        <- list.files(folder, pattern = "\\.rds$", full.names = TRUE)
+    result_files   <- all_rds[!grepl("_parameters\\.rds$", all_rds)]
+    param_hashes   <- sub("_parameters\\.rds$", "", basename(param_files))
+    result_hashes  <- sub("\\.rds$", "", basename(result_files))
 
-    warning(paste(paste(msg, collapse = "\n"), "\nThis usually means that one of the corresponding files was manually deleted and not the other."))
+    missing_params  <- setdiff(result_hashes, param_hashes)
+    missing_results <- setdiff(param_hashes, result_hashes)
+
+    if (length(missing_params) || length(missing_results)) {
+      msgs <- character()
+      if (length(missing_params)) {
+        msgs <- c(msgs,
+                  paste0("Results but no parameters: ",
+                         paste(missing_params, collapse = ", ")))
+      }
+      if (length(missing_results)) {
+        msgs <- c(msgs,
+                  paste0("Parameters but no results: ",
+                         paste(missing_results, collapse = ", ")))
+      }
+      warning(paste(msgs, collapse = "\n"))
+    }
   }
 }
 check_and_fix_extension <- function(filename, ext) {

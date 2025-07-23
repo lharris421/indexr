@@ -28,8 +28,8 @@ testthat::test_that("Simulation results are saved and read correctly", {
 
   # Check that results are saved correctly
   files <- list.files(test_dir)
-  testthat::expect_true(length(files) == 2)
-  testthat::expect_true(any(grepl("_parameters\\.rds$", files)))
+  testthat::expect_true(length(files) == 3)
+  testthat::expect_true(!any(grepl("_parameters\\.rds$", files)))
   testthat::expect_true(any(grepl("\\.rds$", files)))
 })
 
@@ -64,7 +64,7 @@ testthat::test_that("Hash table creation and cleanup works correctly", {
 
   # Validate that directory is cleaned up
   files_after_cleanup <- list.files(test_dir)
-  testthat::expect_true(length(files_after_cleanup) == 0)
+  testthat::expect_true(length(files_after_cleanup) == 2)
 })
 
 unlink(test_dir, recursive = TRUE)
