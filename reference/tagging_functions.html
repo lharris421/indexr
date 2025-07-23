@@ -13,7 +13,7 @@ close_tagging() deletes the tagging file, ending the tagging session."></head><b
 
     <a class="navbar-brand me-2" href="../index.html">indexr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,8 +105,8 @@ close_tagging() deletes the tagging file, ending the tagging session."></head><b
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## See the files have been saved</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">tmp_dir</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "217efbce7bc38344.rds"            "217efbce7bc38344_parameters.rds"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "d930457b62268bae.rds"            "d930457b62268bae_parameters.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "0cd610b75db0a053.rds" "a7055815a9e17ac9.rds" "indexr.yaml"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "indexr.yaml.lock"    </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Start tagging</span></span></span>
 <span class="r-in"><span><span class="fu">start_tagging</span><span class="op">(</span><span class="va">tmp_dir</span><span class="op">)</span></span></span>
@@ -118,13 +118,12 @@ close_tagging() deletes the tagging file, ending the tagging session."></head><b
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Remove untagged file without confirmation (that for parameters_list2)</span></span></span>
 <span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="va">tmp_dir</span>, request_confirmation <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in cleanup(tmp_dir, request_confirmation = FALSE):</span> The tagging file 'indexer_tagging.txt' is empty. No tagged files to compare for cleanup.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in cleanup(tmp_dir, request_confirmation = FALSE):</span> Tagging file 'indexr_tagging.txt' is empty. No tagged files to compare.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## See that one file was removed</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">tmp_dir</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "217efbce7bc38344.rds"            "217efbce7bc38344_parameters.rds"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "d930457b62268bae.rds"            "d930457b62268bae_parameters.rds"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "indexr_tagging.txt"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "0cd610b75db0a053.rds" "a7055815a9e17ac9.rds" "indexr.yaml"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "indexr.yaml.lock"     "indexr_tagging.txt"  </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Close tagging (just removes tagging file)</span></span></span>
 <span class="r-in"><span><span class="fu">close_tagging</span><span class="op">(</span><span class="va">tmp_dir</span><span class="op">)</span></span></span>

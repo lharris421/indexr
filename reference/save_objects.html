@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">indexr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,6 +49,7 @@
 <span>  <span class="va">folder</span>,</span>
 <span>  <span class="va">results</span>,</span>
 <span>  parameters_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  yaml <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ignore_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  alphabetical_order <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -76,6 +77,10 @@
 
 <dt id="arg-parameters-list">parameters_list<a class="anchor" aria-label="anchor" href="#arg-parameters-list"></a></dt>
 <dd><p>A named list of arguments used to generate a unique hash for the file.</p></dd>
+
+
+<dt id="arg-yaml">yaml<a class="anchor" aria-label="anchor" href="#arg-yaml"></a></dt>
+<dd><p>Whether results should be saved in indexr.yaml if <code>TRUE</code> (default) or individual parameter files if <code>FALSE</code> which is the egacy behavior prior to version 0.3.0.</p></dd>
 
 
 <dt id="arg-ignore-na">ignore_na<a class="anchor" aria-label="anchor" href="#arg-ignore-na"></a></dt>
