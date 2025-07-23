@@ -136,8 +136,9 @@ save_objects <- function(
     if (length(legacy_params) > 0) {
       warning(
         "Detected legacy `_parameters.rds` files in '", folder, "'. ",
-        "Consider setting `yaml = FALSE` or running `update_from_legacy()` before proceeding.",
-        "It is not recommended to mix parameter saving methods."
+        "Consider running `update_from_legacy()` before proceeding.",
+        "It is not recommended to mix parameter saving methods and individual",
+        "parameter files will be depricated in version 0.4.0"
       )
     }
 

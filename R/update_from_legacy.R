@@ -1,15 +1,43 @@
-#' Update individual parameter files (legacy) to a single indexr.yaml parameters
-#' file.
+#' Combined individual *_parameter.rds files (legacy) to a single indexr.yaml
+#' parameters file. Prior to version 0.3.0, each result file was saved with a
+#' corresponding *_parameters.rds file.
 #'
-#' @param folder the rds folder
+#' For backward support, \code{save_objects} has been given an option \code{yaml}
+#' which is \code{TRUE} by default. If switched to \code{FALSE}, the legacy behavior
+#' will be produced. However, this option will go away in version 0.4.0.
 #'
-#' @returns NULL
+#' Functions which use the parameters will detect whether to use
+#' *_parameters.rds files or the \code{indexr.yaml} file. If both are detected,
+#' a warning/error is produced as appropriate. This can be addressed by running
+#' \code{update_from_legacy}.
+#'
+#' In version 1.0.0, support for legacy will be dropped completely.
+#'
+#' @param folder the rds folder containing the *_parameter.rds files to convert
+#' to a single indexr.yaml file.
+#'
+#' @returns The function does not return a value but compresses all \code{*_parameter.rds} files into \code{indexr.yaml}.
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' update_from_legacy(path_to_rds)
-#' }
+#' tmp_dir <- file.path(tempdir(), "example")
+#' dir.create(tmp_dir)
+#'
+#' obj1 <- rnorm(1000)
+#' obj2 <- data.frame(x = runif(100), y = "something", z = rep(c(TRUE, FALSE), 50))
+#'
+#' params1 <- list(distribution = "normal", other_params = list(param1 = TRUE, param2 = 1, param3 = NA))
+#' params2 <- list(distribution = "uniform", other_params = list(param1 = FALSE, param2 = 2, param3 = "1", param4 = 4))
+#'
+#' # Save objects
+#' save_objects(tmp_dir, obj1, params1, yaml = FALSE)
+#' save_objects(tmp_dir, obj2, params2, yaml = FALSE)
+#'
+#' # Update
+#' update_from_legacy(tmp_dir)
+#'
+#' # View file
+#' yaml::read_yaml(file.path(tmp_dir, "indexr.yaml"))
 update_from_legacy <- function(folder) {
 
   yaml_file <- "indexr.yaml"
