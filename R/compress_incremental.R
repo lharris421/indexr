@@ -94,7 +94,7 @@ compress_incremental <- function(
   has_yaml    <- file.exists(yaml_file)
   has_legacy  <- length(parameter_files) > 0
   if (has_yaml && has_legacy) {
-    stop("Found both legacy `_parameters.rds` files and 'indexr.yaml'; remove one before compressing.")
+    stop("Found both legacy `_parameters.rds` files and 'indexr.yaml'; run update_from_legacy before proceeding.")
   }
 
   ## Save via save_objects (yaml=FALSE for legacy, default TRUE otherwise)

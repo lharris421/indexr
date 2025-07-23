@@ -85,7 +85,7 @@ update_from_hash_table <- function(hash_table,
   has_yaml       <- file.exists(yaml_file)
 
   if (has_params && has_yaml) {
-    stop("Both parameter RDS files and 'indexr.yaml' found; remove one before updating.")
+    stop("Both parameter RDS files and 'indexr.yaml' found; run update_from_legacy before proceeding.")
   }
   if (!has_params && !has_yaml) {
     stop(glue::glue("No parameter RDS files or 'indexr.yaml' found in folder: {rds_folder}"))
@@ -173,9 +173,6 @@ update_from_hash_table <- function(hash_table,
 
   } else {
     ## YAML MODE: update via indexr.yaml
-    if (!requireNamespace("yaml", quietly = TRUE)) {
-      stop("The 'yaml' package is required for YAML updates. Please install it.")
-    }
     index_list <- yaml::read_yaml(yaml_file)
 
     for (i in seq_len(nrow(updated_table))) {

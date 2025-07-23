@@ -100,7 +100,7 @@ cleanup <- function(folder,
   has_yaml    <- file.exists(yaml_file)
 
   if (has_params && has_yaml) {
-    stop("Both parameter RDS files and 'indexr.yaml' found; remove one before cleanup.")
+    stop("Both parameter RDS files and 'indexr.yaml' found; run update_from_legacy before continuing.")
   }
   if (!has_params && !has_yaml) {
     stop(glue::glue(
@@ -157,9 +157,6 @@ cleanup <- function(folder,
 
       # In YAML mode, also remove entries from indexr.yaml
       if (has_yaml) {
-        if (!requireNamespace("yaml", quietly = TRUE)) {
-          stop("The 'yaml' package is required for YAML cleanup. Please install it.")
-        }
         removed_hashes <- sub("\\.rds$", "", basename(to_delete))
         index_list <- yaml::read_yaml(yaml_file)
         for (h in removed_hashes) {

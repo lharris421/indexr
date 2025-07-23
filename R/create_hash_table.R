@@ -64,7 +64,7 @@ create_hash_table <- function(folder, save_path = NULL, filter_list = NULL) {
   has_params <- length(param_files) > 0
 
   if (has_yaml && has_params) {
-    stop("Both parameter files and indexr.yaml found; please remove one before creating hash table.")
+    stop("Both parameter files and indexr.yaml found; please run update_from_legacy before proceeding.")
   } else if (has_params) {
     ## Legacy behavior: read parameter RDS files
     all_parameters_lists <- list()
@@ -80,9 +80,6 @@ create_hash_table <- function(folder, save_path = NULL, filter_list = NULL) {
     args_df <- dplyr::bind_rows(lapply(all_parameters_lists, as.data.frame.list, optional = TRUE))
   } else if (has_yaml) {
     ## YAML-based behavior: read indexr.yaml
-    if (!requireNamespace("yaml", quietly = TRUE)) {
-      stop("The 'yaml' package is required for reading indexr.yaml. Please install it.")
-    }
     index <- yaml::read_yaml(yaml_file)
     all_parameters_lists <- lapply(names(index), function(h) {
       parameters_list <- index[[h]]

@@ -72,7 +72,7 @@ rehash <- function(folder,
 
   ## Error if both backends are present
   if (has_params && has_yaml) {
-    stop("Both parameter RDS files and 'indexr.yaml' found; remove one before rehashing.")
+    stop("Both parameter RDS files and 'indexr.yaml' found; run update_from_legacy before proceeding.")
   }
 
   ## PATH 1: Legacy parameter‐file mode
@@ -114,9 +114,7 @@ rehash <- function(folder,
 
     ## PATH 2: YAML‐index mode
   } else if (has_yaml) {
-    if (!requireNamespace("yaml", quietly = TRUE)) {
-      stop("The 'yaml' package is required for rehashing via YAML index. Please install it.")
-    }
+
     index_list <- yaml::read_yaml(yaml_file)
     new_index  <- list()
 

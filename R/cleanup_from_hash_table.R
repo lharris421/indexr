@@ -76,7 +76,7 @@ cleanup_from_hash_table <- function(folder,
   has_params  <- length(param_files) > 0
   has_yaml    <- file.exists(yaml_file)
   if (has_params && has_yaml) {
-    stop("Both parameter RDS files and 'indexr.yaml' present; remove one before cleanup.")
+    stop("Both parameter RDS files and 'indexr.yaml' present; run update_from_legacy to convert from legacy before continuing.")
   }
   if (!has_params && !has_yaml) {
     message(glue::glue("No parameter files or 'indexr.yaml' found in '{folder}'."))
