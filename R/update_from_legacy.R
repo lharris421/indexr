@@ -30,9 +30,6 @@ update_from_legacy <- function(folder) {
 
   ## Load or initialize index list
   if (file.exists(yaml_path)) {
-    if (!requireNamespace("yaml", quietly = TRUE)) {
-      stop("Package 'yaml' is required; please install it.")
-    }
     index_list <- yaml::read_yaml(yaml_path)
   } else {
     index_list <- list()

@@ -17,7 +17,7 @@ check_missing_pairs <- function(folder) {
 
   ## Error if both or neither
   if (has_params && has_yaml) {
-    stop("Both parameter RDS files and 'indexr.yaml' found; remove one before checking.")
+    warning("Both parameter RDS files and 'indexr.yaml' found; it is recommended to run update_from_legacy before proceeding.")
   }
   if (!has_params && !has_yaml) {
     message(paste0("No parameter RDS files or 'indexr.yaml' found in folder: ", folder))

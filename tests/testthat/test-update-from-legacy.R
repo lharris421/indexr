@@ -17,15 +17,22 @@ testthat::test_that("save_objects and read_objects work correctly", {
   # Save objects
   save_objects(test_dir, obj1, params1, yaml = FALSE)
   save_objects(test_dir, obj2, params2, yaml = FALSE)
-  save_objects(test_dir, obj3, params3, yaml = FALSE)
 
   # Check
   saved_files <- list.files(test_dir)
-  testthat::expect_equal(length(saved_files), 6)
+  testthat::expect_equal(length(saved_files), 4)
 
   # Update
   update_from_legacy(test_dir)
 
+  # Expect error
+  testthat::expect_error(update_from_legacy(test_dir))
+
+  ## Run again and update existing file (and expect warning)
+  testthat::expect_warning(save_objects(test_dir, obj3, params3, yaml = FALSE))
+
+  # Update
+  update_from_legacy(test_dir)
 
 })
 
