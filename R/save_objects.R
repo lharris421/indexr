@@ -142,9 +142,6 @@ save_objects <- function(
     }
 
     yaml_file <- file.path(folder, "indexr.yaml")
-    if (!requireNamespace("filelock", quietly = TRUE)) {
-      stop("The 'filelock' package is required for YAML locking. Please install it.")
-    }
     lock_file <- paste0(yaml_file, ".lock")
     lock <- filelock::lock(lock_file, timeout = 60000)
     on.exit(filelock::unlock(lock), add = TRUE)
